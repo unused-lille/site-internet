@@ -1035,7 +1035,7 @@ function renderDetail(id) {
   cBtn.style.cssText = "width:100%;justify-content:center";
   cBtn.addEventListener("click", function() { openContact(l.id); });
   cbox.appendChild(cBtn);
-  var ciDiv = el("div", null, n + " personne" + (n !== 1 ? "s" : "") + " interessees.");
+  var ciDiv = el("div", null, n + " personne(s)" + (n !== 1 ? "s" : "") + " intéressée(s).");
   ciDiv.id = "interest-count-wrap";
   cbox.appendChild(ciDiv);
   dc.appendChild(cbox);
