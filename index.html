@@ -742,8 +742,8 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
+
 
 
 const CONTACT_EMAIL = ['unused.lille','gmail.com'].join('@');
@@ -753,7 +753,13 @@ const CONTACT_EMAIL = ['unused.lille','gmail.com'].join('@');
 // ════════════════════════════════
 const SUPABASE_URL = 'https://wncoflfsrorictwndffa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const API = SUPABASE_URL + '/rest/v1';
+const HEADERS = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': 'Bearer ' + SUPABASE_KEY,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
 
 // ════════════════════════════════
 // DATA STORE
@@ -832,35 +838,52 @@ let listings = [];
 let interests = {};
 
 async function loadListings() {
-  const { data, error } = await sb.from('listings').select('*').order('created_at', { ascending: false });
-  if (error) { console.error('loadListings:', error); return []; }
-  return (data || []).map(dbToListing);
+  try {
+    const res = await fetch(API + '/listings?select=*&order=created_at.desc', { headers: HEADERS });
+    if (!res.ok) { console.error('loadListings HTTP', res.status, await res.text()); return []; }
+    const data = await res.json();
+    return (data || []).map(dbToListing);
+  } catch(e) { console.error('loadListings:', e); return []; }
 }
 
 async function saveNewListing(l) {
-  const { error } = await sb.from('listings').insert([listingToDb(l)]);
-  if (error) throw error;
+  const res = await fetch(API + '/listings', {
+    method: 'POST',
+    headers: HEADERS,
+    body: JSON.stringify(listingToDb(l))
+  });
+  if (!res.ok) { const t = await res.text(); console.error('saveNewListing:', t); throw new Error(t); }
 }
 
 async function deleteListing(id) {
-  const { error } = await sb.from('listings').delete().eq('id', id);
-  if (error) throw error;
+  const res = await fetch(API + '/listings?id=eq.' + id, {
+    method: 'DELETE',
+    headers: HEADERS
+  });
+  if (!res.ok) throw new Error(await res.text());
 }
 
 async function loadInterests() {
-  const { data, error } = await sb.from('interests').select('listing_id');
-  if (error) { console.error('loadInterests:', error); return {}; }
-  const map = {};
-  (data || []).forEach(r => {
-    if (!map[r.listing_id]) map[r.listing_id] = [];
-    map[r.listing_id].push(1);
-  });
-  return map;
+  try {
+    const res = await fetch(API + '/interests?select=listing_id', { headers: HEADERS });
+    if (!res.ok) return {};
+    const data = await res.json();
+    const map = {};
+    (data || []).forEach(r => {
+      if (!map[r.listing_id]) map[r.listing_id] = [];
+      map[r.listing_id].push(1);
+    });
+    return map;
+  } catch(e) { return {}; }
 }
 
 async function addInterest(listingId) {
   const key = 'session_' + Math.random().toString(36).slice(2);
-  await sb.from('interests').insert([{ listing_id: listingId, session_key: key }]);
+  await fetch(API + '/interests', {
+    method: 'POST',
+    headers: HEADERS,
+    body: JSON.stringify({ listing_id: listingId, session_key: key })
+  });
 }
 
 // ════════════════════════════════
