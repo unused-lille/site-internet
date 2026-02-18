@@ -403,6 +403,13 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
         <p style="font-size:.75rem;color:var(--muted)" id="listing-count-label">à Lille</p>
       </div>
     </div>
+    <div style="position:relative;margin-bottom:10px">
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none">🔍</span>
+      <input type="text" id="search-input" placeholder="Rechercher par titre, quartier, #ID…"
+        oninput="onSearch(this.value)"
+        style="width:100%;padding:10px 14px 10px 34px;border:1.5px solid var(--cream-d);border-radius:100px;font-family:inherit;font-size:.83rem;background:white;outline:none;color:var(--ink);transition:border-color .18s"
+        onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='var(--cream-d)'">
+    </div>
     <div class="filter-bar" style="padding:0">
       <button class="filter-chip active" onclick="setFilter('all',this)">Tous</button>
       <button class="filter-chip" onclick="setFilter('particulier',this)">🏠 Particulier</button>
@@ -412,7 +419,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
     </div>
   </div>
   <div class="listing-layout">
-    <div class="listing-panel" id="listing-panel" style="max-height:calc(100vh - 58px - 95px);"></div>
+    <div class="listing-panel" id="listing-panel" style="max-height:calc(100vh - 58px - 135px);"></div>
     <div class="map-panel"><div id="map"></div></div>
   </div>
 </div>
@@ -783,6 +790,7 @@ async function geocodeAddress(inputId, statusId, latId, lngId) {
 }
 
 var currentView = "home";
+var searchQuery = "";
 var leafletMap = null;
 var markers = [];
 var activeFilter = "all";
@@ -840,10 +848,21 @@ function updateMapMarkers() {
 }
 
 function getFilteredListings() {
+  var q = searchQuery.toLowerCase().trim();
   return listings.filter(function(l) {
     if (l.listingType !== "location") return false;
-    return activeFilter === "all" || l.ownerType === activeFilter;
+    if (activeFilter !== "all" && l.ownerType !== activeFilter) return false;
+    if (!q) return true;
+    return (l.title && l.title.toLowerCase().includes(q)) ||
+           (l.quartier && l.quartier.toLowerCase().includes(q)) ||
+           (l.address && l.address.toLowerCase().includes(q)) ||
+           (String(l.id).includes(q));
   });
+}
+function onSearch(val) {
+  searchQuery = val;
+  renderListing();
+  updateMapMarkers();
 }
 
 function setFilter(f, el) {
@@ -892,6 +911,11 @@ function makeCard(l) {
   addr.className = "space-card-address";
   addr.textContent = l.quartier;
   body.appendChild(addr);
+
+  var idBadge = document.createElement("div");
+  idBadge.style.cssText = "font-size:.68rem;color:var(--muted);margin-bottom:6px;font-family:monospace;letter-spacing:.03em";
+  idBadge.textContent = "#" + l.id;
+  body.appendChild(idBadge);
 
   if (isS && l.shareSurface) {
     var shareInfo = document.createElement("div");
@@ -1063,8 +1087,8 @@ function openContact(id) {
   if (!l) return;
   document.getElementById("modal-title").textContent = "Être mis en relation";
   document.getElementById("modal-body").textContent = "unused transmet ta demande au propriétaire. Toute prise de contact directe hors plateforme annule ta priorité sur cet espace.";
-  var subj = encodeURIComponent("[unused] " + l.title);
-  var bodyLines = ["Bonjour,", "", "Je suis intéressé(e) par l'espace suivant sur unused :", "→ " + l.title + " (" + l.quartier + ", " + (l.surface || l.shareSurface || "?") + " m² — " + (l.sharePrice || l.price || "?") + "€/mois)", "", "Merci de me mettre en relation avec le propriétaire.", "", "Cordialement"];
+  var subj = encodeURIComponent("[unused] Mise en relation #" + l.id + " — " + l.contactName + " — " + l.title);
+  var bodyLines = ["Bonjour,", "", "Je suis intéressé(e) par l'espace suivant sur unused :", "→ " + l.title + " (" + l.quartier + ", " + (l.surface || l.shareSurface || "?") + " m² — " + (l.sharePrice || l.price || "?") + "€/mois)", "", "Référence annonce : #" + l.id, "Propriétaire : " + l.contactName, "", "Merci de me mettre en relation avec le propriétaire.", "", "Cordialement"];
   var body = encodeURIComponent(bodyLines.join("\n"));
   document.getElementById("modal-mailto-btn").href = "mailto:unused.lille@gmail.com?subject=" + subj + "&body=" + body;
   document.getElementById("modal-mailto-btn").onclick = function() {
