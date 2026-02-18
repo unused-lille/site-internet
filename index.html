@@ -550,7 +550,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <div class="fg" style="margin:0"><label>Surface totale de l'espace (m²)</label><input type="number" id="p-total-surface" placeholder="Ex : 12" min="1" oninput="recalcPartage()"></div>
           <div class="fg" style="margin:0"><label>Loyer total que tu paies (€/mois)</label><input type="number" id="p-total-price" placeholder="Ex : 60" min="1" oninput="recalcPartage()"></div>
         </div>
-        <div class="fg"><label>Surface que tu gardes pour toi (m²)</label><input type="number" id="p-my-surface" placeholder="Ex : 6" min="1" oninput="recalcPartage()"></div>
+        <div class="fg"><label>m² que tu n'utilises pas / disponibles pour un coloc de stockage</label><input type="number" id="p-my-surface" placeholder="Ex : 6" min="1" oninput="recalcPartage()"></div>
 
         <div id="partage-calc" style="display:none;background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.2);border-radius:var(--r-sm);padding:18px 20px;margin-top:4px">
           <p style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:12px">💡 Calcul automatique</p>
@@ -1179,9 +1179,9 @@ function recalcPartage() {
   const loyer = parseFloat(document.getElementById('p-total-price').value) || 0;
   const mine = parseFloat(document.getElementById('p-my-surface').value) || 0;
 
-  if (total > 0 && loyer > 0 && mine > 0 && mine < total) {
+  if (total > 0 && loyer > 0 && mine > 0 && mine <= total) {
     const prixM2 = loyer / total;
-    const dispo = total - mine;
+    const dispo = mine; // mine = m² dispos pour un coloc
     const maxGain = Math.round(dispo * prixM2);
 
     partageCalcData = { prixM2, dispo };
@@ -1196,7 +1196,7 @@ function recalcPartage() {
     document.getElementById('partage-contact-section').style.display = 'block';
 
     document.getElementById('p-share-surface-hint').textContent =
-      `Max disponible : ${dispo.toFixed(1)} m² (à ${prixM2.toFixed(2)}€/m²/mois)`;
+      `Max proposable : ${dispo.toFixed(1)} m² (à ${prixM2.toFixed(2)}€/m²/mois)`;
 
     recalcSharePrice();
   } else {
@@ -1240,7 +1240,7 @@ function submitPartage(e) {
 
   if (!title) { showToast('⚠️ Ajoute un titre.'); return; }
   if (!totalSurface || !totalPrice || !mySurface) { showToast('⚠️ Remplis les infos sur ton bail (surface, loyer, ta part).'); return; }
-  if (mySurface >= totalSurface) { showToast('⚠️ Ta surface doit être inférieure au total.'); return; }
+  if (mySurface > totalSurface) { showToast('⚠️ Les m² dispos ne peuvent pas dépasser le total.'); return; }
   if (!shareSurface || !sharePrice) { showToast('⚠️ Indique les m² proposés et le prix.'); return; }
   if (!desc) { showToast('⚠️ Ajoute une description.'); return; }
   if (!address) { showToast('⚠️ Indique l\'adresse.'); return; }
