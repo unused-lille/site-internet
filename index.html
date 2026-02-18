@@ -742,16 +742,16 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<script type="module">
 const CONTACT_EMAIL = ['unused.lille','gmail.com'].join('@');
 
 // ════════════════════════════════
 // SUPABASE
 // ════════════════════════════════
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 const SUPABASE_URL = 'https://wncoflfsrorictwndffa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ════════════════════════════════
 // DATA STORE
@@ -1456,6 +1456,29 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal();
   listings = await loadListings();
   interests = await loadInterests();
 })();
+
+// Expose functions to global scope for onclick handlers
+window.showView = showView;
+window.setFilter = setFilter;
+window.setActiveTab = setActiveTab;
+window.selectType = selectType;
+window.selectPartageType = selectPartageType;
+window.geocodeAddress = geocodeAddress;
+window.clearGeocode = clearGeocode;
+window.recalcPartage = recalcPartage;
+window.recalcSharePrice = recalcSharePrice;
+window.submitPropose = submitPropose;
+window.submitPartage = submitPartage;
+window.openContact = openContact;
+window.closeModal = closeModal;
+window.openDeleteModal = openDeleteModal;
+window.closeDeleteModal = closeDeleteModal;
+window.confirmDelete = confirmDelete;
+window.copyDeleteKey = copyDeleteKey;
+window.removePhoto = removePhoto;
+window.removePhotoP = removePhotoP;
+window.handlePhotos = handlePhotos;
+window.handlePhotosP = handlePhotosP;
 </script>
 </body>
 </html>
