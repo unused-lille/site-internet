@@ -742,8 +742,16 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
 </div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const CONTACT_EMAIL = ['unused.lille','gmail.com'].join('@');
+
+// ════════════════════════════════
+// SUPABASE
+// ════════════════════════════════
+const SUPABASE_URL = 'https://wncoflfsrorictwndffa.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ════════════════════════════════
 // DATA STORE
@@ -767,25 +775,95 @@ function getCoords(quartier) {
   return [base[0] + (Math.random()-.5)*.008, base[1] + (Math.random()-.5)*.012];
 }
 
-function loadListings() {
-  try { return JSON.parse(localStorage.getItem('unused_listings') || '[]'); }
-  catch(e) { return []; }
+// DB helpers
+function dbToListing(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    type: row.type,
+    typeIcon: row.type_icon,
+    surface: row.surface,
+    price: row.price,
+    desc: row.description,
+    address: row.address,
+    quartier: row.quartier,
+    contactName: row.contact_name,
+    contactEmail: row.contact_email,
+    contactPhone: row.contact_phone,
+    ownerType: row.owner_type,
+    listingType: row.listing_type,
+    shareSurface: row.share_surface,
+    sharePrice: row.share_price,
+    shareMax: row.share_max,
+    coords: row.coords,
+    deleteKey: row.delete_key,
+    createdAt: row.created_at,
+    photos: [],
+  };
 }
-function saveListings(arr) { localStorage.setItem('unused_listings', JSON.stringify(arr)); }
-function loadInterests() {
-  try { return JSON.parse(localStorage.getItem('unused_interests') || '{}'); }
-  catch(e) { return {}; }
-}
-function saveInterests(obj) { localStorage.setItem('unused_interests', JSON.stringify(obj)); }
 
-let listings = loadListings();
-let interests = loadInterests();
+function listingToDb(l) {
+  return {
+    id: l.id,
+    title: l.title,
+    type: l.type,
+    type_icon: l.typeIcon,
+    surface: l.surface,
+    price: l.price,
+    description: l.desc,
+    address: l.address,
+    quartier: l.quartier,
+    contact_name: l.contactName,
+    contact_email: l.contactEmail,
+    contact_phone: l.contactPhone,
+    owner_type: l.ownerType,
+    listing_type: l.listingType,
+    share_surface: l.shareSurface,
+    share_price: l.sharePrice,
+    share_max: l.shareMax,
+    coords: l.coords,
+    delete_key: l.deleteKey,
+  };
+}
+
+let listings = [];
+let interests = {};
+
+async function loadListings() {
+  const { data, error } = await sb.from('listings').select('*').order('created_at', { ascending: false });
+  if (error) { console.error('loadListings:', error); return []; }
+  return (data || []).map(dbToListing);
+}
+
+async function saveNewListing(l) {
+  const { error } = await sb.from('listings').insert([listingToDb(l)]);
+  if (error) throw error;
+}
+
+async function deleteListing(id) {
+  const { error } = await sb.from('listings').delete().eq('id', id);
+  if (error) throw error;
+}
+
+async function loadInterests() {
+  const { data, error } = await sb.from('interests').select('listing_id');
+  if (error) { console.error('loadInterests:', error); return {}; }
+  const map = {};
+  (data || []).forEach(r => {
+    if (!map[r.listing_id]) map[r.listing_id] = [];
+    map[r.listing_id].push(1);
+  });
+  return map;
+}
+
+async function addInterest(listingId) {
+  const key = 'session_' + Math.random().toString(36).slice(2);
+  await sb.from('interests').insert([{ listing_id: listingId, session_key: key }]);
+}
 
 // ════════════════════════════════
-// GEOCODING (Nominatim / OSM)
+// GEOCODING
 // ════════════════════════════════
-let geocodeTimers = {};
-
 function clearGeocode(statusId) {
   const el = document.getElementById(statusId);
   if (el) { el.textContent = ''; el.style.color = 'var(--muted)'; }
@@ -797,30 +875,24 @@ async function geocodeAddress(inputId, statusId, latId, lngId) {
   const latEl = document.getElementById(latId);
   const lngEl = document.getElementById(lngId);
   if (!input || !input.value.trim()) return;
-
-  statusEl.textContent = '🔍 Recherche de l\'adresse…';
+  statusEl.textContent = '🔍 Recherche de l'adresse…';
   statusEl.style.color = 'var(--muted)';
-
   try {
     const query = encodeURIComponent(input.value.trim() + ', Lille, France');
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1&countrycodes=fr`;
-    const res = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1&countrycodes=fr`, { headers: { 'Accept-Language': 'fr' } });
     const data = await res.json();
     if (data && data.length > 0) {
-      const lat = parseFloat(data[0].lat);
-      const lng = parseFloat(data[0].lon);
-      latEl.value = lat;
-      lngEl.value = lng;
-      statusEl.textContent = '✅ Adresse trouvée : ' + data[0].display_name.split(',').slice(0,3).join(',');
+      latEl.value = parseFloat(data[0].lat);
+      lngEl.value = parseFloat(data[0].lon);
+      statusEl.textContent = '✅ ' + data[0].display_name.split(',').slice(0,3).join(',');
       statusEl.style.color = '#38A169';
     } else {
-      latEl.value = '';
-      lngEl.value = '';
-      statusEl.textContent = '⚠️ Adresse non trouvée — le quartier sera utilisé pour la carte.';
+      latEl.value = ''; lngEl.value = '';
+      statusEl.textContent = '⚠️ Adresse non trouvée — le quartier sera utilisé.';
       statusEl.style.color = '#D97706';
     }
   } catch(e) {
-    statusEl.textContent = '⚠️ Impossible de vérifier l\'adresse (pas de réseau ?)';
+    statusEl.textContent = '⚠️ Impossible de vérifier l'adresse.';
     statusEl.style.color = '#D97706';
   }
 }
@@ -833,8 +905,6 @@ let mapInitialized = false;
 let leafletMap = null;
 let markers = [];
 let activeFilter = 'all';
-let photoData = [];
-let photoDataP = [];
 
 function showView(name, listingId) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -870,24 +940,27 @@ function updateMapMarkers() {
   const filtered = getFilteredListings();
   filtered.forEach(l => {
     if (!l.coords) return;
+    const isShared = l.listingType === 'partage';
+    const displayPrice = isShared ? (l.sharePrice || l.price) : l.price;
+    const color = isShared ? '#7C3AED' : '#3D3BF3';
     const icon = L.divIcon({
       className: '',
-      html: `<div style="background:${l.listingType==='partage'?'#7C3AED':'#3D3BF3'};color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${l.listingType==='partage'?(l.sharePrice||l.price):l.price}€</div>`,
+      html: `<div style="background:${color};color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${displayPrice}€</div>`,
       iconAnchor: [20, 10]
     });
     const m = L.marker(l.coords, {icon}).addTo(leafletMap);
     m.bindPopup(`
       <div style="font-weight:700">${escHtml(l.title)}</div>
       <div style="font-size:.74rem;color:#7B7A9A;margin-bottom:4px">${escHtml(l.quartier)} · ${l.surface} m²</div>
-      <div style="font-weight:800;color:${l.listingType==='partage'?'#7C3AED':'#3D3BF3'}">${l.listingType==='partage'?(l.sharePrice||l.price):l.price}€<span style="font-size:.72rem;font-weight:400;color:#7B7A9A"> / mois</span></div>
-      <button style="display:inline-block;margin-top:8px;padding:6px 14px;background:#3D3BF3;color:white;border-radius:100px;font-size:.74rem;font-weight:700;cursor:pointer;border:none;font-family:'Bricolage Grotesque',sans-serif" onclick="showView('detail',${l.id})">Voir l'annonce</button>
+      <div style="font-weight:800;color:${color}">${displayPrice}€<span style="font-size:.72rem;font-weight:400;color:#7B7A9A"> / mois</span></div>
+      <button style="display:inline-block;margin-top:8px;padding:6px 14px;background:${color};color:white;border-radius:100px;font-size:.74rem;font-weight:700;cursor:pointer;border:none;font-family:'Bricolage Grotesque',sans-serif" onclick="showView('detail',${l.id})">Voir l'annonce</button>
     `);
     markers.push(m);
   });
-  if (filtered.some(l => l.coords)) {
-    const validCoords = filtered.filter(l => l.coords).map(l => l.coords);
+  const valid = filtered.filter(l => l.coords).map(l => l.coords);
+  if (valid.length > 0) {
     leafletMap.invalidateSize();
-    try { leafletMap.fitBounds(validCoords, {padding:[30,30], maxZoom:15}); } catch(e){}
+    try { leafletMap.fitBounds(valid, {padding:[30,30], maxZoom:15}); } catch(e){}
   }
 }
 
@@ -910,11 +983,16 @@ function setFilter(f, el) {
   updateMapMarkers();
 }
 
+function showLoading(panelId) {
+  const panel = document.getElementById(panelId);
+  if (panel) panel.innerHTML = `<div class="empty-state"><div class="ei" style="animation:pulse 1.5s infinite">⏳</div><p>Chargement des annonces…</p></div>`;
+}
+
 function renderListing() {
   const panel = document.getElementById('listing-panel');
   const filtered = getFilteredListings();
   document.getElementById('listing-count-label').textContent =
-    filtered.length === 0 ? 'Aucun espace pour l\'instant' :
+    filtered.length === 0 ? 'Aucun espace pour l'instant' :
     filtered.length + ' espace' + (filtered.length > 1 ? 's' : '') + ' disponible' + (filtered.length > 1 ? 's' : '');
   if (filtered.length === 0) {
     panel.innerHTML = `<div class="empty-state"><div class="ei">📭</div><p>Aucun espace disponible pour l'instant.<br>Sois le premier à <strong style="color:var(--indigo);cursor:pointer" onclick="showView('propose')">proposer ton espace</strong> !</p></div>`;
@@ -925,12 +1003,9 @@ function renderListing() {
 
 function spaceCardHTML(l) {
   const intCount = (interests[l.id] || []).length;
-  const imgHTML = l.photos && l.photos.length > 0
-    ? `<img src="${l.photos[0]}" alt="">`
-    : `<span style="font-size:3rem">${l.typeIcon}</span>`;
   return `
     <div class="space-card" onclick="showView('detail',${l.id})">
-      <div class="space-card-img">${imgHTML}<div class="type-badge">${capitalize(l.ownerType)}</div></div>
+      <div class="space-card-img"><span style="font-size:3rem">${l.typeIcon}</span><div class="type-badge">${capitalize(l.ownerType)}</div></div>
       <div class="space-card-body">
         <div class="space-card-title">${escHtml(l.title)}</div>
         <div class="space-card-address">📍 ${escHtml(l.quartier)}${l.address ? ' · ' + escHtml(l.address.split(',')[0]) : ''}</div>
@@ -954,15 +1029,6 @@ function renderDetail(id) {
   const intCount = (interests[l.id] || []).length;
   const isShared = l.listingType === 'partage';
 
-  const imgHTML = l.photos && l.photos.length > 0
-    ? `<img src="${l.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
-    : `<span>${l.typeIcon}</span>`;
-
-  const photosCarousel = l.photos && l.photos.length > 1
-    ? `<div style="display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px">
-        ${l.photos.map(p => `<img src="${p}" style="height:80px;border-radius:8px;flex-shrink:0;object-fit:cover;width:110px">`).join('')}
-      </div>` : '';
-
   const partageInfo = isShared && l.sharePrice ? `
     <div style="background:rgba(124,58,237,.07);border:1.5px solid rgba(124,58,237,.2);border-radius:var(--r);padding:18px 20px;margin-bottom:24px">
       <p style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7C3AED;margin-bottom:8px">Espace partagé</p>
@@ -976,8 +1042,7 @@ function renderDetail(id) {
     <button class="back-btn" onclick="showView('${isShared ? 'shared' : 'listing'}')">
       ← Retour aux ${isShared ? 'espaces partagés' : 'espaces disponibles'}
     </button>
-    <div class="detail-img" id="detail-main-img">${imgHTML}</div>
-    ${photosCarousel}
+    <div class="detail-img"><span>${l.typeIcon}</span></div>
     <div class="detail-header">
       <h1 class="detail-title">${escHtml(l.title)}</h1>
       <div class="detail-price">${isShared ? (l.sharePrice || l.price) : l.price}€ <span>/ mois</span></div>
@@ -991,7 +1056,8 @@ function renderDetail(id) {
     </div>
     ${partageInfo}
     <p class="detail-section-title">Description</p>
-    <p class="detail-desc">${escHtml(l.desc).replace(/\n/g,'<br>')}</p>
+    <p class="detail-desc">${escHtml(l.desc).replace(/
+/g,'<br>')}</p>
     <p class="detail-section-title">Localisation</p>
     <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">📍 ${escHtml(l.address)}${l.quartier ? ', ' + escHtml(l.quartier) : ''}</p>
     <div class="detail-map" id="detail-map"></div>
@@ -1001,7 +1067,7 @@ function renderDetail(id) {
       <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="openContact(${l.id})">✉️ Contacter pour cet espace</button>
       <div class="contact-interest">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span class="interest-count" id="interest-count">${intCount}</span>&nbsp;personne${intCount !== 1 ? 's' : ''} ${intCount !== 1 ? 'ont' : 'a'} déjà envoyé un message.
+        <span id="interest-count">${intCount}</span>&nbsp;personne${intCount !== 1 ? 's' : ''} ${intCount !== 1 ? 'ont' : 'a'} déjà envoyé un message.
       </div>
     </div>
     <div style="border-top:1px solid var(--cream-d);padding-top:20px;margin-top:4px">
@@ -1015,12 +1081,13 @@ function renderDetail(id) {
     if (!dm || !l.coords) return;
     const detailMap = L.map('detail-map').setView(l.coords, 16);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(detailMap);
-    const icon = L.divIcon({
+    const color = isShared ? '#7C3AED' : '#3D3BF3';
+    const displayPrice = isShared ? (l.sharePrice || l.price) : l.price;
+    L.marker(l.coords, {icon: L.divIcon({
       className:'',
-      html:`<div style="background:#3D3BF3;color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${l.price}€/mois</div>`,
+      html:`<div style="background:${color};color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${displayPrice}€/mois</div>`,
       iconAnchor:[30,10]
-    });
-    L.marker(l.coords, {icon}).addTo(detailMap);
+    })}).addTo(detailMap);
   }, 150);
 }
 
@@ -1036,12 +1103,9 @@ function renderShared() {
   }
   panel.innerHTML = shared.map(l => {
     const intCount = (interests[l.id] || []).length;
-    const imgHTML = l.photos && l.photos.length > 0
-      ? `<img src="${l.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
-      : `<span style="font-size:3rem">${l.typeIcon}</span>`;
     return `
       <div class="space-card" onclick="showView('detail',${l.id})">
-        <div class="space-card-img">${imgHTML}<div class="shared-badge">👥 Partagé</div><div class="type-badge">${capitalize(l.ownerType)}</div></div>
+        <div class="space-card-img"><span style="font-size:3rem">${l.typeIcon}</span><div class="shared-badge">👥 Partagé</div><div class="type-badge">${capitalize(l.ownerType)}</div></div>
         <div class="space-card-body">
           <div class="space-card-title">${escHtml(l.title)}</div>
           <div class="space-card-address">📍 ${escHtml(l.quartier)}${l.address ? ' · ' + escHtml(l.address.split(',')[0]) : ''}</div>
@@ -1069,24 +1133,31 @@ function openContact(id) {
   if (!l) return;
   const subject = encodeURIComponent(`[unused] Intérêt pour : ${l.title}`);
   const contactLine = [l.contactEmail && `Email : ${l.contactEmail}`, l.contactPhone && `Tél : ${l.contactPhone}`].filter(Boolean).join(' — ');
-  const body = encodeURIComponent(`Bonjour,\n\nJe suis intéressé(e) par l'espace suivant sur unused :\n\n"${l.title}" — ${l.quartier} — ${l.price}€/mois\n\nPouvez-vous me mettre en relation avec ${l.contactName || 'le propriétaire'} ?\n${contactLine ? `\nContact propriétaire : ${contactLine}\n` : ''}\nMerci !`);
+  const body = encodeURIComponent(`Bonjour,
+
+Je suis intéressé(e) par l'espace suivant sur unused :
+
+"${l.title}" — ${l.quartier} — ${l.price}€/mois
+
+Pouvez-vous me mettre en relation avec ${l.contactName || 'le propriétaire'} ?
+${contactLine ? `
+Contact propriétaire : ${contactLine}
+` : ''}
+Merci !`);
   const mailto = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
   document.getElementById('modal-title').textContent = 'Contacter pour cet espace';
   document.getElementById('modal-body').textContent = `En cliquant ci-dessous, ton client mail va s'ouvrir avec un message pré-rempli pour ${CONTACT_EMAIL} concernant "${l.title}".`;
   document.getElementById('modal-mailto-btn').href = mailto;
-  document.getElementById('modal-mailto-btn').onclick = function() {
-    setTimeout(() => { registerInterest(id); closeModal(); }, 300);
+  document.getElementById('modal-mailto-btn').onclick = async function() {
+    setTimeout(async () => {
+      await addInterest(id);
+      interests = await loadInterests();
+      const el = document.getElementById('interest-count');
+      if (el) el.textContent = (interests[id] || []).length;
+      closeModal();
+    }, 300);
   };
   document.getElementById('contact-modal').classList.add('open');
-}
-
-function registerInterest(id) {
-  if (!interests[id]) interests[id] = [];
-  interests[id].push('session_' + Math.random().toString(36).slice(2));
-  saveInterests(interests);
-  const el = document.getElementById('interest-count');
-  if (el) el.textContent = interests[id].length;
-  showToast('✉️ Ton email va s\'ouvrir !');
 }
 
 function closeModal() { document.getElementById('contact-modal').classList.remove('open'); }
@@ -1102,22 +1173,6 @@ function selectType(name, icon, el) {
   document.getElementById('f-type-icon').value = icon;
 }
 
-function handlePhotos(e) {
-  Array.from(e.target.files).forEach(f => {
-    if (!f.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = ev => { photoData.push(ev.target.result); renderPhotoPreview(); };
-    reader.readAsDataURL(f);
-  });
-}
-
-function renderPhotoPreview() {
-  document.getElementById('photo-preview').innerHTML = photoData.map((src, i) =>
-    `<div class="photo-thumb"><img src="${src}"><button class="photo-rm" onclick="removePhoto(${i})">✕</button></div>`).join('');
-}
-
-function removePhoto(i) { photoData.splice(i, 1); renderPhotoPreview(); }
-
 function resetForm() {
   document.getElementById('propose-form').reset();
   document.getElementById('f-contact-email').value = '';
@@ -1125,14 +1180,12 @@ function resetForm() {
   document.getElementById('f-geocoded-lat').value = '';
   document.getElementById('f-geocoded-lng').value = '';
   document.getElementById('geocode-status').textContent = '';
-  photoData = [];
-  renderPhotoPreview();
   document.querySelectorAll('#type-selector .type-opt').forEach((o,i) => o.classList.toggle('selected', i===0));
   document.getElementById('f-type').value = 'Cave';
   document.getElementById('f-type-icon').value = '🏚️';
 }
 
-function submitPropose(e) {
+async function submitPropose(e) {
   e.preventDefault();
   const title = document.getElementById('f-title').value.trim();
   const surface = parseInt(document.getElementById('f-surface').value) || 0;
@@ -1147,12 +1200,11 @@ function submitPropose(e) {
   if (!title) { showToast('⚠️ Ajoute un titre.'); return; }
   if (!surface || !price) { showToast('⚠️ Indique la surface et le prix.'); return; }
   if (!desc) { showToast('⚠️ Ajoute une description.'); return; }
-  if (!address) { showToast('⚠️ Indique l\'adresse.'); return; }
+  if (!address) { showToast('⚠️ Indique l'adresse.'); return; }
   if (!quartier) { showToast('⚠️ Sélectionne un quartier.'); return; }
   if (!contactName) { showToast('⚠️ Indique ton prénom.'); return; }
   if (!contactEmail && !contactPhone) { showToast('⚠️ Fournis au moins un email ou un téléphone.'); return; }
 
-  // Use geocoded coords if available, else fallback to quartier
   const lat = parseFloat(document.getElementById('f-geocoded-lat').value);
   const lng = parseFloat(document.getElementById('f-geocoded-lng').value);
   const coords = (!isNaN(lat) && !isNaN(lng)) ? [lat, lng] : getCoords(quartier);
@@ -1165,15 +1217,24 @@ function submitPropose(e) {
     contactName, contactEmail, contactPhone,
     ownerType: document.getElementById('f-owner-type').value,
     listingType: 'location',
-    photos: [...photoData],
+    shareSurface: null, sharePrice: null, shareMax: null,
     coords,
-    createdAt: new Date().toISOString(),
     deleteKey: Math.random().toString(36).slice(2,8).toUpperCase()
   };
 
-  listings.push(newListing);
-  saveListings(listings);
-  showDeleteKeyModal(newListing);
+  const btn = e.target.querySelector('.btn-submit');
+  btn.textContent = 'Publication…'; btn.disabled = true;
+  try {
+    await saveNewListing(newListing);
+    listings = await loadListings();
+    interests = await loadInterests();
+    showDeleteKeyModal(newListing);
+  } catch(err) {
+    showToast('❌ Erreur lors de la publication. Réessaie.');
+    console.error(err);
+  } finally {
+    btn.textContent = 'Publier mon annonce →'; btn.disabled = false;
+  }
 }
 
 // ════════════════════════════════
@@ -1188,25 +1249,8 @@ function selectPartageType(name, icon, el) {
   document.getElementById('p-type-icon').value = icon;
 }
 
-function handlePhotosP(e) {
-  Array.from(e.target.files).forEach(f => {
-    if (!f.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = ev => { photoDataP.push(ev.target.result); renderPhotoPreviewP(); };
-    reader.readAsDataURL(f);
-  });
-}
-
-function renderPhotoPreviewP() {
-  document.getElementById('p-photo-preview').innerHTML = photoDataP.map((src, i) =>
-    `<div class="photo-thumb"><img src="${src}"><button class="photo-rm" onclick="removePhotoP(${i})">✕</button></div>`).join('');
-}
-
-function removePhotoP(i) { photoDataP.splice(i, 1); renderPhotoPreviewP(); }
-
 function resetPartageForm() {
   document.getElementById('partage-form').reset();
-  photoDataP = [];
   document.getElementById('p-geocoded-lat').value = '';
   document.getElementById('p-geocoded-lng').value = '';
   document.getElementById('p-geocode-status').textContent = '';
@@ -1225,26 +1269,19 @@ function recalcPartage() {
   const total = parseFloat(document.getElementById('p-total-surface').value) || 0;
   const loyer = parseFloat(document.getElementById('p-total-price').value) || 0;
   const mine = parseFloat(document.getElementById('p-my-surface').value) || 0;
-
   if (total > 0 && loyer > 0 && mine > 0 && mine <= total) {
     const prixM2 = loyer / total;
-    const dispo = mine; // mine = m² dispos pour un coloc
-    const maxGain = Math.round(dispo * prixM2);
-
+    const dispo = mine;
     partageCalcData = { prixM2, dispo };
-
     document.getElementById('calc-prixm2').textContent = prixM2.toFixed(2);
     document.getElementById('calc-dispo').textContent = dispo.toFixed(1);
-    document.getElementById('calc-maxgain').textContent = maxGain + '€';
+    document.getElementById('calc-maxgain').textContent = Math.round(dispo * prixM2) + '€';
     document.getElementById('partage-calc').style.display = 'block';
     document.getElementById('partage-offer-section').style.display = 'block';
     document.getElementById('partage-loc-section').style.display = 'block';
     document.getElementById('partage-photos-section').style.display = 'block';
     document.getElementById('partage-contact-section').style.display = 'block';
-
-    document.getElementById('p-share-surface-hint').textContent =
-      `Max proposable : ${dispo.toFixed(1)} m² (à ${prixM2.toFixed(2)}€/m²/mois)`;
-
+    document.getElementById('p-share-surface-hint').textContent = `Max proposable : ${dispo.toFixed(1)} m² (à ${prixM2.toFixed(2)}€/m²/mois)`;
     recalcSharePrice();
   } else {
     document.getElementById('partage-calc').style.display = 'none';
@@ -1253,23 +1290,19 @@ function recalcPartage() {
 
 function recalcSharePrice() {
   const shareSurface = parseFloat(document.getElementById('p-share-surface').value) || 0;
-  const { prixM2, dispo } = partageCalcData;
-
+  const { prixM2 } = partageCalcData;
   if (shareSurface > 0 && prixM2 > 0) {
-    const suggestedPrice = Math.round(shareSurface * prixM2);
-    document.getElementById('suggested-price-display').textContent = suggestedPrice + '€/mois';
-    document.getElementById('price-explanation').textContent =
-      `${shareSurface} m² × ${prixM2.toFixed(2)}€/m² = ${suggestedPrice}€/mois. Ce prix correspond exactement à ta quote-part du loyer. Tu peux l'ajuster librement ci-dessous.`;
+    const suggested = Math.round(shareSurface * prixM2);
+    document.getElementById('suggested-price-display').textContent = suggested + '€/mois';
+    document.getElementById('price-explanation').textContent = `${shareSurface} m² × ${prixM2.toFixed(2)}€/m² = ${suggested}€/mois. Tu peux ajuster librement ci-dessous.`;
     document.getElementById('price-suggestion').style.display = 'block';
-    // Auto-fill the price field if empty or was auto-set
-    const priceInput = document.getElementById('p-share-price');
-    priceInput.value = suggestedPrice;
+    document.getElementById('p-share-price').value = suggested;
   } else {
     document.getElementById('price-suggestion').style.display = 'none';
   }
 }
 
-function submitPartage(e) {
+async function submitPartage(e) {
   e.preventDefault();
   const title = document.getElementById('p-title').value.trim();
   const totalSurface = parseFloat(document.getElementById('p-total-surface').value) || 0;
@@ -1286,11 +1319,11 @@ function submitPartage(e) {
   const contactPhone = document.getElementById('p-contact-phone').value.trim();
 
   if (!title) { showToast('⚠️ Ajoute un titre.'); return; }
-  if (!totalSurface || !totalPrice || !mySurface) { showToast('⚠️ Remplis les infos sur ton bail (surface, loyer, ta part).'); return; }
+  if (!totalSurface || !totalPrice || !mySurface) { showToast('⚠️ Remplis les infos sur ton bail.'); return; }
   if (mySurface > totalSurface) { showToast('⚠️ Les m² dispos ne peuvent pas dépasser le total.'); return; }
   if (!shareSurface || !sharePrice) { showToast('⚠️ Indique les m² proposés et le prix.'); return; }
   if (!desc) { showToast('⚠️ Ajoute une description.'); return; }
-  if (!address) { showToast('⚠️ Indique l\'adresse.'); return; }
+  if (!address) { showToast('⚠️ Indique l'adresse.'); return; }
   if (!quartier) { showToast('⚠️ Sélectionne un quartier.'); return; }
   if (!contactName) { showToast('⚠️ Indique ton prénom.'); return; }
   if (!contactEmail && !contactPhone) { showToast('⚠️ Fournis au moins un email ou un téléphone.'); return; }
@@ -1304,22 +1337,29 @@ function submitPartage(e) {
     title,
     type: document.getElementById('p-type').value,
     typeIcon: document.getElementById('p-type-icon').value,
-    surface: totalSurface,
-    price: totalPrice,
+    surface: totalSurface, price: totalPrice,
     shareSurface, sharePrice, shareMax,
     desc, address, quartier,
     contactName, contactEmail, contactPhone,
     ownerType: 'particulier',
     listingType: 'partage',
-    photos: [...photoDataP],
     coords,
-    createdAt: new Date().toISOString(),
     deleteKey: Math.random().toString(36).slice(2,8).toUpperCase()
   };
 
-  listings.push(newListing);
-  saveListings(listings);
-  showDeleteKeyModal(newListing);
+  const btn = e.target.querySelector('.btn-submit');
+  btn.textContent = 'Publication…'; btn.disabled = true;
+  try {
+    await saveNewListing(newListing);
+    listings = await loadListings();
+    interests = await loadInterests();
+    showDeleteKeyModal(newListing);
+  } catch(err) {
+    showToast('❌ Erreur lors de la publication. Réessaie.');
+    console.error(err);
+  } finally {
+    btn.textContent = 'Publier mon annonce de partage →'; btn.disabled = false;
+  }
 }
 
 // ════════════════════════════════
@@ -1338,9 +1378,12 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function capitalize(s) {
-  if (!s) return '';
-  return s.charAt(0).toUpperCase() + s.slice(1);
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function setActiveTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
 }
 
 // ════════════════════════════════
@@ -1360,9 +1403,8 @@ function showDeleteKeyModal(listing) {
 
 function copyDeleteKey() {
   const key = document.getElementById('deletekey-value').textContent;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(key).then(() => showToast('📋 Code copié !'));
-  } else { showToast('Code : ' + key); }
+  if (navigator.clipboard) navigator.clipboard.writeText(key).then(() => showToast('📋 Code copié !'));
+  else showToast('Code : ' + key);
 }
 
 function openDeleteModal(id) {
@@ -1378,7 +1420,7 @@ function closeDeleteModal() {
   currentDeleteId = null;
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   const input = document.getElementById('delete-key-input').value.trim().toUpperCase();
   const listing = listings.find(l => l.id == currentDeleteId);
   if (!listing) { closeDeleteModal(); return; }
@@ -1389,24 +1431,31 @@ function confirmDelete() {
     return;
   }
   const wasShared = listing.listingType === 'partage';
-  listings = listings.filter(l => l.id != currentDeleteId);
-  saveListings(listings);
-  delete interests[currentDeleteId];
-  saveInterests(interests);
-  closeDeleteModal();
-  showToast('🗑️ Annonce supprimée.');
-  setTimeout(() => showView(wasShared ? 'shared' : 'listing'), 400);
-}
-
-function setActiveTab(id) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const el = document.getElementById(id);
-  if (el) el.classList.add('active');
+  try {
+    await deleteListing(currentDeleteId);
+    listings = await loadListings();
+    interests = await loadInterests();
+    closeDeleteModal();
+    showToast('🗑️ Annonce supprimée.');
+    setTimeout(() => showView(wasShared ? 'shared' : 'listing'), 400);
+  } catch(err) {
+    showToast('❌ Erreur lors de la suppression.');
+    console.error(err);
+  }
 }
 
 document.getElementById('delete-modal').addEventListener('click', function(e) { if(e.target===this) closeDeleteModal(); });
 document.getElementById('delete-key-input').addEventListener('keydown', function(e) { if(e.key==='Enter') confirmDelete(); });
 document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); closeDeleteModal(); } });
+
+// ════════════════════════════════
+// INIT — charge les données au démarrage
+// ════════════════════════════════
+(async () => {
+  showLoading('listing-panel');
+  listings = await loadListings();
+  interests = await loadInterests();
+})();
 </script>
 </body>
 </html>
