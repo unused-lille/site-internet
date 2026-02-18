@@ -478,6 +478,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <input type="text" id="f-address" placeholder="Ex : 12 rue Solférino, 59000 Lille" onblur="geocodeAddress('f-address','geocode-status','f-lat','f-lng')">
           <div id="geocode-status" style="font-size:.72rem;margin-top:5px;min-height:16px"></div>
           <input type="hidden" id="f-lat"><input type="hidden" id="f-lng">
+          <div id="f-map-preview" style="display:none;height:180px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border);margin-top:10px"></div>
         </div>
         <div class="fg"><label>Quartier</label>
           <select id="f-quartier"><option value="">Sélectionner…</option><option>Vieux-Lille</option><option>Centre</option><option>Vauban</option><option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option><option>Hellemmes</option><option>Lomme</option><option>Euralille</option><option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option></select>
@@ -561,6 +562,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <input type="text" id="p-address" placeholder="Ex : 12 rue Solférino, 59000 Lille" onblur="geocodeAddress('p-address','p-geocode-status','p-lat','p-lng')">
           <div id="p-geocode-status" style="font-size:.72rem;margin-top:5px;min-height:16px"></div>
           <input type="hidden" id="p-lat"><input type="hidden" id="p-lng">
+          <div id="p-map-preview" style="display:none;height:180px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border);margin-top:10px"></div>
         </div>
         <div class="fg"><label>Quartier</label>
           <select id="p-quartier"><option value="">Sélectionner…</option><option>Vieux-Lille</option><option>Centre</option><option>Vauban</option><option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option><option>Hellemmes</option><option>Lomme</option><option>Euralille</option><option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option></select>
@@ -738,25 +740,46 @@ async function addInterest(lid) {
   });
 }
 
+var formMaps = {};
 async function geocodeAddress(inputId, statusId, latId, lngId) {
   var input = document.getElementById(inputId);
   var status = document.getElementById(statusId);
   if (!input || !input.value.trim()) return;
   status.textContent = "Recherche...";
+  status.style.color = "var(--muted)";
   try {
     var q = encodeURIComponent(input.value.trim() + ", Lille, France");
     var r = await fetch("https://nominatim.openstreetmap.org/search?format=json&q=" + q + "&limit=1&countrycodes=fr");
     var data = await r.json();
     if (data && data.length > 0) {
-      document.getElementById(latId).value = data[0].lat;
-      document.getElementById(lngId).value = data[0].lon;
-      status.textContent = "OK : " + data[0].display_name.split(",")[0];
+      var lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
+      document.getElementById(latId).value = lat;
+      document.getElementById(lngId).value = lng;
+      status.textContent = "✅ " + data[0].display_name.split(",").slice(0,2).join(",");
       status.style.color = "#38A169";
+      /* Show map preview */
+      var previewId = inputId === "f-address" ? "f-map-preview" : "p-map-preview";
+      var previewEl = document.getElementById(previewId);
+      if (previewEl) {
+        previewEl.style.display = "block";
+        if (formMaps[previewId]) {
+          formMaps[previewId].setView([lat, lng], 16);
+          if (formMaps[previewId]._marker) { formMaps[previewId]._marker.setLatLng([lat, lng]); }
+        } else {
+          setTimeout(function() {
+            var m = L.map(previewId).setView([lat, lng], 16);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution:"© OpenStreetMap", maxZoom:19}).addTo(m);
+            var marker = L.marker([lat, lng]).addTo(m);
+            m._marker = marker;
+            formMaps[previewId] = m;
+          }, 80);
+        }
+      }
     } else {
-      status.textContent = "Adresse non trouvee, le quartier sera utilise.";
+      status.textContent = "⚠️ Adresse non trouvée, le quartier sera utilisé.";
       status.style.color = "#D97706";
     }
-  } catch(e) { status.textContent = "Erreur de geocodage."; }
+  } catch(e) { status.textContent = "Erreur de géocodage."; status.style.color = "#E53E3E"; }
 }
 
 var currentView = "home";
@@ -972,9 +995,14 @@ function renderDetail(id) {
   dc.appendChild(descP);
 
   dc.appendChild(el("p", "detail-section-title", "Localisation"));
-  dc.appendChild(el("p", null, l.address + (l.quartier ? ", " + l.quartier : "")));
-  dc.appendChild(el("div", "detail-map", null));
-  document.getElementById("detail-map").id = "detail-map";
+  var addrLine = el("p");
+  addrLine.style.cssText = "font-size:.88rem;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px";
+  addrLine.textContent = "📍 " + l.address + (l.quartier ? ", " + l.quartier : "");
+  dc.appendChild(addrLine);
+  var mapContainer = el("div");
+  mapContainer.id = "detail-map-" + l.id;
+  mapContainer.className = "detail-map";
+  dc.appendChild(mapContainer);
 
   var cbox = el("div", "contact-box");
   cbox.appendChild(el("h3", null, "Interesse ?"));
@@ -989,23 +1017,40 @@ function renderDetail(id) {
   dc.appendChild(cbox);
 
   var delDiv = el("div");
-  delDiv.style.cssText = "border-top:1px solid var(--cream-d);padding-top:20px;margin-top:4px";
-  var delBtn = el("button", "btn btn-outline", "Supprimer mon annonce");
-  delBtn.style.cssText = "font-size:.82rem;padding:11px 20px;color:#E53E3E;border-color:rgba(229,62,62,.3)";
+  delDiv.style.cssText = "border:1.5px solid rgba(229,62,62,.2);border-radius:var(--r);padding:20px;margin-top:24px;background:rgba(229,62,62,.03)";
+  var delTitle = el("p");
+  delTitle.style.cssText = "font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E53E3E;margin-bottom:6px";
+  delTitle.textContent = "Gérer mon annonce";
+  delDiv.appendChild(delTitle);
+  var delInfo = el("p");
+  delInfo.style.cssText = "font-size:.78rem;color:var(--muted);margin-bottom:14px;line-height:1.55";
+  delInfo.textContent = "Tu es le propriétaire de cette annonce ? Entre ton code secret pour la supprimer définitivement.";
+  delDiv.appendChild(delInfo);
+  var delBtn = el("button");
+  delBtn.className = "btn btn-outline";
+  delBtn.style.cssText = "font-size:.85rem;padding:12px 22px;color:#E53E3E;border-color:rgba(229,62,62,.35);display:flex;align-items:center;gap:8px";
+  delBtn.innerHTML = "🗑️ Supprimer mon annonce";
   delBtn.addEventListener("click", function() { openDeleteModal(l.id); });
   delDiv.appendChild(delBtn);
   dc.appendChild(delDiv);
 
   setTimeout(function() {
-    var dm = document.getElementById("detail-map");
-    if (!dm || !l.coords) return;
-    var dm2 = L.map("detail-map").setView(l.coords, 16);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution:"OpenStreetMap"}).addTo(dm2);
+    var dmId = "detail-map-" + l.id;
+    var dm = document.getElementById(dmId);
+    if (!dm) return;
+    if (!l.coords) {
+      dm.innerHTML = "<div style=\"display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:.85rem;gap:8px\">📍 Localisation approximative (quartier : " + (l.quartier||"Lille") + ")</div>";
+      return;
+    }
+    var dm2 = L.map(dmId).setView(l.coords, 16);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution:"© OpenStreetMap", maxZoom:19}).addTo(dm2);
     var col = isS ? "#7C3AED" : "#3D3BF3";
+    /* Cercle de zone floue pour protéger l'adresse exacte */
+    L.circle(l.coords, {radius:80, color:col, fillColor:col, fillOpacity:0.15, weight:2}).addTo(dm2);
     L.marker(l.coords, {icon: L.divIcon({
       className:"",
-      html: "<div style=\"background:" + col + ";color:white;padding:5px 10px;border-radius:100px;font-size:.72rem;font-weight:700;white-space:nowrap\">" + price + "EUR/mois<\/div>",
-      iconAnchor:[30,10]
+      html: "<div style=\"background:" + col + ";color:white;padding:5px 12px;border-radius:100px;font-size:.72rem;font-weight:700;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)\">" + (l.typeIcon||"📦") + " " + price + "€/mois<\/div>",
+      iconAnchor:[40,10]
     })}).addTo(dm2);
   }, 150);
 }
