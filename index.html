@@ -1062,7 +1062,7 @@ function openContact(id) {
   for (var i = 0; i < listings.length; i++) { if (listings[i].id == id) { l = listings[i]; break; } }
   if (!l) return;
   document.getElementById("modal-title").textContent = "Contacter pour cet espace";
-  document.getElementById("modal-body").textContent = "Ton client mail va ouvrir un message pour unused.lille@gmail.com.";
+  document.getElementById("modal-body").textContent = "Tu es sur le point d'envoyer un mail à unused.lille@gmail.com.";
   var subj = encodeURIComponent("[unused] " + l.title);
   var body = encodeURIComponent("Bonjour, je suis interesse par: " + l.title + " (" + l.quartier + ").");
   document.getElementById("modal-mailto-btn").href = "mailto:unused.lille@gmail.com?subject=" + subj + "&body=" + body;
