@@ -635,7 +635,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
 <!-- CONTACT MODAL -->
 <div class="modal-overlay" id="contact-modal">
   <div class="modal-box">
-    <h3 id="modal-title">Contacter pour cet espace</h3>
+    <h3 id="modal-title">Être mis en relation</h3>
     <p id="modal-body"></p>
     <div class="modal-actions">
       <a id="modal-mailto-btn" href="#" class="btn-modal-primary" style="text-align:center;text-decoration:none">Envoyer un email →</a>
@@ -1061,10 +1061,11 @@ function openContact(id) {
   var l = null;
   for (var i = 0; i < listings.length; i++) { if (listings[i].id == id) { l = listings[i]; break; } }
   if (!l) return;
-  document.getElementById("modal-title").textContent = "Contacter pour cet espace";
-  document.getElementById("modal-body").textContent = "Tu es sur le point d'envoyer un mail à unused.lille@gmail.com.";
+  document.getElementById("modal-title").textContent = "Être mis en relation";
+  document.getElementById("modal-body").textContent = "unused transmet ta demande au propriétaire. Toute prise de contact directe hors plateforme annule ta priorité sur cet espace.";
   var subj = encodeURIComponent("[unused] " + l.title);
-  var body = encodeURIComponent("Bonjour, je suis interesse par: " + l.title + " (" + l.quartier + ").");
+  var bodyLines = ["Bonjour,", "", "Je suis intéressé(e) par l'espace suivant sur unused :", "→ " + l.title + " (" + l.quartier + ", " + (l.surface || l.shareSurface || "?") + " m² — " + (l.sharePrice || l.price || "?") + "€/mois)", "", "Merci de me mettre en relation avec le propriétaire.", "", "Cordialement"];
+  var body = encodeURIComponent(bodyLines.join("\n"));
   document.getElementById("modal-mailto-btn").href = "mailto:unused.lille@gmail.com?subject=" + subj + "&body=" + body;
   document.getElementById("modal-mailto-btn").onclick = function() {
     setTimeout(async function() {
