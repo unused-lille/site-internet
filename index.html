@@ -328,7 +328,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
 <!-- NAV -->
 <nav class="nav">
   <button class="logo" onclick="showView('home')">
-    <span class="logo-dot"></span>unused
+    <span class="logo-dot"></span>UNUSED
   </button>
   <div class="nav-links">
     <button class="nav-btn nav-btn-ghost" onclick="showView('listing')"><span class="nav-label">Trouver un espace</span><span>🔍</span></button>
@@ -412,42 +412,47 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
   <div class="detail-view" id="detail-content"></div>
 </div>
 
-<!-- ══════════ PROPOSE VIEW ══════════ -->
+<!-- ══════════ PROPOSE VIEW (choix) ══════════ -->
 <div class="view" id="view-propose">
   <div class="form-view">
-    <h2>Proposer mon espace</h2>
-    <p class="form-sub">Remplis ce formulaire pour lister ton espace. Il apparaîtra dans la liste des espaces disponibles ou partagés selon ce que tu indiques.</p>
-
-    <form id="propose-form" novalidate onsubmit="submitPropose(event)">
-
-      <div class="form-section">
-        <p class="form-section-title">Type de proposition</p>
-        <div class="listing-type-selector">
-          <div class="lt-opt selected" id="lt-location" onclick="selectListingType('location')">
-            <h4>🏠 Je loue mon espace</h4>
-            <p>Tu mets à disposition un espace vide que tu possèdes (cave, salle, local…)</p>
-          </div>
-          <div class="lt-opt" id="lt-partage" onclick="selectListingType('partage')">
-            <h4>👥 Je partage mon espace loué</h4>
-            <p>Tu loues déjà un espace et tu veux le partager avec d'autres étudiants pour réduire les coûts.</p>
-          </div>
-        </div>
-        <input type="hidden" id="listing-type" value="location">
+    <h2>Proposer un espace</h2>
+    <p class="form-sub">Que veux-tu faire ?</p>
+    <div class="listing-type-selector" style="gap:14px">
+      <div class="lt-opt" onclick="showView('propose-location')" style="cursor:pointer;padding:24px 18px;text-align:center">
+        <div style="font-size:2.2rem;margin-bottom:10px">🏠</div>
+        <h4 style="font-size:1rem;margin-bottom:6px">Je loue mon espace</h4>
+        <p>Tu es propriétaire d'une cave, d'un garage, d'une salle ou d'un local vide. Tu veux le louer à un étudiant.</p>
       </div>
+      <div class="lt-opt" onclick="showView('propose-partage')" style="cursor:pointer;padding:24px 18px;text-align:center">
+        <div style="font-size:2.2rem;margin-bottom:10px">👥</div>
+        <h4 style="font-size:1rem;margin-bottom:6px">Je partage mon espace loué</h4>
+        <p>Tu loues déjà un espace et tu veux y accueillir d'autres étudiants pour diviser les coûts.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- ══════════ PROPOSE-LOCATION VIEW ══════════ -->
+<div class="view" id="view-propose-location">
+  <div class="form-view">
+    <button class="back-btn" onclick="showView('propose')">← Retour</button>
+    <h2>Lister mon espace</h2>
+    <p class="form-sub">Tu mets à disposition un espace vide que tu possèdes. Remplis les infos ci-dessous.</p>
+    <form id="propose-form" novalidate onsubmit="submitPropose(event)">
+      <input type="hidden" id="listing-type" value="location">
       <div class="form-section">
         <p class="form-section-title">L'espace</p>
         <div class="fg">
           <label>Titre de l'annonce</label>
-          <input type="text" id="f-title" placeholder="Ex : Cave sèche Vauban — 8 m²" >
+          <input type="text" id="f-title" placeholder="Ex : Cave sèche Vauban — 8 m²">
         </div>
         <div class="fg">
           <label>Type de pièce</label>
           <div class="type-selector" id="type-selector">
             <div class="type-opt selected" onclick="selectType('Cave','🏚️',this)"><span class="type-opt-icon">🏚️</span><span class="type-opt-label">Cave</span></div>
-            <div class="type-opt" onclick="selectType('Garage',  '🚗',this)"><span class="type-opt-icon">🚗</span><span class="type-opt-label">Garage</span></div>
-            <div class="type-opt" onclick="selectType('Salle', '🏫',this)"><span class="type-opt-icon">🏫</span><span class="type-opt-label">Salle</span></div>
-            <div class="type-opt" onclick="selectType('Local', '🏢',this)"><span class="type-opt-icon">🏢</span><span class="type-opt-label">Local</span></div>
+            <div class="type-opt" onclick="selectType('Garage','🚗',this)"><span class="type-opt-icon">🚗</span><span class="type-opt-label">Garage</span></div>
+            <div class="type-opt" onclick="selectType('Salle','🏫',this)"><span class="type-opt-icon">🏫</span><span class="type-opt-label">Salle</span></div>
+            <div class="type-opt" onclick="selectType('Local','🏢',this)"><span class="type-opt-icon">🏢</span><span class="type-opt-label">Local</span></div>
             <div class="type-opt" onclick="selectType('Grenier','🏠',this)"><span class="type-opt-icon">🏠</span><span class="type-opt-label">Grenier</span></div>
             <div class="type-opt" onclick="selectType('Autre','📦',this)"><span class="type-opt-icon">📦</span><span class="type-opt-label">Autre</span></div>
           </div>
@@ -455,68 +460,37 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <input type="hidden" id="f-type-icon" value="🏚️">
         </div>
         <div class="fg-row">
-          <div class="fg" style="margin:0">
-            <label>Surface (m²)</label>
-            <input type="number" id="f-surface" placeholder="Ex : 8" min="1" >
-          </div>
-          <div class="fg" style="margin:0">
-            <label>Prix / mois (€)</label>
-            <input type="number" id="f-price" placeholder="Ex : 30" min="1" >
-          </div>
+          <div class="fg" style="margin:0"><label>Surface totale (m²)</label><input type="number" id="f-surface" placeholder="Ex : 8" min="1"></div>
+          <div class="fg" style="margin:0"><label>Prix / mois (€)</label><input type="number" id="f-price" placeholder="Ex : 30" min="1"></div>
         </div>
         <div class="fg">
           <label>Description</label>
           <textarea id="f-desc" placeholder="Décris l'espace : accessibilité, état, conditions d'accès, ce qui est inclus…"></textarea>
         </div>
       </div>
-
       <div class="form-section">
         <p class="form-section-title">Localisation</p>
         <div class="fg">
           <label>Adresse complète à Lille</label>
-          <input type="text" id="f-address" placeholder="Ex : 12 rue Solférino, 59000 Lille" >
+          <input type="text" id="f-address" placeholder="Ex : 12 rue Solférino, 59000 Lille" oninput="clearGeocode('geocode-status')" onblur="geocodeAddress('f-address','geocode-status','f-geocoded-lat','f-geocoded-lng')">
+          <div id="geocode-status" style="font-size:.72rem;margin-top:5px;min-height:16px"></div>
+          <input type="hidden" id="f-geocoded-lat"><input type="hidden" id="f-geocoded-lng">
         </div>
         <div class="fg">
           <label>Quartier / Arrondissement</label>
           <select id="f-quartier">
             <option value="">Sélectionner…</option>
-            <option>Vieux-Lille</option>
-            <option>Centre</option>
-            <option>Vauban</option>
-            <option>Wazemmes</option>
-            <option>Moulins</option>
-            <option>Faubourg de Béthune</option>
-            <option>Hellemmes</option>
-            <option>Lomme</option>
-            <option>Euralille</option>
-            <option>Bois-Blancs</option>
-            <option>Saint-Maurice Pellevoisin</option>
+            <option>Vieux-Lille</option><option>Centre</option><option>Vauban</option>
+            <option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option>
+            <option>Hellemmes</option><option>Lomme</option><option>Euralille</option>
+            <option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option>
           </select>
         </div>
       </div>
-
-      <div class="form-section" id="partage-fields" style="display:none">
-        <p class="form-section-title">Infos partage</p>
-        <div class="fg-row">
-          <div class="fg" style="margin:0">
-            <label>Espace dispo à partager (m²)</label>
-            <input type="number" id="f-share-surface" placeholder="Ex : 4" min="1">
-          </div>
-          <div class="fg" style="margin:0">
-            <label>Prix partage / mois (€)</label>
-            <input type="number" id="f-share-price" placeholder="Ex : 15" min="1">
-          </div>
-        </div>
-        <div class="fg">
-          <label>Nb max de colocataires de box</label>
-          <input type="number" id="f-share-max" placeholder="Ex : 2" min="1" max="8">
-        </div>
-      </div>
-
       <div class="form-section">
         <p class="form-section-title">Photos</p>
         <div class="fg">
-          <div class="photo-upload" id="photo-upload-zone">
+          <div class="photo-upload">
             <input type="file" accept="image/*" multiple onchange="handlePhotos(event)">
             <div class="photo-upload-icon">📷</div>
             <p>Clique pour ajouter des photos</p>
@@ -525,24 +499,14 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <div class="photo-preview" id="photo-preview"></div>
         </div>
       </div>
-
       <div class="form-section">
         <p class="form-section-title">Contact</p>
-        <div class="fg">
-          <label>Ton prénom</label>
-          <input type="text" id="f-contact-name" placeholder="Ex : Jean" >
-        </div>
+        <div class="fg"><label>Ton prénom</label><input type="text" id="f-contact-name" placeholder="Ex : Jean"></div>
         <div class="fg-row">
-          <div class="fg" style="margin:0">
-            <label>Email</label>
-            <input type="email" id="f-contact-email" placeholder="jean@email.fr">
-          </div>
-          <div class="fg" style="margin:0">
-            <label>Téléphone</label>
-            <input type="tel" id="f-contact-phone" placeholder="06 12 34 56 78">
-          </div>
+          <div class="fg" style="margin:0"><label>Email</label><input type="email" id="f-contact-email" placeholder="jean@email.fr"></div>
+          <div class="fg" style="margin:0"><label>Téléphone</label><input type="tel" id="f-contact-phone" placeholder="06 12 34 56 78"></div>
         </div>
-        <p style="font-size:.72rem;color:var(--muted);margin-top:-6px;margin-bottom:14px;line-height:1.5">Au moins un des deux est requis. Ces infos ne sont pas affichées publiquement — elles servent uniquement à la mise en relation via unused.</p>
+        <p style="font-size:.72rem;color:var(--muted);margin-top:-6px;margin-bottom:14px;line-height:1.5">Au moins un des deux est requis.</p>
         <div class="fg">
           <label>Type de propriétaire</label>
           <select id="f-owner-type">
@@ -553,11 +517,116 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           </select>
         </div>
       </div>
-
       <button type="submit" class="btn-submit">Publier mon annonce →</button>
-      <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5">
-        unused.lille [at] gmail.com sera mis en relation avec les intéressés. Ton annonce sera visible dès publication.
-      </p>
+      <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5">unused.lille [at] gmail.com sera mis en relation avec les intéressés.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════ PROPOSE-PARTAGE VIEW ══════════ -->
+<div class="view" id="view-propose-partage">
+  <div class="form-view">
+    <button class="back-btn" onclick="showView('propose')">← Retour</button>
+    <h2>Partager mon espace loué</h2>
+    <p class="form-sub">Tu loues déjà un espace et tu veux y accueillir d'autres étudiants pour diviser les frais. Le prix juste est calculé automatiquement.</p>
+    <form id="partage-form" novalidate onsubmit="submitPartage(event)">
+
+      <div class="form-section">
+        <p class="form-section-title">📋 Ton bail actuel</p>
+        <div class="fg"><label>Titre de l'annonce</label><input type="text" id="p-title" placeholder="Ex : Cave Vauban — cherche coloc de box"></div>
+        <div class="fg">
+          <label>Type de pièce</label>
+          <div class="type-selector">
+            <div class="type-opt selected" onclick="selectPartageType('Cave','🏚️',this)"><span class="type-opt-icon">🏚️</span><span class="type-opt-label">Cave</span></div>
+            <div class="type-opt" onclick="selectPartageType('Garage','🚗',this)"><span class="type-opt-icon">🚗</span><span class="type-opt-label">Garage</span></div>
+            <div class="type-opt" onclick="selectPartageType('Salle','🏫',this)"><span class="type-opt-icon">🏫</span><span class="type-opt-label">Salle</span></div>
+            <div class="type-opt" onclick="selectPartageType('Local','🏢',this)"><span class="type-opt-icon">🏢</span><span class="type-opt-label">Local</span></div>
+            <div class="type-opt" onclick="selectPartageType('Grenier','🏠',this)"><span class="type-opt-icon">🏠</span><span class="type-opt-label">Grenier</span></div>
+            <div class="type-opt" onclick="selectPartageType('Autre','📦',this)"><span class="type-opt-icon">📦</span><span class="type-opt-label">Autre</span></div>
+          </div>
+          <input type="hidden" id="p-type" value="Cave"><input type="hidden" id="p-type-icon" value="🏚️">
+        </div>
+        <div class="fg-row">
+          <div class="fg" style="margin:0"><label>Surface totale de l'espace (m²)</label><input type="number" id="p-total-surface" placeholder="Ex : 12" min="1" oninput="recalcPartage()"></div>
+          <div class="fg" style="margin:0"><label>Loyer total que tu paies (€/mois)</label><input type="number" id="p-total-price" placeholder="Ex : 60" min="1" oninput="recalcPartage()"></div>
+        </div>
+        <div class="fg"><label>Surface que tu gardes pour toi (m²)</label><input type="number" id="p-my-surface" placeholder="Ex : 6" min="1" oninput="recalcPartage()"></div>
+
+        <div id="partage-calc" style="display:none;background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.2);border-radius:var(--r-sm);padding:18px 20px;margin-top:4px">
+          <p style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:12px">💡 Calcul automatique</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center">
+            <div><div style="font-size:1.3rem;font-weight:800;color:var(--indigo)" id="calc-prixm2">—</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">€ / m² / mois</div></div>
+            <div><div style="font-size:1.3rem;font-weight:800;color:var(--indigo)" id="calc-dispo">—</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">m² disponibles</div></div>
+            <div><div style="font-size:1.3rem;font-weight:800;color:var(--indigo)" id="calc-maxgain">—</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">€ max récupérables</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="partage-offer-section" style="display:none">
+        <p class="form-section-title">📦 Ce que tu proposes</p>
+        <div class="fg">
+          <label>m² que tu proposes à partager</label>
+          <input type="number" id="p-share-surface" placeholder="Ex : 4" min="1" oninput="recalcSharePrice()">
+          <div style="font-size:.72rem;color:var(--muted);margin-top:4px" id="p-share-surface-hint"></div>
+        </div>
+        <div id="price-suggestion" style="display:none;background:white;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:16px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <p style="font-size:.75rem;font-weight:700;color:var(--muted)">Prix suggéré</p>
+            <div style="font-size:1.4rem;font-weight:800;letter-spacing:-.04em;color:var(--indigo)" id="suggested-price-display">—</div>
+          </div>
+          <div style="background:var(--cream);border-radius:8px;padding:10px 12px;font-size:.75rem;color:var(--muted);line-height:1.6" id="price-explanation"></div>
+        </div>
+        <div class="fg">
+          <label>Prix mensuel demandé (€/mois) <span style="color:var(--indigo);font-weight:400;font-size:.72rem">— modifiable librement</span></label>
+          <input type="number" id="p-share-price" placeholder="Ex : 20" min="1">
+        </div>
+        <div class="fg"><label>Nombre max de colocataires acceptés</label><input type="number" id="p-share-max" placeholder="Ex : 2" min="1" max="8"></div>
+        <div class="fg"><label>Description</label><textarea id="p-desc" placeholder="Décris l'espace, les conditions d'accès, comment se passe le partage…"></textarea></div>
+      </div>
+
+      <div class="form-section" id="partage-loc-section" style="display:none">
+        <p class="form-section-title">📍 Localisation</p>
+        <div class="fg">
+          <label>Adresse complète à Lille</label>
+          <input type="text" id="p-address" placeholder="Ex : 12 rue Solférino, 59000 Lille" oninput="clearGeocode('p-geocode-status')" onblur="geocodeAddress('p-address','p-geocode-status','p-geocoded-lat','p-geocoded-lng')">
+          <div id="p-geocode-status" style="font-size:.72rem;margin-top:5px;min-height:16px"></div>
+          <input type="hidden" id="p-geocoded-lat"><input type="hidden" id="p-geocoded-lng">
+        </div>
+        <div class="fg">
+          <label>Quartier</label>
+          <select id="p-quartier">
+            <option value="">Sélectionner…</option>
+            <option>Vieux-Lille</option><option>Centre</option><option>Vauban</option>
+            <option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option>
+            <option>Hellemmes</option><option>Lomme</option><option>Euralille</option>
+            <option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section" id="partage-photos-section" style="display:none">
+        <p class="form-section-title">📷 Photos</p>
+        <div class="fg">
+          <div class="photo-upload">
+            <input type="file" accept="image/*" multiple onchange="handlePhotosP(event)">
+            <div class="photo-upload-icon">📷</div>
+            <p>Clique pour ajouter des photos</p>
+          </div>
+          <div class="photo-preview" id="p-photo-preview"></div>
+        </div>
+      </div>
+
+      <div class="form-section" id="partage-contact-section" style="display:none">
+        <p class="form-section-title">👤 Contact</p>
+        <div class="fg"><label>Ton prénom</label><input type="text" id="p-contact-name" placeholder="Ex : Marie"></div>
+        <div class="fg-row">
+          <div class="fg" style="margin:0"><label>Email</label><input type="email" id="p-contact-email" placeholder="marie@email.fr"></div>
+          <div class="fg" style="margin:0"><label>Téléphone</label><input type="tel" id="p-contact-phone" placeholder="06 12 34 56 78"></div>
+        </div>
+        <p style="font-size:.72rem;color:var(--muted);margin-top:-6px;margin-bottom:14px;line-height:1.5">Au moins un des deux est requis.</p>
+        <button type="submit" class="btn-submit">Publier mon annonce de partage →</button>
+        <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5">unused.lille [at] gmail.com sera mis en relation avec les intéressés.</p>
+      </div>
     </form>
   </div>
 </div>
@@ -628,11 +697,10 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
 
 <script>
 const CONTACT_EMAIL = ['unused.lille','gmail.com'].join('@');
+
 // ════════════════════════════════
 // DATA STORE
 // ════════════════════════════════
-
-// Lille neighborhood approximate coords for geocoding simulation
 const quartierCoords = {
   'Vieux-Lille':     [50.6422, 3.0585],
   'Centre':          [50.6292, 3.0573],
@@ -649,28 +717,66 @@ const quartierCoords = {
 
 function getCoords(quartier) {
   const base = quartierCoords[quartier] || [50.6292, 3.0573];
-  // small random offset so markers don't stack
   return [base[0] + (Math.random()-.5)*.008, base[1] + (Math.random()-.5)*.012];
 }
 
-// Load from localStorage or start empty
 function loadListings() {
   try { return JSON.parse(localStorage.getItem('unused_listings') || '[]'); }
   catch(e) { return []; }
 }
-function saveListings(arr) {
-  localStorage.setItem('unused_listings', JSON.stringify(arr));
-}
+function saveListings(arr) { localStorage.setItem('unused_listings', JSON.stringify(arr)); }
 function loadInterests() {
   try { return JSON.parse(localStorage.getItem('unused_interests') || '{}'); }
   catch(e) { return {}; }
 }
-function saveInterests(obj) {
-  localStorage.setItem('unused_interests', JSON.stringify(obj));
-}
+function saveInterests(obj) { localStorage.setItem('unused_interests', JSON.stringify(obj)); }
 
 let listings = loadListings();
 let interests = loadInterests();
+
+// ════════════════════════════════
+// GEOCODING (Nominatim / OSM)
+// ════════════════════════════════
+let geocodeTimers = {};
+
+function clearGeocode(statusId) {
+  const el = document.getElementById(statusId);
+  if (el) { el.textContent = ''; el.style.color = 'var(--muted)'; }
+}
+
+async function geocodeAddress(inputId, statusId, latId, lngId) {
+  const input = document.getElementById(inputId);
+  const statusEl = document.getElementById(statusId);
+  const latEl = document.getElementById(latId);
+  const lngEl = document.getElementById(lngId);
+  if (!input || !input.value.trim()) return;
+
+  statusEl.textContent = '🔍 Recherche de l\'adresse…';
+  statusEl.style.color = 'var(--muted)';
+
+  try {
+    const query = encodeURIComponent(input.value.trim() + ', Lille, France');
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1&countrycodes=fr`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
+    const data = await res.json();
+    if (data && data.length > 0) {
+      const lat = parseFloat(data[0].lat);
+      const lng = parseFloat(data[0].lon);
+      latEl.value = lat;
+      lngEl.value = lng;
+      statusEl.textContent = '✅ Adresse trouvée : ' + data[0].display_name.split(',').slice(0,3).join(',');
+      statusEl.style.color = '#38A169';
+    } else {
+      latEl.value = '';
+      lngEl.value = '';
+      statusEl.textContent = '⚠️ Adresse non trouvée — le quartier sera utilisé pour la carte.';
+      statusEl.style.color = '#D97706';
+    }
+  } catch(e) {
+    statusEl.textContent = '⚠️ Impossible de vérifier l\'adresse (pas de réseau ?)';
+    statusEl.style.color = '#D97706';
+  }
+}
 
 // ════════════════════════════════
 // VIEW ROUTER
@@ -681,26 +787,20 @@ let leafletMap = null;
 let markers = [];
 let activeFilter = 'all';
 let photoData = [];
+let photoDataP = [];
 
 function showView(name, listingId) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
+  const el = document.getElementById('view-' + name);
+  if (el) el.classList.add('active');
   currentView = name;
   window.scrollTo(0, 0);
 
-  if (name === 'listing') {
-    renderListing();
-    setTimeout(initMap, 100);
-  }
-  if (name === 'detail' && listingId !== undefined) {
-    renderDetail(listingId);
-  }
-  if (name === 'shared') {
-    renderShared();
-  }
-  if (name === 'propose') {
-    resetForm();
-  }
+  if (name === 'listing') { renderListing(); setTimeout(initMap, 100); }
+  if (name === 'detail' && listingId !== undefined) renderDetail(listingId);
+  if (name === 'shared') renderShared();
+  if (name === 'propose-location') resetForm();
+  if (name === 'propose-partage') resetPartageForm();
 }
 
 // ════════════════════════════════
@@ -710,8 +810,7 @@ function initMap() {
   if (!leafletMap) {
     leafletMap = L.map('map').setView([50.6292, 3.0573], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
-      maxZoom: 19
+      attribution: '© OpenStreetMap', maxZoom: 19
     }).addTo(leafletMap);
   }
   updateMapMarkers();
@@ -721,31 +820,27 @@ function updateMapMarkers() {
   if (!leafletMap) return;
   markers.forEach(m => m.remove());
   markers = [];
-
   const filtered = getFilteredListings();
   filtered.forEach(l => {
-    if (!l.coords || l.listingType !== 'location') return;
+    if (!l.coords) return;
     const icon = L.divIcon({
       className: '',
-      html: `<div style="background:${l.listingType==='location'?'#3D3BF3':'#7C3AED'};color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${l.price}€</div>`,
+      html: `<div style="background:#3D3BF3;color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${l.price}€</div>`,
       iconAnchor: [20, 10]
     });
     const m = L.marker(l.coords, {icon}).addTo(leafletMap);
     m.bindPopup(`
-      <div class="popup-title">${escHtml(l.title)}</div>
+      <div style="font-weight:700">${escHtml(l.title)}</div>
       <div style="font-size:.74rem;color:#7B7A9A;margin-bottom:4px">${escHtml(l.quartier)} · ${l.surface} m²</div>
-      <div class="popup-price">${l.price}€<span style="font-size:.72rem;font-weight:400;color:#7B7A9A"> / mois</span></div>
-      <button class="popup-btn" onclick="showView('detail',${l.id})">Voir l'annonce</button>
+      <div style="font-weight:800;color:#3D3BF3">${l.price}€<span style="font-size:.72rem;font-weight:400;color:#7B7A9A"> / mois</span></div>
+      <button style="display:inline-block;margin-top:8px;padding:6px 14px;background:#3D3BF3;color:white;border-radius:100px;font-size:.74rem;font-weight:700;cursor:pointer;border:none;font-family:'Bricolage Grotesque',sans-serif" onclick="showView('detail',${l.id})">Voir l'annonce</button>
     `);
     markers.push(m);
   });
-
-  if (filtered.length > 0 && filtered.some(l => l.coords)) {
-    const validCoords = filtered.filter(l=>l.coords).map(l=>l.coords);
-    if (validCoords.length > 0) {
-      leafletMap.invalidateSize();
-      leafletMap.fitBounds(validCoords, {padding:[30,30], maxZoom:15});
-    }
+  if (filtered.some(l => l.coords)) {
+    const validCoords = filtered.filter(l => l.coords).map(l => l.coords);
+    leafletMap.invalidateSize();
+    try { leafletMap.fitBounds(validCoords, {padding:[30,30], maxZoom:15}); } catch(e){}
   }
 }
 
@@ -774,12 +869,10 @@ function renderListing() {
   document.getElementById('listing-count-label').textContent =
     filtered.length === 0 ? 'Aucun espace pour l\'instant' :
     filtered.length + ' espace' + (filtered.length > 1 ? 's' : '') + ' disponible' + (filtered.length > 1 ? 's' : '');
-
   if (filtered.length === 0) {
-    panel.innerHTML = `<div class="empty-state"><div class="ei">📭</div><p>Aucun espace disponible pour l'instant.<br>Sois le premier à <strong style="color:var(--indigo);cursor:pointer" onclick="showView('propose')">proposer ton espace</strong>&nbsp;!</p></div>`;
+    panel.innerHTML = `<div class="empty-state"><div class="ei">📭</div><p>Aucun espace disponible pour l'instant.<br>Sois le premier à <strong style="color:var(--indigo);cursor:pointer" onclick="showView('propose')">proposer ton espace</strong> !</p></div>`;
     return;
   }
-
   panel.innerHTML = filtered.map(l => spaceCardHTML(l)).join('');
 }
 
@@ -790,10 +883,7 @@ function spaceCardHTML(l) {
     : `<span style="font-size:3rem">${l.typeIcon}</span>`;
   return `
     <div class="space-card" onclick="showView('detail',${l.id})">
-      <div class="space-card-img">
-        ${imgHTML}
-        <div class="type-badge">${capitalize(l.ownerType)}</div>
-      </div>
+      <div class="space-card-img">${imgHTML}<div class="type-badge">${capitalize(l.ownerType)}</div></div>
       <div class="space-card-body">
         <div class="space-card-title">${escHtml(l.title)}</div>
         <div class="space-card-address">📍 ${escHtml(l.quartier)}${l.address ? ' · ' + escHtml(l.address.split(',')[0]) : ''}</div>
@@ -818,12 +908,12 @@ function renderDetail(id) {
   const isShared = l.listingType === 'partage';
 
   const imgHTML = l.photos && l.photos.length > 0
-    ? l.photos.map(p => `<img src="${p}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`).join('')
+    ? `<img src="${l.photos[0]}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
     : `<span>${l.typeIcon}</span>`;
 
   const photosCarousel = l.photos && l.photos.length > 1
     ? `<div style="display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px">
-        ${l.photos.map(p => `<img src="${p}" style="height:80px;border-radius:8px;flex-shrink:0;object-fit:cover;width:110px;cursor:pointer" onclick="this.parentElement.previousElementSibling.querySelector('img') && (this.parentElement.previousElementSibling.querySelector('img').src='${p}')">`).join('')}
+        ${l.photos.map(p => `<img src="${p}" style="height:80px;border-radius:8px;flex-shrink:0;object-fit:cover;width:110px">`).join('')}
       </div>` : '';
 
   const partageInfo = isShared && l.sharePrice ? `
@@ -831,7 +921,7 @@ function renderDetail(id) {
       <p style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7C3AED;margin-bottom:8px">Espace partagé</p>
       <p style="font-size:.9rem;line-height:1.65;color:var(--muted)">
         Un étudiant loue déjà cet espace et propose <strong style="color:var(--ink)">${l.shareSurface} m²</strong> à partager pour
-        <strong style="color:#7C3AED">${l.sharePrice}€&nbsp;/&nbsp;mois</strong>. Jusqu'à ${l.shareMax || '?'} colocataire${l.shareMax > 1 ? 's' : ''} accepté${l.shareMax > 1 ? 's' : ''}.
+        <strong style="color:#7C3AED">${l.sharePrice}€ / mois</strong>. Jusqu'à ${l.shareMax || '?'} colocataire${l.shareMax > 1 ? 's' : ''} accepté${l.shareMax > 1 ? 's' : ''}.
       </p>
     </div>` : '';
 
@@ -839,15 +929,12 @@ function renderDetail(id) {
     <button class="back-btn" onclick="showView('${isShared ? 'shared' : 'listing'}')">
       ← Retour aux ${isShared ? 'espaces partagés' : 'espaces disponibles'}
     </button>
-
     <div class="detail-img" id="detail-main-img">${imgHTML}</div>
     ${photosCarousel}
-
     <div class="detail-header">
       <h1 class="detail-title">${escHtml(l.title)}</h1>
       <div class="detail-price">${isShared ? (l.sharePrice || l.price) : l.price}€ <span>/ mois</span></div>
     </div>
-
     <div class="detail-meta">
       <div class="meta-chip">${l.typeIcon} ${l.type}</div>
       <div class="meta-chip">📐 ${isShared ? (l.shareSurface || l.surface) : l.surface} m²</div>
@@ -855,46 +942,35 @@ function renderDetail(id) {
       <div class="meta-chip">🏷️ ${capitalize(l.ownerType)}</div>
       ${isShared ? `<div class="meta-chip" style="border-color:rgba(124,58,237,.3);color:#7C3AED">👥 Espace partagé</div>` : ''}
     </div>
-
     ${partageInfo}
-
     <p class="detail-section-title">Description</p>
     <p class="detail-desc">${escHtml(l.desc).replace(/\n/g,'<br>')}</p>
-
     <p class="detail-section-title">Localisation</p>
     <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">📍 ${escHtml(l.address)}${l.quartier ? ', ' + escHtml(l.quartier) : ''}</p>
     <div class="detail-map" id="detail-map"></div>
-
     <div class="contact-box">
-      <h3>Intéressé par cet espace&nbsp;?</h3>
+      <h3>Intéressé par cet espace ?</h3>
       <p>Envoie un email à ${CONTACT_EMAIL} — nous te mettrons en relation avec ${escHtml(l.contactName || 'le propriétaire')} dès que possible.</p>
-      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="openContact(${l.id})">
-        ✉️ Contacter pour cet espace
-      </button>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="openContact(${l.id})">✉️ Contacter pour cet espace</button>
       <div class="contact-interest">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span class="interest-count" id="interest-count">${intCount}</span>&nbsp;personne${intCount !== 1 ? 's' : ''} ${intCount !== 1 ? 'ont' : 'a'} déjà envoyé un message pour cet espace.
+        <span class="interest-count" id="interest-count">${intCount}</span>&nbsp;personne${intCount !== 1 ? 's' : ''} ${intCount !== 1 ? 'ont' : 'a'} déjà envoyé un message.
       </div>
     </div>
-
     <div style="border-top:1px solid var(--cream-d);padding-top:20px;margin-top:4px">
-      <p style="font-size:.75rem;color:var(--muted);margin-bottom:10px">Tu es le propriétaire de cette annonce&nbsp;?</p>
-      <button class="btn btn-outline" style="font-size:.82rem;padding:11px 20px;color:#E53E3E;border-color:rgba(229,62,62,.3)" onclick="openDeleteModal(${l.id})">
-        🗑️ Supprimer mon annonce
-      </button>
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:10px">Tu es le propriétaire de cette annonce ?</p>
+      <button class="btn btn-outline" style="font-size:.82rem;padding:11px 20px;color:#E53E3E;border-color:rgba(229,62,62,.3)" onclick="openDeleteModal(${l.id})">🗑️ Supprimer mon annonce</button>
     </div>
   `;
 
-  // Mini map in detail
   setTimeout(() => {
-    if (!l.coords) return;
     const dm = document.getElementById('detail-map');
-    if (!dm) return;
-    const detailMap = L.map('detail-map').setView(l.coords, 15);
+    if (!dm || !l.coords) return;
+    const detailMap = L.map('detail-map').setView(l.coords, 16);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(detailMap);
     const icon = L.divIcon({
       className:'',
-      html:`<div style="background:var(--indigo);color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${l.price}€/mois</div>`,
+      html:`<div style="background:#3D3BF3;color:white;padding:5px 10px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)">${l.price}€/mois</div>`,
       iconAnchor:[30,10]
     });
     L.marker(l.coords, {icon}).addTo(detailMap);
@@ -907,12 +983,10 @@ function renderDetail(id) {
 function renderShared() {
   const panel = document.getElementById('shared-panel');
   const shared = listings.filter(l => l.listingType === 'partage');
-
   if (shared.length === 0) {
-    panel.innerHTML = `<div class="empty-state"><div class="ei">👥</div><p>Aucun espace partagé pour l'instant.<br>Si tu loues déjà un espace et veux le partager, <strong style="color:var(--indigo);cursor:pointer" onclick="showView('propose')">propose-le ici</strong>&nbsp;!</p></div>`;
+    panel.innerHTML = `<div class="empty-state"><div class="ei">👥</div><p>Aucun espace partagé pour l'instant.<br>Si tu loues déjà un espace et veux le partager, <strong style="color:var(--indigo);cursor:pointer" onclick="showView('propose')">propose-le ici</strong> !</p></div>`;
     return;
   }
-
   panel.innerHTML = shared.map(l => {
     const intCount = (interests[l.id] || []).length;
     const imgHTML = l.photos && l.photos.length > 0
@@ -920,17 +994,11 @@ function renderShared() {
       : `<span style="font-size:3rem">${l.typeIcon}</span>`;
     return `
       <div class="space-card" onclick="showView('detail',${l.id})">
-        <div class="space-card-img">
-          ${imgHTML}
-          <div class="shared-badge">👥 Partagé</div>
-          <div class="type-badge">${capitalize(l.ownerType)}</div>
-        </div>
+        <div class="space-card-img">${imgHTML}<div class="shared-badge">👥 Partagé</div><div class="type-badge">${capitalize(l.ownerType)}</div></div>
         <div class="space-card-body">
           <div class="space-card-title">${escHtml(l.title)}</div>
           <div class="space-card-address">📍 ${escHtml(l.quartier)}${l.address ? ' · ' + escHtml(l.address.split(',')[0]) : ''}</div>
-          <div style="font-size:.78rem;color:#7C3AED;margin-bottom:10px;font-weight:600">
-            ${l.shareSurface ? l.shareSurface + ' m² disponibles' : ''}${l.shareMax ? ' · max ' + l.shareMax + ' colocataires' : ''}
-          </div>
+          <div style="font-size:.78rem;color:#7C3AED;margin-bottom:10px;font-weight:600">${l.shareSurface ? l.shareSurface + ' m² disponibles' : ''}${l.shareMax ? ' · max ' + l.shareMax + ' colocataires' : ''}</div>
           <div class="space-card-footer">
             <div class="space-card-price">${l.sharePrice || l.price}€ <span>/ mois</span></div>
             <div class="space-card-meta">
@@ -956,96 +1024,63 @@ function openContact(id) {
   const contactLine = [l.contactEmail && `Email : ${l.contactEmail}`, l.contactPhone && `Tél : ${l.contactPhone}`].filter(Boolean).join(' — ');
   const body = encodeURIComponent(`Bonjour,\n\nJe suis intéressé(e) par l'espace suivant sur unused :\n\n"${l.title}" — ${l.quartier} — ${l.price}€/mois\n\nPouvez-vous me mettre en relation avec ${l.contactName || 'le propriétaire'} ?\n${contactLine ? `\nContact propriétaire : ${contactLine}\n` : ''}\nMerci !`);
   const mailto = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-
   document.getElementById('modal-title').textContent = 'Contacter pour cet espace';
   document.getElementById('modal-body').textContent = `En cliquant ci-dessous, ton client mail va s'ouvrir avec un message pré-rempli pour ${CONTACT_EMAIL} concernant "${l.title}".`;
   document.getElementById('modal-mailto-btn').href = mailto;
   document.getElementById('modal-mailto-btn').onclick = function() {
-    setTimeout(() => {
-      registerInterest(id);
-      closeModal();
-    }, 300);
+    setTimeout(() => { registerInterest(id); closeModal(); }, 300);
   };
   document.getElementById('contact-modal').classList.add('open');
 }
 
 function registerInterest(id) {
   if (!interests[id]) interests[id] = [];
-  // track by session key to avoid double-count per session
-  const key = 'session_' + Math.random().toString(36).slice(2);
-  interests[id].push(key);
+  interests[id].push('session_' + Math.random().toString(36).slice(2));
   saveInterests(interests);
-  // update UI
   const el = document.getElementById('interest-count');
-  if (el) {
-    const count = interests[id].length;
-    el.textContent = count;
-    el.closest('.contact-interest').querySelector('span:last-child') &&
-      (el.parentElement.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span class="interest-count">${count}</span>&nbsp;personne${count !== 1 ? 's' : ''} ${count !== 1 ? 'ont' : 'a'} déjà envoyé un message pour cet espace.`);
-  }
+  if (el) el.textContent = interests[id].length;
   showToast('✉️ Ton email va s\'ouvrir !');
 }
 
-function closeModal() {
-  document.getElementById('contact-modal').classList.remove('open');
-}
-document.getElementById('contact-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+function closeModal() { document.getElementById('contact-modal').classList.remove('open'); }
+document.getElementById('contact-modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
 // ════════════════════════════════
-// FORM
+// FORM — LOCATION
 // ════════════════════════════════
-function selectListingType(type) {
-  document.getElementById('lt-location').classList.toggle('selected', type === 'location');
-  document.getElementById('lt-partage').classList.toggle('selected', type === 'partage');
-  document.getElementById('listing-type').value = type;
-  document.getElementById('partage-fields').style.display = type === 'partage' ? 'block' : 'none';
-}
-
 function selectType(name, icon, el) {
-  document.querySelectorAll('.type-opt').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('#type-selector .type-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   document.getElementById('f-type').value = name;
   document.getElementById('f-type-icon').value = icon;
 }
 
 function handlePhotos(e) {
-  const files = Array.from(e.target.files);
-  files.forEach(f => {
+  Array.from(e.target.files).forEach(f => {
     if (!f.type.startsWith('image/')) return;
     const reader = new FileReader();
-    reader.onload = ev => {
-      photoData.push(ev.target.result);
-      renderPhotoPreview();
-    };
+    reader.onload = ev => { photoData.push(ev.target.result); renderPhotoPreview(); };
     reader.readAsDataURL(f);
   });
 }
 
 function renderPhotoPreview() {
-  const preview = document.getElementById('photo-preview');
-  preview.innerHTML = photoData.map((src, i) => `
-    <div class="photo-thumb">
-      <img src="${src}">
-      <button class="photo-rm" onclick="removePhoto(${i})">✕</button>
-    </div>`).join('');
+  document.getElementById('photo-preview').innerHTML = photoData.map((src, i) =>
+    `<div class="photo-thumb"><img src="${src}"><button class="photo-rm" onclick="removePhoto(${i})">✕</button></div>`).join('');
 }
 
-function removePhoto(i) {
-  photoData.splice(i, 1);
-  renderPhotoPreview();
-}
+function removePhoto(i) { photoData.splice(i, 1); renderPhotoPreview(); }
 
 function resetForm() {
   document.getElementById('propose-form').reset();
   document.getElementById('f-contact-email').value = '';
   document.getElementById('f-contact-phone').value = '';
+  document.getElementById('f-geocoded-lat').value = '';
+  document.getElementById('f-geocoded-lng').value = '';
+  document.getElementById('geocode-status').textContent = '';
   photoData = [];
   renderPhotoPreview();
-  selectListingType('location');
-  document.querySelectorAll('.type-opt').forEach((o,i) => o.classList.toggle('selected', i===0));
+  document.querySelectorAll('#type-selector .type-opt').forEach((o,i) => o.classList.toggle('selected', i===0));
   document.getElementById('f-type').value = 'Cave';
   document.getElementById('f-type-icon').value = '🏚️';
 }
@@ -1053,8 +1088,6 @@ function resetForm() {
 function submitPropose(e) {
   e.preventDefault();
   const title = document.getElementById('f-title').value.trim();
-  const type = document.getElementById('f-type').value;
-  const typeIcon = document.getElementById('f-type-icon').value;
   const surface = parseInt(document.getElementById('f-surface').value) || 0;
   const price = parseInt(document.getElementById('f-price').value) || 0;
   const desc = document.getElementById('f-desc').value.trim();
@@ -1063,34 +1096,28 @@ function submitPropose(e) {
   const contactName = document.getElementById('f-contact-name').value.trim();
   const contactEmail = document.getElementById('f-contact-email').value.trim();
   const contactPhone = document.getElementById('f-contact-phone').value.trim();
-  const ownerType = document.getElementById('f-owner-type').value;
-  const listingType = document.getElementById('listing-type').value;
-  const shareSurface = parseInt(document.getElementById('f-share-surface').value) || null;
-  const sharePrice = parseInt(document.getElementById('f-share-price').value) || null;
-  const shareMax = parseInt(document.getElementById('f-share-max').value) || null;
 
-  if (!title) { showToast('⚠️ Ajoute un titre à ton annonce.'); return; }
+  if (!title) { showToast('⚠️ Ajoute un titre.'); return; }
   if (!surface || !price) { showToast('⚠️ Indique la surface et le prix.'); return; }
   if (!desc) { showToast('⚠️ Ajoute une description.'); return; }
   if (!address) { showToast('⚠️ Indique l\'adresse.'); return; }
   if (!quartier) { showToast('⚠️ Sélectionne un quartier.'); return; }
   if (!contactName) { showToast('⚠️ Indique ton prénom.'); return; }
-  if (!contactEmail && !contactPhone) {
-    showToast('⚠️ Fournis au moins un email ou un téléphone.');
-    return;
-  }
-  if (listingType === 'partage' && (!shareSurface || !sharePrice)) {
-    showToast('⚠️ Précise la surface et le prix de partage.');
-    return;
-  }
+  if (!contactEmail && !contactPhone) { showToast('⚠️ Fournis au moins un email ou un téléphone.'); return; }
 
-  const coords = getCoords(quartier);
+  // Use geocoded coords if available, else fallback to quartier
+  const lat = parseFloat(document.getElementById('f-geocoded-lat').value);
+  const lng = parseFloat(document.getElementById('f-geocoded-lng').value);
+  const coords = (!isNaN(lat) && !isNaN(lng)) ? [lat, lng] : getCoords(quartier);
+
   const newListing = {
     id: Date.now(),
-    title, type, typeIcon, surface, price, desc,
-    address, quartier, contactName, contactEmail, contactPhone, ownerType,
-    listingType,
-    shareSurface, sharePrice, shareMax,
+    title, surface, price, desc, address, quartier,
+    type: document.getElementById('f-type').value,
+    typeIcon: document.getElementById('f-type-icon').value,
+    contactName, contactEmail, contactPhone,
+    ownerType: document.getElementById('f-owner-type').value,
+    listingType: 'location',
     photos: [...photoData],
     coords,
     createdAt: new Date().toISOString(),
@@ -1099,8 +1126,152 @@ function submitPropose(e) {
 
   listings.push(newListing);
   saveListings(listings);
+  showDeleteKeyModal(newListing);
+}
 
-  // Show delete key modal before navigating
+// ════════════════════════════════
+// FORM — PARTAGE
+// ════════════════════════════════
+let partageCalcData = { prixM2: 0, dispo: 0 };
+
+function selectPartageType(name, icon, el) {
+  el.closest('.type-selector').querySelectorAll('.type-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('p-type').value = name;
+  document.getElementById('p-type-icon').value = icon;
+}
+
+function handlePhotosP(e) {
+  Array.from(e.target.files).forEach(f => {
+    if (!f.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = ev => { photoDataP.push(ev.target.result); renderPhotoPreviewP(); };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderPhotoPreviewP() {
+  document.getElementById('p-photo-preview').innerHTML = photoDataP.map((src, i) =>
+    `<div class="photo-thumb"><img src="${src}"><button class="photo-rm" onclick="removePhotoP(${i})">✕</button></div>`).join('');
+}
+
+function removePhotoP(i) { photoDataP.splice(i, 1); renderPhotoPreviewP(); }
+
+function resetPartageForm() {
+  document.getElementById('partage-form').reset();
+  photoDataP = [];
+  document.getElementById('p-geocoded-lat').value = '';
+  document.getElementById('p-geocoded-lng').value = '';
+  document.getElementById('p-geocode-status').textContent = '';
+  document.getElementById('partage-calc').style.display = 'none';
+  document.getElementById('partage-offer-section').style.display = 'none';
+  document.getElementById('partage-loc-section').style.display = 'none';
+  document.getElementById('partage-photos-section').style.display = 'none';
+  document.getElementById('partage-contact-section').style.display = 'none';
+  document.getElementById('price-suggestion').style.display = 'none';
+  document.getElementById('p-type').value = 'Cave';
+  document.getElementById('p-type-icon').value = '🏚️';
+  partageCalcData = { prixM2: 0, dispo: 0 };
+}
+
+function recalcPartage() {
+  const total = parseFloat(document.getElementById('p-total-surface').value) || 0;
+  const loyer = parseFloat(document.getElementById('p-total-price').value) || 0;
+  const mine = parseFloat(document.getElementById('p-my-surface').value) || 0;
+
+  if (total > 0 && loyer > 0 && mine > 0 && mine < total) {
+    const prixM2 = loyer / total;
+    const dispo = total - mine;
+    const maxGain = Math.round(dispo * prixM2);
+
+    partageCalcData = { prixM2, dispo };
+
+    document.getElementById('calc-prixm2').textContent = prixM2.toFixed(2);
+    document.getElementById('calc-dispo').textContent = dispo.toFixed(1);
+    document.getElementById('calc-maxgain').textContent = maxGain + '€';
+    document.getElementById('partage-calc').style.display = 'block';
+    document.getElementById('partage-offer-section').style.display = 'block';
+    document.getElementById('partage-loc-section').style.display = 'block';
+    document.getElementById('partage-photos-section').style.display = 'block';
+    document.getElementById('partage-contact-section').style.display = 'block';
+
+    document.getElementById('p-share-surface-hint').textContent =
+      `Max disponible : ${dispo.toFixed(1)} m² (à ${prixM2.toFixed(2)}€/m²/mois)`;
+
+    recalcSharePrice();
+  } else {
+    document.getElementById('partage-calc').style.display = 'none';
+  }
+}
+
+function recalcSharePrice() {
+  const shareSurface = parseFloat(document.getElementById('p-share-surface').value) || 0;
+  const { prixM2, dispo } = partageCalcData;
+
+  if (shareSurface > 0 && prixM2 > 0) {
+    const suggestedPrice = Math.round(shareSurface * prixM2);
+    document.getElementById('suggested-price-display').textContent = suggestedPrice + '€/mois';
+    document.getElementById('price-explanation').textContent =
+      `${shareSurface} m² × ${prixM2.toFixed(2)}€/m² = ${suggestedPrice}€/mois. Ce prix correspond exactement à ta quote-part du loyer. Tu peux l'ajuster librement ci-dessous.`;
+    document.getElementById('price-suggestion').style.display = 'block';
+    // Auto-fill the price field if empty or was auto-set
+    const priceInput = document.getElementById('p-share-price');
+    priceInput.value = suggestedPrice;
+  } else {
+    document.getElementById('price-suggestion').style.display = 'none';
+  }
+}
+
+function submitPartage(e) {
+  e.preventDefault();
+  const title = document.getElementById('p-title').value.trim();
+  const totalSurface = parseFloat(document.getElementById('p-total-surface').value) || 0;
+  const totalPrice = parseFloat(document.getElementById('p-total-price').value) || 0;
+  const mySurface = parseFloat(document.getElementById('p-my-surface').value) || 0;
+  const shareSurface = parseFloat(document.getElementById('p-share-surface').value) || 0;
+  const sharePrice = parseInt(document.getElementById('p-share-price').value) || 0;
+  const shareMax = parseInt(document.getElementById('p-share-max').value) || null;
+  const desc = document.getElementById('p-desc').value.trim();
+  const address = document.getElementById('p-address').value.trim();
+  const quartier = document.getElementById('p-quartier').value;
+  const contactName = document.getElementById('p-contact-name').value.trim();
+  const contactEmail = document.getElementById('p-contact-email').value.trim();
+  const contactPhone = document.getElementById('p-contact-phone').value.trim();
+
+  if (!title) { showToast('⚠️ Ajoute un titre.'); return; }
+  if (!totalSurface || !totalPrice || !mySurface) { showToast('⚠️ Remplis les infos sur ton bail (surface, loyer, ta part).'); return; }
+  if (mySurface >= totalSurface) { showToast('⚠️ Ta surface doit être inférieure au total.'); return; }
+  if (!shareSurface || !sharePrice) { showToast('⚠️ Indique les m² proposés et le prix.'); return; }
+  if (!desc) { showToast('⚠️ Ajoute une description.'); return; }
+  if (!address) { showToast('⚠️ Indique l\'adresse.'); return; }
+  if (!quartier) { showToast('⚠️ Sélectionne un quartier.'); return; }
+  if (!contactName) { showToast('⚠️ Indique ton prénom.'); return; }
+  if (!contactEmail && !contactPhone) { showToast('⚠️ Fournis au moins un email ou un téléphone.'); return; }
+
+  const lat = parseFloat(document.getElementById('p-geocoded-lat').value);
+  const lng = parseFloat(document.getElementById('p-geocoded-lng').value);
+  const coords = (!isNaN(lat) && !isNaN(lng)) ? [lat, lng] : getCoords(quartier);
+
+  const newListing = {
+    id: Date.now(),
+    title,
+    type: document.getElementById('p-type').value,
+    typeIcon: document.getElementById('p-type-icon').value,
+    surface: totalSurface,
+    price: totalPrice,
+    shareSurface, sharePrice, shareMax,
+    desc, address, quartier,
+    contactName, contactEmail, contactPhone,
+    ownerType: 'particulier',
+    listingType: 'partage',
+    photos: [...photoDataP],
+    coords,
+    createdAt: new Date().toISOString(),
+    deleteKey: Math.random().toString(36).slice(2,8).toUpperCase()
+  };
+
+  listings.push(newListing);
+  saveListings(listings);
   showDeleteKeyModal(newListing);
 }
 
@@ -1112,10 +1283,7 @@ function showToast(msg) {
   t.textContent = msg;
   t.style.opacity = '1';
   t.style.transform = 'translateX(-50%) translateY(0)';
-  setTimeout(() => {
-    t.style.opacity = '0';
-    t.style.transform = 'translateX(-50%) translateY(14px)';
-  }, 3000);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(14px)'; }, 3000);
 }
 
 function escHtml(str) {
@@ -1131,7 +1299,6 @@ function capitalize(s) {
 // ════════════════════════════════
 // DELETE KEY FLOW
 // ════════════════════════════════
-let pendingDeleteListing = null;
 let currentDeleteId = null;
 
 function showDeleteKeyModal(listing) {
@@ -1148,9 +1315,7 @@ function copyDeleteKey() {
   const key = document.getElementById('deletekey-value').textContent;
   if (navigator.clipboard) {
     navigator.clipboard.writeText(key).then(() => showToast('📋 Code copié !'));
-  } else {
-    showToast('Code : ' + key);
-  }
+  } else { showToast('Code : ' + key); }
 }
 
 function openDeleteModal(id) {
