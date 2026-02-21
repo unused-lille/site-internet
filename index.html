@@ -1547,9 +1547,10 @@ async function submitManage(e) {
       address: document.getElementById("m-address").value.trim()||l.address,
       quartier: quartier||l.quartier,
       coords: coords,
-      photos: allPhotos,
+      photos: JSON.parse(JSON.stringify(allPhotos)),
       status: currentManageStatus
     };
+    console.log("updates.photos:", updates.photos);
     /* Also update share_price if partage */
     if (l.listingType === "partage") updates.share_price = newPrice;
 
