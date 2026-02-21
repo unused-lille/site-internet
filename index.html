@@ -818,7 +818,7 @@ function dbToListing(r) {
     contactName:r.contact_name, contactEmail:r.contact_email, contactPhone:r.contact_phone,
     ownerType:r.owner_type, listingType:r.listing_type,
     shareSurface:r.share_surface, sharePrice:r.share_price, shareMax:r.share_max,
-    coords:r.coords, deleteKey:r.delete_key, photos:r.photos||[], status:r.status||'disponible'
+    coords:r.coords, deleteKey:r.delete_key, photos:r.photos||[], status:(r.status||'disponible').toLowerCase()
   };
 }
 function listingToDb(l) {
@@ -1438,6 +1438,7 @@ async function submitPartage(e) {
 /* ══ MANAGE ══ */
 var currentManageId = null;
 var currentManageStatus = "disponible";
+var existingManagePhotos = [];
 
 function openManageView(id) {
   currentManageId = id;
@@ -1478,10 +1479,11 @@ function unlockManage() {
   /* Status */
   currentManageStatus = l.status || "disponible";
   updateStatusBtns();
-  /* Existing photos */
+  /* Existing photos — track in dedicated array */
+  existingManagePhotos = (l.photos||[]).filter(function(u){ return u && u.length > 0; });
   var existingDiv = document.getElementById("m-existing-photos");
   existingDiv.innerHTML = "";
-  (l.photos||[]).forEach(function(url, idx) {
+  existingManagePhotos.forEach(function(url) {
     var wrap = document.createElement("div");
     wrap.style.cssText = "position:relative;width:72px;height:72px;";
     var img = document.createElement("img");
@@ -1490,8 +1492,7 @@ function unlockManage() {
     rm.className = "photo-rm"; rm.textContent = "×";
     rm.addEventListener("click", (function(u){ return function(e){
       e.stopPropagation();
-      var ll = listings.find(function(x){return x.id==currentManageId;});
-      if(ll){ ll.photos = (ll.photos||[]).filter(function(p){return p!==u;}); }
+      existingManagePhotos = existingManagePhotos.filter(function(p){return p!==u;});
       wrap.remove();
     }; })(url));
     wrap.appendChild(img); wrap.appendChild(rm);
@@ -1529,8 +1530,7 @@ async function submitManage(e) {
   try {
     /* Upload new photos */
     var newUrls = await uploadPhotos("m", currentManageId);
-    var existingUrls = (l.photos||[]);
-    var allPhotos = existingUrls.concat(newUrls).slice(0, 5);
+    var allPhotos = existingManagePhotos.filter(function(u){return u&&u.length>0;}).concat(newUrls).slice(0, 5);
 
     var lat = parseFloat(document.getElementById("m-lat").value);
     var lng = parseFloat(document.getElementById("m-lng").value);
