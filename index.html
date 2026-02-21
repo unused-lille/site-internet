@@ -1530,8 +1530,7 @@ async function submitManage(e) {
   try {
     /* Upload new photos */
     var newUrls = await uploadPhotos("m", currentManageId);
-    console.log("existingManagePhotos:", existingManagePhotos);
-    console.log("newUrls:", newUrls);
+
     var allPhotos = [];
     existingManagePhotos.forEach(function(u){ if(u && typeof u === "string" && u.length > 0) allPhotos.push(u); });
     newUrls.forEach(function(u){ if(u && typeof u === "string" && u.length > 0) allPhotos.push(u); });
