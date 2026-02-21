@@ -321,32 +321,6 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
 .tab-btn.tab-primary{color:var(--indigo);}
 @media(max-width:599px){.bottom-tabs{display:block;}.nav-links .nav-btn-ghost{display:none;}.nav-btn-primary{display:none;}.view{padding-bottom:72px;}}
 
-/* ── MANAGE VIEW ── */
-.manage-view{max-width:600px;margin:0 auto;padding:24px 20px;}
-.manage-unlock{
-  background:white;border:1.5px solid var(--border);border-radius:var(--r);
-  padding:28px;text-align:center;margin-top:20px;
-}
-.manage-unlock h3{font-size:1.1rem;font-weight:800;margin-bottom:6px;letter-spacing:-.03em;}
-.manage-unlock p{font-size:.84rem;color:var(--muted);line-height:1.6;margin-bottom:20px;}
-.manage-code-input{
-  width:100%;padding:14px;text-align:center;font-size:1.4rem;font-weight:800;
-  letter-spacing:.18em;text-transform:uppercase;font-family:monospace;
-  border:2px solid var(--cream-d);border-radius:var(--r-sm);background:white;
-  outline:none;transition:border-color .18s;margin-bottom:8px;
-}
-.manage-code-input:focus{border-color:var(--indigo);}
-.manage-error{font-size:.78rem;color:#E53E3E;display:none;margin-bottom:12px;}
-.manage-panel{display:none;}
-.manage-status-btns{display:flex;gap:10px;margin-bottom:28px;}
-.status-btn{
-  flex:1;padding:14px;border-radius:var(--r-sm);font-family:inherit;font-weight:700;
-  font-size:.85rem;cursor:pointer;border:2px solid var(--cream-d);background:white;
-  color:var(--muted);transition:all .18s;
-}
-.status-btn.active-dispo{border-color:var(--indigo);background:var(--indigo-pale);color:var(--indigo);}
-.status-btn.active-loue{border-color:#E53E3E;background:#FFF5F5;color:#E53E3E;}
-
 /* map marker popup */
 .leaflet-popup-content-wrapper{border-radius:12px;box-shadow:var(--shadow-md);border:1px solid var(--border);}
 .leaflet-popup-content{margin:12px 16px;font-family:'Bricolage Grotesque',sans-serif;font-size:.82rem;}
@@ -647,77 +621,6 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
   </div>
 </div>
 
-<!-- ══════════ MANAGE VIEW ══════════ -->
-<div class="view" id="view-manage">
-  <div class="manage-view">
-    <button class="back-btn" id="manage-back-btn">← Retour</button>
-    <p class="section-label">Propriétaire</p>
-    <h2 style="font-size:1.4rem;font-weight:800;letter-spacing:-.04em;margin-bottom:4px">Gérer mon annonce</h2>
-    <p style="font-size:.85rem;color:var(--muted);margin-bottom:20px;line-height:1.6">Entre ton code secret pour modifier ou désactiver ton annonce.</p>
-
-    <!-- Unlock box -->
-    <div class="manage-unlock" id="manage-unlock-box">
-      <div style="font-size:2rem;margin-bottom:12px">🔐</div>
-      <h3>Code secret requis</h3>
-      <p>Saisis le code à 6 caractères que tu as reçu lors de la publication.</p>
-      <input type="text" class="manage-code-input" id="manage-code-input" maxlength="6" placeholder="XXXXXX" oninput="this.value=this.value.toUpperCase()">
-      <p class="manage-error" id="manage-code-error">❌ Code incorrect, réessaie.</p>
-      <button class="btn-submit" onclick="unlockManage()" style="margin-top:4px">Accéder à mon annonce →</button>
-    </div>
-
-    <!-- Manage panel (shown after unlock) -->
-    <div class="manage-panel" id="manage-panel">
-      <!-- Status -->
-      <div class="form-section">
-        <p class="form-section-title">📌 Statut de l'annonce</p>
-        <div class="manage-status-btns">
-          <button class="status-btn active-dispo" id="status-btn-dispo" onclick="setManageStatus('disponible')">✅ Disponible</button>
-          <button class="status-btn" id="status-btn-loue" onclick="setManageStatus('loue')">🔒 Déjà loué</button>
-        </div>
-        <p style="font-size:.78rem;color:var(--muted);line-height:1.55" id="status-hint">Ton annonce est visible dans les résultats.</p>
-      </div>
-
-      <!-- Edit form -->
-      <form id="manage-form" novalidate onsubmit="submitManage(event)">
-        <div class="form-section">
-          <p class="form-section-title">✏️ Modifier les infos</p>
-          <div class="fg"><label>Prix / mois (€)</label><input type="number" id="m-price" min="1"></div>
-          <div class="fg"><label>Description</label><textarea id="m-desc"></textarea></div>
-          <div class="fg">
-            <label>Adresse complète</label>
-            <input type="text" id="m-address" onblur="geocodeAddress('m-address','m-geocode-status','m-lat','m-lng')">
-            <div id="m-geocode-status" style="font-size:.72rem;margin-top:5px;min-height:16px"></div>
-            <input type="hidden" id="m-lat"><input type="hidden" id="m-lng">
-          </div>
-          <div class="fg"><label>Quartier</label>
-            <select id="m-quartier"><option value="">Sélectionner…</option><option>Vieux-Lille</option><option>Centre</option><option>Vauban</option><option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option><option>Hellemmes</option><option>Lomme</option><option>Euralille</option><option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option></select>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <p class="form-section-title">📷 Photos</p>
-          <div id="m-existing-photos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
-          <div class="photo-upload" onclick="document.getElementById('m-photos-input').click()">
-            <input type="file" id="m-photos-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect('m','m-photos-input')">
-            <div class="photo-upload-icon">➕</div>
-            <p>Ajouter de nouvelles photos</p>
-          </div>
-          <div class="photo-preview" id="m-photo-preview" style="margin-top:10px"></div>
-        </div>
-
-        <button type="submit" class="btn-submit">💾 Enregistrer les modifications</button>
-      </form>
-
-      <!-- Delete zone -->
-      <div style="border:1.5px solid rgba(229,62,62,.2);border-radius:var(--r);padding:20px;margin-top:24px;background:rgba(229,62,62,.03)">
-        <p style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E53E3E;margin-bottom:6px">Zone de danger</p>
-        <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px;line-height:1.55">Supprimer définitivement l'annonce. Cette action est irréversible.</p>
-        <button class="btn btn-outline" id="manage-delete-btn" style="font-size:.85rem;padding:12px 22px;color:#E53E3E;border-color:rgba(229,62,62,.35);display:flex;align-items:center;gap:8px">🗑️ Supprimer mon annonce</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- DELETE KEY MODAL (shown after publish) -->
 <div class="modal-overlay" id="deletekey-modal">
   <div class="modal-box">
@@ -988,7 +891,6 @@ function getFilteredListings() {
   var q = searchQuery.toLowerCase().trim();
   return listings.filter(function(l) {
     if (l.listingType !== "location") return false;
-    if (l.status === "loue") return false;
     if (activeFilter !== "all" && l.ownerType !== activeFilter) return false;
     if (!q) return true;
     return (l.title && l.title.toLowerCase().includes(q)) ||
@@ -1103,7 +1005,7 @@ function renderListing() {
 
 function renderShared() {
   var panel = document.getElementById("shared-panel");
-  var shared = listings.filter(function(l) { return l.listingType === "partage" && l.status !== "loue"; });
+  var shared = listings.filter(function(l) { return l.listingType === "partage"; });
   panel.innerHTML = "";
   if (shared.length === 0) {
     panel.innerHTML = "<div class=\"empty-state\"><div class=\"ei\">no shared<\/div><p>Aucun espace partage pour le moment.<\/p><\/div>";
@@ -1238,23 +1140,23 @@ function renderDetail(id) {
   cbox.appendChild(ciDiv);
   dc.appendChild(cbox);
 
-  var manageDiv = el("div");
-  manageDiv.style.cssText = "border:1.5px solid var(--border);border-radius:var(--r);padding:20px;margin-top:24px;background:white";
-  var manageTitle = el("p");
-  manageTitle.style.cssText = "font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:6px";
-  manageTitle.textContent = "Tu es le propriétaire ?";
-  manageDiv.appendChild(manageTitle);
-  var manageInfo = el("p");
-  manageInfo.style.cssText = "font-size:.78rem;color:var(--muted);margin-bottom:14px;line-height:1.55";
-  manageInfo.textContent = "Modifie ton annonce, change son statut ou supprime-la avec ton code secret.";
-  manageDiv.appendChild(manageInfo);
-  var manageBtn = el("button");
-  manageBtn.className = "btn btn-primary";
-  manageBtn.style.cssText = "font-size:.85rem;padding:12px 22px;display:flex;align-items:center;gap:8px";
-  manageBtn.innerHTML = "⚙️ Gérer mon annonce";
-  manageBtn.addEventListener("click", function() { openManageView(l.id); });
-  manageDiv.appendChild(manageBtn);
-  dc.appendChild(manageDiv);
+  var delDiv = el("div");
+  delDiv.style.cssText = "border:1.5px solid rgba(229,62,62,.2);border-radius:var(--r);padding:20px;margin-top:24px;background:rgba(229,62,62,.03)";
+  var delTitle = el("p");
+  delTitle.style.cssText = "font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E53E3E;margin-bottom:6px";
+  delTitle.textContent = "Gérer mon annonce";
+  delDiv.appendChild(delTitle);
+  var delInfo = el("p");
+  delInfo.style.cssText = "font-size:.78rem;color:var(--muted);margin-bottom:14px;line-height:1.55";
+  delInfo.textContent = "Tu es le propriétaire de cette annonce ? Entre ton code secret pour la supprimer définitivement.";
+  delDiv.appendChild(delInfo);
+  var delBtn = el("button");
+  delBtn.className = "btn btn-outline";
+  delBtn.style.cssText = "font-size:.85rem;padding:12px 22px;color:#E53E3E;border-color:rgba(229,62,62,.35);display:flex;align-items:center;gap:8px";
+  delBtn.innerHTML = "🗑️ Supprimer mon annonce";
+  delBtn.addEventListener("click", function() { openDeleteModal(l.id); });
+  delDiv.appendChild(delBtn);
+  dc.appendChild(delDiv);
 
   setTimeout(function() {
     var dmId = "detail-map-" + l.id;
@@ -1433,135 +1335,6 @@ async function submitPartage(e) {
     showDeleteKeyModal(listing);
   } catch(err) { showToast("Erreur: "+err.message); }
   finally { btn.textContent="Publier"; btn.disabled=false; }
-}
-
-/* ══ MANAGE ══ */
-var currentManageId = null;
-var currentManageStatus = "disponible";
-var existingManagePhotos = [];
-
-function openManageView(id) {
-  currentManageId = id;
-  currentManageStatus = "disponible";
-  /* reset unlock box */
-  document.getElementById("manage-unlock-box").style.display = "block";
-  document.getElementById("manage-panel").style.display = "none";
-  document.getElementById("manage-code-input").value = "";
-  document.getElementById("manage-code-error").style.display = "none";
-  /* set back button */
-  var l = listings.find(function(x){return x.id == id;});
-  document.getElementById("manage-back-btn").onclick = function() {
-    showView("detail", id);
-  };
-  showView("manage");
-}
-
-function unlockManage() {
-  var input = document.getElementById("manage-code-input").value.trim().toUpperCase();
-  var l = listings.find(function(x){return x.id == currentManageId;});
-  if (!l) return;
-  if (input !== l.deleteKey) {
-    document.getElementById("manage-code-error").style.display = "block";
-    document.getElementById("manage-code-input").style.borderColor = "#E53E3E";
-    setTimeout(function(){ document.getElementById("manage-code-input").style.borderColor=""; }, 1200);
-    return;
-  }
-  /* Unlock — populate form */
-  document.getElementById("manage-unlock-box").style.display = "none";
-  document.getElementById("manage-panel").style.display = "block";
-  document.getElementById("m-price").value = l.sharePrice || l.price || "";
-  document.getElementById("m-desc").value = l.desc || "";
-  document.getElementById("m-address").value = l.address || "";
-  document.getElementById("m-lat").value = l.coords ? l.coords[0] : "";
-  document.getElementById("m-lng").value = l.coords ? l.coords[1] : "";
-  var qSel = document.getElementById("m-quartier");
-  for (var i=0;i<qSel.options.length;i++) { if(qSel.options[i].value===l.quartier){qSel.selectedIndex=i;break;} }
-  /* Status */
-  currentManageStatus = l.status || "disponible";
-  updateStatusBtns();
-  /* Existing photos — track in dedicated array */
-  existingManagePhotos = (l.photos||[]).filter(function(u){ return u && u.length > 0; });
-  var existingDiv = document.getElementById("m-existing-photos");
-  existingDiv.innerHTML = "";
-  existingManagePhotos.forEach(function(url) {
-    var wrap = document.createElement("div");
-    wrap.style.cssText = "position:relative;width:72px;height:72px;";
-    var img = document.createElement("img");
-    img.src = url; img.style.cssText = "width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border);";
-    var rm = document.createElement("button");
-    rm.className = "photo-rm"; rm.textContent = "×";
-    rm.addEventListener("click", (function(u){ return function(e){
-      e.stopPropagation();
-      existingManagePhotos = existingManagePhotos.filter(function(p){return p!==u;});
-      wrap.remove();
-    }; })(url));
-    wrap.appendChild(img); wrap.appendChild(rm);
-    existingDiv.appendChild(wrap);
-  });
-  selectedPhotos["m"] = [];
-  document.getElementById("m-photo-preview").innerHTML = "";
-  /* Delete btn */
-  document.getElementById("manage-delete-btn").onclick = function() { openDeleteModal(currentManageId); };
-}
-
-function setManageStatus(status) {
-  currentManageStatus = status;
-  updateStatusBtns();
-}
-function updateStatusBtns() {
-  var dispo = document.getElementById("status-btn-dispo");
-  var loue = document.getElementById("status-btn-loue");
-  var hint = document.getElementById("status-hint");
-  if (currentManageStatus === "loue") {
-    dispo.className = "status-btn"; loue.className = "status-btn active-loue";
-    hint.textContent = "Ton annonce est masquée des résultats de recherche.";
-  } else {
-    dispo.className = "status-btn active-dispo"; loue.className = "status-btn";
-    hint.textContent = "Ton annonce est visible dans les résultats.";
-  }
-}
-
-async function submitManage(e) {
-  e.preventDefault();
-  var l = listings.find(function(x){return x.id==currentManageId;});
-  if (!l) return;
-  var btn = e.target.querySelector(".btn-submit");
-  btn.textContent = "Enregistrement..."; btn.disabled = true;
-  try {
-    /* Upload new photos */
-    var newUrls = await uploadPhotos("m", currentManageId);
-
-    var allPhotos = [];
-    existingManagePhotos.forEach(function(u){ if(u && typeof u === "string" && u.length > 0) allPhotos.push(u); });
-    newUrls.forEach(function(u){ if(u && typeof u === "string" && u.length > 0) allPhotos.push(u); });
-    allPhotos = allPhotos.slice(0, 5);
-    console.log("allPhotos final:", JSON.stringify(allPhotos));
-
-    var lat = parseFloat(document.getElementById("m-lat").value);
-    var lng = parseFloat(document.getElementById("m-lng").value);
-    var quartier = document.getElementById("m-quartier").value;
-    var coords = (!isNaN(lat)&&!isNaN(lng)) ? [lat,lng] : (l.coords || getCoords(quartier));
-
-    var newPrice = parseInt(document.getElementById("m-price").value)||l.price;
-    var updates = {
-      price: newPrice,
-      description: document.getElementById("m-desc").value.trim()||l.desc,
-      address: document.getElementById("m-address").value.trim()||l.address,
-      quartier: quartier||l.quartier,
-      coords: coords,
-      photos: allPhotos,
-      status: currentManageStatus
-    };
-    console.log("updates final:", JSON.stringify(updates));
-    /* Also update share_price if partage */
-    if (l.listingType === "partage") updates.share_price = newPrice;
-
-    await updateListing(currentManageId, updates);
-    listings = await loadListings();
-    showToast("✅ Annonce mise à jour !");
-    setTimeout(function(){ showView("detail", currentManageId); }, 600);
-  } catch(err) { showToast("Erreur : " + err.message); }
-  finally { btn.textContent = "💾 Enregistrer les modifications"; btn.disabled = false; }
 }
 
 /* ══ PHOTOS ══ */
