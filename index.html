@@ -1530,7 +1530,10 @@ async function submitManage(e) {
   try {
     /* Upload new photos */
     var newUrls = await uploadPhotos("m", currentManageId);
-    var allPhotos = existingManagePhotos.filter(function(u){return u&&u.length>0;}).concat(newUrls).slice(0, 5);
+    console.log("existingManagePhotos:", existingManagePhotos);
+    console.log("newUrls:", newUrls);
+    var allPhotos = existingManagePhotos.filter(function(u){return u&&u.length>0;}).concat(newUrls.filter(function(u){return u&&u.length>0;})).slice(0, 5);
+    console.log("allPhotos:", allPhotos);
 
     var lat = parseFloat(document.getElementById("m-lat").value);
     var lng = parseFloat(document.getElementById("m-lng").value);
