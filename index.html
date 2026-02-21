@@ -833,7 +833,7 @@ function updateMapMarkers() {
     var color = isS ? "#7C3AED" : "#3D3BF3";
     var icon = L.divIcon({
       className: "",
-      html: "<div style=\"background:" + color + ";color:white;padding:5px 10px;border-radius:100px;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)\">" + price + "EUR<\/div>",
+      html: "<div style=\"background:" + color + ";color:white;padding:5px 10px;border-radius:100px;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)\">" + price + "€<\/div>",
       iconAnchor: [20, 10]
     });
     var m = L.marker(l.coords, {icon:icon}).addTo(leafletMap);
@@ -929,7 +929,7 @@ function makeCard(l) {
   var priceEl = document.createElement("div");
   priceEl.className = "space-card-price";
   var displayPrice = isS ? (l.sharePrice || l.price) : l.price;
-  priceEl.textContent = displayPrice + "EUR/mois";
+  priceEl.textContent = displayPrice + "€/mois";
   var metaEl = document.createElement("div");
   metaEl.className = "space-card-meta";
   metaEl.textContent = n + " intéressé" + (n !== 1 ? "s" : "");
@@ -995,7 +995,7 @@ function renderDetail(id) {
 
   var header = el("div", "detail-header");
   header.appendChild(el("h1", "detail-title", l.title));
-  var priceEl = el("div", "detail-price", price + "EUR / mois");
+  var priceEl = el("div", "detail-price", price + "€ / mois");
   header.appendChild(priceEl);
   dc.appendChild(header);
 
@@ -1009,7 +1009,7 @@ function renderDetail(id) {
   if (isS && l.sharePrice) {
     var box = el("div");
     box.style.cssText = "background:rgba(124,58,237,.07);border:1.5px solid rgba(124,58,237,.2);border-radius:16px;padding:18px;margin-bottom:20px";
-    box.appendChild(el("p", null, "Espace partage: " + l.shareSurface + " m2 pour " + l.sharePrice + "EUR/mois. Max " + (l.shareMax || "?") + " colocataires."));
+    box.appendChild(el("p", null, "Espace partage: " + l.shareSurface + " m2 pour " + l.sharePrice + "€/mois. Max " + (l.shareMax || "?") + " colocataires."));
     dc.appendChild(box);
   }
 
@@ -1178,7 +1178,7 @@ function recalcPartage() {
     partageCalc={prixM2:prixM2, dispo:dispo};
     document.getElementById("calc-prixm2").textContent=prixM2.toFixed(2);
     document.getElementById("calc-dispo").textContent=dispo.toFixed(1);
-    document.getElementById("calc-maxgain").textContent=Math.round(dispo*prixM2)+"EUR";
+    document.getElementById("calc-maxgain").textContent=Math.round(dispo*prixM2)+"€";
     ["partage-calc","partage-offer-section","partage-loc-section","partage-contact-section"].forEach(function(id) {
       var e=document.getElementById(id); if(e) e.style.display="block";
     });
@@ -1189,8 +1189,8 @@ function recalcSharePrice() {
   var s=parseFloat(document.getElementById("p-share-surface").value)||0;
   if (s>0&&partageCalc.prixM2>0) {
     var sug=Math.round(s*partageCalc.prixM2);
-    document.getElementById("suggested-price-display").textContent=sug+"EUR/mois";
-    document.getElementById("price-explanation").textContent=s+" m2 x "+partageCalc.prixM2.toFixed(2)+"EUR/m2 = "+sug+"EUR/mois.";
+    document.getElementById("suggested-price-display").textContent=sug+"€/mois";
+    document.getElementById("price-explanation").textContent=s+" m2 x "+partageCalc.prixM2.toFixed(2)+"€/m2 = "+sug+"€/mois.";
     document.getElementById("price-suggestion").style.display="block";
     document.getElementById("p-share-price").value=sug;
   }
