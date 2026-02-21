@@ -1532,8 +1532,11 @@ async function submitManage(e) {
     var newUrls = await uploadPhotos("m", currentManageId);
     console.log("existingManagePhotos:", existingManagePhotos);
     console.log("newUrls:", newUrls);
-    var allPhotos = existingManagePhotos.filter(function(u){return u&&u.length>0;}).concat(newUrls.filter(function(u){return u&&u.length>0;})).slice(0, 5);
-    console.log("allPhotos:", allPhotos);
+    var allPhotos = [];
+    existingManagePhotos.forEach(function(u){ if(u && typeof u === "string" && u.length > 0) allPhotos.push(u); });
+    newUrls.forEach(function(u){ if(u && typeof u === "string" && u.length > 0) allPhotos.push(u); });
+    allPhotos = allPhotos.slice(0, 5);
+    console.log("allPhotos final:", JSON.stringify(allPhotos));
 
     var lat = parseFloat(document.getElementById("m-lat").value);
     var lng = parseFloat(document.getElementById("m-lng").value);
@@ -1547,10 +1550,10 @@ async function submitManage(e) {
       address: document.getElementById("m-address").value.trim()||l.address,
       quartier: quartier||l.quartier,
       coords: coords,
-      photos: JSON.parse(JSON.stringify(allPhotos)),
+      photos: allPhotos,
       status: currentManageStatus
     };
-    console.log("updates.photos:", updates.photos);
+    console.log("updates final:", JSON.stringify(updates));
     /* Also update share_price if partage */
     if (l.listingType === "partage") updates.share_price = newPrice;
 
