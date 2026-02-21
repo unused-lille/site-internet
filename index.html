@@ -503,6 +503,16 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <select id="f-owner-type"><option value="particulier">Particulier</option><option value="ecole">École / Université</option><option value="entreprise">Entreprise</option><option value="autre">Autre</option></select>
         </div>
       </div>
+      <div class="form-section">
+        <p class="form-section-title">📷 Photos <span style="font-size:.7rem;font-weight:400;color:var(--muted)">(optionnel, max 5)</span></p>
+        <div class="photo-upload" onclick="document.getElementById('f-photos-input').click()">
+          <input type="file" id="f-photos-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect('f','f-photos-input')">
+          <div class="photo-upload-icon">📷</div>
+          <p>Clique pour ajouter des photos</p>
+          <p style="font-size:.72rem;margin-top:4px;color:var(--muted)">JPG, PNG — max 5 Mo par photo</p>
+        </div>
+        <div class="photo-preview" id="f-photo-preview"></div>
+      </div>
       <button type="submit" class="btn-submit">Publier mon annonce →</button>
     </form>
   </div>
@@ -583,6 +593,16 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <div class="fg" style="margin:0"><label>Téléphone</label><input type="tel" id="p-contact-phone" placeholder="06 12 34 56 78"></div>
         </div>
         <p style="font-size:.72rem;color:var(--muted);margin-bottom:14px">Au moins un des deux requis.</p>
+        <div class="form-section" style="display:block">
+          <p class="form-section-title">📷 Photos <span style="font-size:.7rem;font-weight:400;color:var(--muted)">(optionnel, max 5)</span></p>
+          <div class="photo-upload" onclick="document.getElementById('p-photos-input').click()">
+            <input type="file" id="p-photos-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect('p','p-photos-input')">
+            <div class="photo-upload-icon">📷</div>
+            <p>Clique pour ajouter des photos</p>
+            <p style="font-size:.72rem;margin-top:4px;color:var(--muted)">JPG, PNG — max 5 Mo par photo</p>
+          </div>
+          <div class="photo-preview" id="p-photo-preview"></div>
+        </div>
         <button type="submit" class="btn-submit">Publier mon annonce de partage →</button>
       </div>
     </form>
@@ -694,7 +714,7 @@ function dbToListing(r) {
     contactName:r.contact_name, contactEmail:r.contact_email, contactPhone:r.contact_phone,
     ownerType:r.owner_type, listingType:r.listing_type,
     shareSurface:r.share_surface, sharePrice:r.share_price, shareMax:r.share_max,
-    coords:r.coords, deleteKey:r.delete_key, photos:[]
+    coords:r.coords, deleteKey:r.delete_key, photos:r.photos||[]
   };
 }
 function listingToDb(l) {
@@ -705,7 +725,7 @@ function listingToDb(l) {
     contact_name:l.contactName, contact_email:l.contactEmail, contact_phone:l.contactPhone,
     owner_type:l.ownerType, listing_type:l.listingType,
     share_surface:l.shareSurface, share_price:l.sharePrice, share_max:l.shareMax,
-    coords:l.coords, delete_key:l.deleteKey
+    coords:l.coords, delete_key:l.deleteKey, photos:l.photos||[]
   };
 }
 
@@ -882,10 +902,17 @@ function makeCard(l) {
 
   var imgDiv = document.createElement("div");
   imgDiv.className = "space-card-img";
-  var iconSpan = document.createElement("span");
-  iconSpan.style.fontSize = "3rem";
-  iconSpan.textContent = l.typeIcon;
-  imgDiv.appendChild(iconSpan);
+  if (l.photos && l.photos.length > 0) {
+    var imgEl = document.createElement("img");
+    imgEl.src = l.photos[0];
+    imgEl.alt = l.title;
+    imgDiv.appendChild(imgEl);
+  } else {
+    var iconSpan = document.createElement("span");
+    iconSpan.style.fontSize = "3rem";
+    iconSpan.textContent = l.typeIcon;
+    imgDiv.appendChild(iconSpan);
+  }
 
   var badge = document.createElement("div");
   badge.className = "type-badge";
@@ -989,9 +1016,62 @@ function renderDetail(id) {
   backBtn.addEventListener("click", function() { showView(isS ? "shared" : "listing"); });
   dc.appendChild(backBtn);
 
-  var imgDiv = el("div", "detail-img");
-  imgDiv.appendChild(el("span", null, l.typeIcon));
-  dc.appendChild(imgDiv);
+  if (l.photos && l.photos.length > 0) {
+    var galleryDiv = el("div");
+    galleryDiv.style.cssText = "margin-bottom:24px;border-radius:var(--r);overflow:hidden;";
+    /* Main photo */
+    var mainImg = el("div");
+    mainImg.style.cssText = "width:100%;height:280px;position:relative;overflow:hidden;border-radius:var(--r);background:var(--indigo-pale);cursor:pointer;";
+    var mainImgEl = document.createElement("img");
+    mainImgEl.id = "gallery-main";
+    mainImgEl.src = l.photos[0];
+    mainImgEl.style.cssText = "width:100%;height:100%;object-fit:cover;transition:opacity .2s;";
+    mainImg.appendChild(mainImgEl);
+    /* Photo count badge */
+    if (l.photos.length > 1) {
+      var countBadge = el("div");
+      countBadge.style.cssText = "position:absolute;bottom:12px;right:12px;background:rgba(18,17,30,.6);color:white;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:100px;backdrop-filter:blur(4px);";
+      countBadge.textContent = "📷 " + l.photos.length + " photos";
+      mainImg.appendChild(countBadge);
+    }
+    galleryDiv.appendChild(mainImg);
+    /* Thumbnails */
+    if (l.photos.length > 1) {
+      var thumbsDiv = el("div");
+      thumbsDiv.style.cssText = "display:flex;gap:8px;margin-top:8px;overflow-x:auto;padding-bottom:4px;";
+      l.photos.forEach(function(url, idx) {
+        var thumb = document.createElement("img");
+        thumb.src = url;
+        thumb.style.cssText = "width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;flex-shrink:0;border:2px solid " + (idx===0?"var(--indigo)":"transparent") + ";transition:border-color .15s;opacity:" + (idx===0?"1":".65") + ";transition:all .15s;";
+        thumb.addEventListener("click", (function(u, t, allThumbs) {
+          return function() {
+            document.getElementById("gallery-main").src = u;
+            allThumbs.forEach(function(th) { th.style.borderColor = "transparent"; th.style.opacity = ".65"; });
+            t.style.borderColor = "var(--indigo)"; t.style.opacity = "1";
+          };
+        })(url, thumb, []));
+        thumbsDiv.appendChild(thumb);
+      });
+      /* Fix closure for allThumbs */
+      var allThumbs = Array.from(thumbsDiv.querySelectorAll ? [] : []);
+      setTimeout(function() {
+        var tbs = thumbsDiv.querySelectorAll("img");
+        tbs.forEach(function(t) {
+          t.addEventListener("click", function() {
+            tbs.forEach(function(tb) { tb.style.borderColor="transparent"; tb.style.opacity=".65"; });
+            t.style.borderColor="var(--indigo)"; t.style.opacity="1";
+            document.getElementById("gallery-main").src = t.src;
+          });
+        });
+      }, 0);
+      galleryDiv.appendChild(thumbsDiv);
+    }
+    dc.appendChild(galleryDiv);
+  } else {
+    var imgDiv = el("div", "detail-img");
+    imgDiv.appendChild(el("span", null, l.typeIcon));
+    dc.appendChild(imgDiv);
+  }
 
   var header = el("div", "detail-header");
   header.appendChild(el("h1", "detail-title", l.title));
@@ -1118,6 +1198,9 @@ function resetForm() {
   document.querySelectorAll("#type-selector .type-opt").forEach(function(o,i) { o.classList.toggle("selected", i===0); });
   document.getElementById("f-type").value = "Cave";
   document.getElementById("f-type-icon").value = "🏚️";
+  selectedPhotos["f"] = [];
+  var fp = document.getElementById("f-photo-preview"); if (fp) fp.innerHTML = "";
+  var fmap = document.getElementById("f-map-preview"); if (fmap) fmap.style.display = "none";
 }
 async function submitPropose(e) {
   e.preventDefault();
@@ -1144,6 +1227,8 @@ async function submitPropose(e) {
   var btn=e.target.querySelector(".btn-submit");
   btn.textContent="Publication..."; btn.disabled=true;
   try {
+    var photoUrls = await uploadPhotos("f", listing.id);
+    listing.photos = photoUrls;
     await saveNewListing(listing);
     listings=await loadListings(); interests=await loadInterests();
     showDeleteKeyModal(listing);
@@ -1223,11 +1308,79 @@ async function submitPartage(e) {
   var btn=e.target.querySelector(".btn-submit");
   btn.textContent="Publication..."; btn.disabled=true;
   try {
+    var photoUrls = await uploadPhotos("p", listing.id);
+    listing.photos = photoUrls;
     await saveNewListing(listing);
     listings=await loadListings(); interests=await loadInterests();
     showDeleteKeyModal(listing);
   } catch(err) { showToast("Erreur: "+err.message); }
   finally { btn.textContent="Publier"; btn.disabled=false; }
+}
+
+/* ══ PHOTOS ══ */
+var selectedPhotos = {f: [], p: []};
+
+function handlePhotoSelect(prefix, inputId) {
+  var input = document.getElementById(inputId);
+  var files = Array.from(input.files);
+  var existing = selectedPhotos[prefix] || [];
+  var combined = existing.concat(files).slice(0, 5);
+  selectedPhotos[prefix] = combined;
+  renderPhotoPreviews(prefix);
+  input.value = "";
+}
+
+function renderPhotoPreviews(prefix) {
+  var container = document.getElementById(prefix + "-photo-preview");
+  if (!container) return;
+  container.innerHTML = "";
+  (selectedPhotos[prefix] || []).forEach(function(file, idx) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var thumb = document.createElement("div");
+      thumb.className = "photo-thumb";
+      var img = document.createElement("img");
+      img.src = e.target.result;
+      var rm = document.createElement("button");
+      rm.className = "photo-rm";
+      rm.textContent = "×";
+      rm.addEventListener("click", function(ev) {
+        ev.stopPropagation();
+        selectedPhotos[prefix].splice(idx, 1);
+        renderPhotoPreviews(prefix);
+      });
+      thumb.appendChild(img);
+      thumb.appendChild(rm);
+      container.appendChild(thumb);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadPhotos(prefix, listingId) {
+  var files = selectedPhotos[prefix] || [];
+  if (files.length === 0) return [];
+  var urls = [];
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    var ext = file.name.split(".").pop().toLowerCase() || "jpg";
+    var path = listingId + "/" + i + "." + ext;
+    var r = await fetch(SUPABASE_URL + "/storage/v1/object/listings-photos/" + path, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": file.type || "image/jpeg",
+        "x-upsert": "true"
+      },
+      body: file
+    });
+    if (r.ok) {
+      urls.push(SUPABASE_URL + "/storage/v1/object/public/listings-photos/" + path);
+    }
+  }
+  selectedPhotos[prefix] = [];
+  return urls;
 }
 
 function showToast(msg) {
