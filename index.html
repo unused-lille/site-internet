@@ -416,6 +416,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
       <button class="filter-chip" onclick="setFilter('ecole',this)">🏫 École</button>
       <button class="filter-chip" onclick="setFilter('entreprise',this)">🏢 Entreprise</button>
       <button class="filter-chip" onclick="setFilter('autre',this)">📦 Autre</button>
+      <button class="filter-chip" onclick="setFilter('partage',this)">👥 Partagés</button>
     </div>
   </div>
   <div class="listing-layout">
@@ -896,8 +897,9 @@ function updateMapMarkers() {
 function getFilteredListings() {
   var q = searchQuery.toLowerCase().trim();
   return listings.filter(function(l) {
-    if (l.listingType !== "location") return false;
-    if (activeFilter !== "all" && l.ownerType !== activeFilter) return false;
+    if (l.listingType !== "location" && l.listingType !== "partage") return false;
+    if (activeFilter !== "all" && activeFilter !== "partage" && l.ownerType !== activeFilter) return false;
+    if (activeFilter === "partage" && l.listingType !== "partage") return false;
     if (!q) return true;
     return (l.title && l.title.toLowerCase().includes(q)) ||
            (l.quartier && l.quartier.toLowerCase().includes(q)) ||
