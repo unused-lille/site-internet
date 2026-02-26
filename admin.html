@@ -7,16 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
-:root{--indigo:#3D3BF3;--indigo-d:#2A28C8;--indigo-pale:#EEEEFF;--cream:#FAF8F2;--cream-d:#EEEAE0;--ink:#12111E;--muted:#7B7A9A;--border:rgba(61,59,243,.1);--r:12px;--r-sm:8px;}
+:root{--indigo:#3D3BF3;--indigo-d:#2A28C8;--indigo-pale:#EEEEFF;--cream:#FAF8F2;--ink:#12111E;--muted:#7B7A9A;--border:rgba(61,59,243,.1);--r:12px;--r-sm:8px;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6FF;-webkit-font-smoothing:antialiased;min-height:100vh;}
+
+/* NAV */
 .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:#1A1828;border-bottom:1px solid rgba(255,255,255,.06);}
 .logo{font-size:1rem;font-weight:800;letter-spacing:-.04em;color:white;display:flex;align-items:center;gap:8px;}
 .logo-dot{width:6px;height:6px;background:var(--indigo);border-radius:50%;}
 .admin-badge{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(61,59,243,.3);color:#9B99FF;padding:3px 10px;border-radius:100px;}
-.page{max-width:900px;margin:0 auto;padding:32px 24px 60px;}
 
-/* Auth gate */
+/* AUTH */
 .auth-gate{max-width:360px;margin:80px auto;text-align:center;}
 .auth-gate h2{font-size:1.2rem;font-weight:800;margin-bottom:16px;color:white;}
 .auth-input{width:100%;padding:12px 16px;background:#1A1828;border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;color:white;outline:none;letter-spacing:.08em;text-align:center;transition:border-color .18s;}
@@ -25,82 +26,170 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
 .auth-btn:hover{background:var(--indigo-d);}
 .auth-err{font-size:.78rem;color:#FC8181;margin-top:8px;display:none;}
 
-/* Dashboard */
+/* LAYOUT */
 #dashboard{display:none;}
-.section-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7B79AA;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;}
+.page{max-width:1100px;margin:0 auto;padding:32px 24px 60px;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:#1A1828;border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:4px;margin-bottom:28px;width:fit-content;}
+.tab{padding:9px 20px;border-radius:var(--r-sm);font-family:inherit;font-size:.84rem;font-weight:700;cursor:pointer;border:none;background:none;color:#7B79AA;transition:all .18s;}
+.tab.active{background:var(--indigo);color:white;}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:28px;}
 .stat-card{background:#1A1828;border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:18px 20px;}
 .stat-value{font-size:1.8rem;font-weight:800;color:white;letter-spacing:-.04em;}
 .stat-label{font-size:.72rem;color:#7B79AA;margin-top:4px;}
 
-/* Table */
-.table-wrap{background:#1A1828;border:1px solid rgba(255,255,255,.06);border-radius:var(--r);overflow:hidden;margin-bottom:32px;}
-.table-header{padding:14px 20px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;border-bottom:1px solid rgba(255,255,255,.06);}
-.sig-row{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.04);display:grid;grid-template-columns:1fr 140px 100px 120px;gap:12px;align-items:center;}
+/* SECTION TITLES */
+.section-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7B79AA;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);}
+
+/* TABLE WRAP */
+.table-wrap{background:#1A1828;border:1px solid rgba(255,255,255,.06);border-radius:var(--r);overflow:hidden;margin-bottom:28px;}
+.empty{padding:32px;text-align:center;color:#7B79AA;font-size:.88rem;}
+
+/* LISTING ROWS */
+.listing-row{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.04);display:grid;grid-template-columns:1fr 90px 90px 160px;gap:12px;align-items:center;}
+.listing-row:last-child{border-bottom:none;}
+.listing-row:hover{background:rgba(255,255,255,.02);}
+.row-title{font-size:.88rem;font-weight:600;color:white;margin-bottom:3px;}
+.row-meta{font-size:.72rem;color:#7B79AA;line-height:1.5;}
+
+/* SIG ROWS */
+.sig-row{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.04);display:grid;grid-template-columns:1fr 150px 110px 130px;gap:12px;align-items:center;}
 .sig-row:last-child{border-bottom:none;}
 .sig-row:hover{background:rgba(255,255,255,.02);}
-.sig-title{font-size:.88rem;font-weight:600;color:white;margin-bottom:3px;}
-.sig-meta{font-size:.72rem;color:#7B79AA;}
-.sig-ref{font-family:monospace;font-size:.75rem;color:#9B99FF;letter-spacing:.06em;}
-.status-badge{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;}
-.s-pending_owner{background:rgba(246,173,85,.15);color:#F6AD55;}
-.s-owner_refused{background:rgba(229,62,62,.12);color:#FC8181;}
-.s-pending_payment{background:rgba(154,230,180,.12);color:#68D391;}
-.s-pending_confirmation{background:rgba(99,179,237,.12);color:#63B3ED;}
-.s-completed{background:rgba(72,187,120,.15);color:#48BB78;}
-.btn-confirm{padding:7px 14px;background:var(--indigo);color:white;border:none;border-radius:var(--r-sm);font-family:inherit;font-weight:700;font-size:.76rem;cursor:pointer;transition:background .18s;white-space:nowrap;}
-.btn-confirm:hover{background:var(--indigo-d);}
-.btn-confirm:disabled{opacity:.4;cursor:not-allowed;}
-.empty{padding:32px;text-align:center;color:#7B79AA;font-size:.88rem;}
+.sig-ref{font-family:monospace;font-size:.74rem;color:#9B99FF;letter-spacing:.06em;}
+
+/* BADGES */
+.badge{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;}
+.b-active{background:rgba(154,230,180,.12);color:#68D391;}
+.b-pending{background:rgba(246,173,85,.15);color:#F6AD55;}
+.b-refused{background:rgba(229,62,62,.12);color:#FC8181;}
+.b-payment{background:rgba(99,179,237,.15);color:#63B3ED;}
+.b-done{background:rgba(72,187,120,.15);color:#48BB78;}
+
+/* BUTTONS */
+.btn-sm{padding:6px 14px;border-radius:var(--r-sm);font-family:inherit;font-weight:700;font-size:.74rem;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;}
+.btn-delete{background:rgba(229,62,62,.15);color:#FC8181;}.btn-delete:hover{background:rgba(229,62,62,.3);}
+.btn-confirm{background:var(--indigo);color:white;}.btn-confirm:hover{background:var(--indigo-d);}
+.btn-view{background:rgba(255,255,255,.07);color:#E8E6FF;}.btn-view:hover{background:rgba(255,255,255,.12);}
+.btn-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* PHOTO PREVIEW */
+.photo-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid rgba(255,255,255,.1);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#1A1828;border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:28px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;}
+.modal-box h3{font-size:1.1rem;font-weight:800;color:white;margin-bottom:16px;}
+.modal-field{margin-bottom:12px;}
+.modal-label{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:4px;}
+.modal-value{font-size:.88rem;color:#E8E6FF;line-height:1.55;}
+.modal-photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.modal-photo{width:80px;height:80px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.1);cursor:pointer;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:white;color:var(--ink);padding:10px 20px;border-radius:100px;font-size:.82rem;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
 .toast.show{opacity:1;}
 </style>
 </head>
 <body>
+
 <nav class="nav">
   <div class="logo"><span class="logo-dot"></span>UNUSED</div>
   <span class="admin-badge">⚙️ Admin</span>
 </nav>
-<div class="page">
 
-  <!-- AUTH -->
-  <div id="auth-gate" class="auth-gate">
-    <h2>Accès administrateur</h2>
-    <input type="password" class="auth-input" id="admin-pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkAuth()">
-    <button class="auth-btn" onclick="checkAuth()">Connexion</button>
-    <p class="auth-err" id="auth-err">Mot de passe incorrect.</p>
-  </div>
+<!-- AUTH -->
+<div id="auth-gate" class="auth-gate">
+  <h2>Accès administrateur</h2>
+  <input type="password" class="auth-input" id="admin-pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkAuth()">
+  <button class="auth-btn" onclick="checkAuth()">Connexion</button>
+  <p class="auth-err" id="auth-err">Mot de passe incorrect.</p>
+</div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboard">
-    <div style="margin-bottom:28px">
-      <h1 style="font-size:1.4rem;font-weight:800;color:white;margin-bottom:4px">Tableau de bord</h1>
-      <p style="font-size:.82rem;color:#7B79AA">Gestion des mises en relation · <span id="last-refresh">—</span> · <button onclick="loadAll()" style="background:none;border:none;color:var(--indigo);font-family:inherit;font-size:.82rem;cursor:pointer;font-weight:600">↻ Actualiser</button></p>
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="page">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h1 style="font-size:1.4rem;font-weight:800;color:white;margin-bottom:3px">Tableau de bord</h1>
+        <p style="font-size:.8rem;color:#7B79AA">Dernière actualisation : <span id="last-refresh">—</span> · <button onclick="loadAll()" style="background:none;border:none;color:var(--indigo);font-family:inherit;font-size:.8rem;cursor:pointer;font-weight:700">↻ Actualiser</button></p>
+      </div>
+      <a href="index.html" target="_blank" style="padding:8px 18px;background:rgba(255,255,255,.07);color:#E8E6FF;border-radius:var(--r-sm);font-size:.82rem;font-weight:700;text-decoration:none;">🌐 Voir le site</a>
     </div>
 
-    <!-- STATS -->
-    <div class="section-title">Vue d'ensemble</div>
+    <!-- STATS GLOBALES -->
     <div class="stats">
-      <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total demandes</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-pending-owner" style="color:#F6AD55">—</div><div class="stat-label">En attente proprio</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-pending-payment" style="color:#68D391">—</div><div class="stat-label">En attente paiement</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-listings">—</div><div class="stat-label">Annonces actives</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-demandes">—</div><div class="stat-label">Demandes totales</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-attente-proprio" style="color:#F6AD55">—</div><div class="stat-label">Attente proprio</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-attente-paiement" style="color:#63B3ED">—</div><div class="stat-label">Attente paiement</div></div>
       <div class="stat-card"><div class="stat-value" id="stat-completed" style="color:#48BB78">—</div><div class="stat-label">Finalisées</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-revenue" style="color:#9B99FF">—€</div><div class="stat-label">Revenus (9€ × finalisées)</div></div>
     </div>
 
-    <!-- À CONFIRMER (pending_payment) -->
-    <div class="section-title">💳 Virements à confirmer</div>
-    <div class="table-wrap">
-      <div id="payment-list"><div class="empty">Aucun virement en attente.</div></div>
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('annonces')">📋 Annonces</button>
+      <button class="tab" onclick="switchTab('demandes')">✍️ Mises en relation</button>
+      <button class="tab" onclick="switchTab('paiements')">💳 Paiements à confirmer</button>
     </div>
 
-    <!-- TOUTES LES DEMANDES -->
-    <div class="section-title">📋 Toutes les demandes</div>
-    <div class="table-wrap">
-      <div id="all-list"><div class="empty">Chargement…</div></div>
+    <!-- TAB : ANNONCES -->
+    <div class="tab-panel active" id="tab-annonces">
+      <div class="section-title">Toutes les annonces publiées</div>
+      <div class="table-wrap">
+        <div id="listings-list"><div class="empty">Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- TAB : MISES EN RELATION -->
+    <div class="tab-panel" id="tab-demandes">
+      <div class="section-title">Toutes les demandes de mise en relation</div>
+      <div class="table-wrap">
+        <div id="sigs-list"><div class="empty">Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- TAB : PAIEMENTS -->
+    <div class="tab-panel" id="tab-paiements">
+      <div class="section-title">💳 Virements reçus à confirmer</div>
+      <div class="table-wrap">
+        <div id="payment-list"><div class="empty">Aucun virement en attente.</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL DÉTAIL ANNONCE -->
+<div class="modal-overlay" id="listing-modal">
+  <div class="modal-box">
+    <h3 id="m-title">—</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="modal-field"><div class="modal-label">Type</div><div class="modal-value" id="m-type">—</div></div>
+      <div class="modal-field"><div class="modal-label">Surface</div><div class="modal-value" id="m-surface">—</div></div>
+      <div class="modal-field"><div class="modal-label">Prix</div><div class="modal-value" id="m-price">—</div></div>
+      <div class="modal-field"><div class="modal-label">Quartier</div><div class="modal-value" id="m-quartier">—</div></div>
+      <div class="modal-field"><div class="modal-label">Type propriétaire</div><div class="modal-value" id="m-owner-type">—</div></div>
+      <div class="modal-field"><div class="modal-label">Publié le</div><div class="modal-value" id="m-date">—</div></div>
+    </div>
+    <div class="modal-field" style="margin-top:12px"><div class="modal-label">Adresse complète</div><div class="modal-value" id="m-address">—</div></div>
+    <div class="modal-field"><div class="modal-label">Description</div><div class="modal-value" id="m-desc">—</div></div>
+    <div class="modal-field"><div class="modal-label">Contact propriétaire</div><div class="modal-value" id="m-contact">—</div></div>
+    <div class="modal-field"><div class="modal-label">Photos</div><div class="modal-photos" id="m-photos"></div></div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-delete" id="m-delete-btn">🗑️ Supprimer cette annonce</button>
+      <button class="btn-sm btn-view" onclick="closeListingModal()">Fermer</button>
     </div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -109,14 +198,13 @@ var SUPABASE_KEY="sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3";
 var API=SUPABASE_URL+"/rest/v1";
 var H={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=representation"};
 var HP={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=minimal"};
+var HD={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY};
 
-// ── Auth (mot de passe local simple — à changer avant déploiement)
-// CHANGE CE MOT DE PASSE AVANT DE DÉPLOYER
+// ── CHANGE CE MOT DE PASSE AVANT DE DÉPLOYER
 var ADMIN_PWD = "unused2026admin";
 
 function checkAuth(){
-  var pwd=document.getElementById("admin-pwd").value;
-  if(pwd===ADMIN_PWD){
+  if(document.getElementById("admin-pwd").value===ADMIN_PWD){
     document.getElementById("auth-gate").style.display="none";
     document.getElementById("dashboard").style.display="block";
     loadAll();
@@ -126,96 +214,183 @@ function checkAuth(){
 }
 
 function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
-
+function escHtml(t){return String(t||"—").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function fmtDate(iso){if(!iso)return "—";var d=new Date(iso);return d.toLocaleDateString("fr-FR")+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 
-function statusLabel(s){
-  var map={"pending_owner":"⏳ Attente proprio","owner_refused":"❌ Refusé","pending_payment":"💳 Attente paiement","pending_confirmation":"🔍 Virement reçu ?","completed":"✅ Finalisé"};
-  return map[s]||s;
+function switchTab(name){
+  document.querySelectorAll(".tab").forEach(function(t,i){t.classList.toggle("active",["annonces","demandes","paiements"][i]===name);});
+  document.querySelectorAll(".tab-panel").forEach(function(p){p.classList.remove("active");});
+  document.getElementById("tab-"+name).classList.add("active");
 }
 
+// ── LOAD ALL DATA
 async function loadAll(){
-  document.getElementById("last-refresh").textContent="Actualisé à "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("last-refresh").textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  await Promise.all([loadListings(), loadSignatures()]);
+}
+
+// ── ANNONCES
+var allListings=[];
+async function loadListings(){
+  try{
+    var r=await fetch(API+"/listings?select=*&order=created_at.desc",{headers:H});
+    allListings=await r.json();
+    document.getElementById("stat-listings").textContent=allListings.length;
+    renderListings();
+  }catch(e){showToast("Erreur annonces : "+e.message);}
+}
+
+function renderListings(){
+  var el=document.getElementById("listings-list");
+  if(!allListings.length){el.innerHTML='<div class="empty">Aucune annonce.</div>';return;}
+  el.innerHTML=allListings.map(function(l){
+    var photos=[];
+    try{photos=JSON.parse(l.photos||"[]");}catch(e){}
+    var thumb=photos.length>0?'<img class="photo-thumb" src="'+escHtml(photos[0])+'" onerror="this.style.display=\'none\'">':'<div style="width:40px;height:40px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1rem">📦</div>';
+    return '<div class="listing-row">'+
+      '<div style="display:flex;gap:12px;align-items:center">>'+
+        thumb+
+        '<div>'+
+          '<div class="row-title">'+escHtml(l.title)+'</div>'+
+          '<div class="row-meta">'+escHtml(l.quartier||"—")+' · '+(l.surface||"?")+'m² · '+(l.price||"?")+'€/mois</div>'+
+          '<div class="row-meta">'+escHtml(l.contact_name||"—")+' · '+escHtml(l.contact_email||l.contact_phone||"—")+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="font-size:.72rem;color:#7B79AA">'+fmtDate(l.created_at)+'</div>'+
+      '<span class="badge b-active">✅ Active</span>'+
+      '<div class="btn-actions">'+
+        '<button class="btn-sm btn-view" onclick="openListingModal('+l.id+')">👁 Détail</button>'+
+        '<button class="btn-sm btn-delete" onclick="deleteListing('+l.id+',\''+escHtml(l.title)+'\')">🗑️</button>'+
+      '</div>'+
+    '</div>';
+  }).join("");
+}
+
+async function deleteListing(id, title){
+  if(!confirm("Supprimer définitivement l'annonce \""+title+"\" ?"))return;
+  try{
+    var r=await fetch(API+"/listings?id=eq."+id,{method:"DELETE",headers:HD});
+    if(!r.ok)throw new Error(await r.text());
+    showToast("Annonce supprimée.");
+    await loadListings();
+  }catch(e){showToast("Erreur : "+e.message);}
+}
+
+function openListingModal(id){
+  var l=allListings.find(function(x){return x.id===id;});
+  if(!l)return;
+  document.getElementById("m-title").textContent=l.title||"—";
+  document.getElementById("m-type").textContent=(l.type_icon||"")+" "+(l.type||"—");
+  document.getElementById("m-surface").textContent=(l.surface||"?")+" m²";
+  document.getElementById("m-price").textContent=(l.price||"?")+"€/mois";
+  document.getElementById("m-quartier").textContent=l.quartier||"—";
+  document.getElementById("m-owner-type").textContent=l.owner_type||"—";
+  document.getElementById("m-date").textContent=fmtDate(l.created_at);
+  document.getElementById("m-address").textContent=l.address||"—";
+  document.getElementById("m-desc").textContent=l.description||"—";
+  document.getElementById("m-contact").textContent=(l.contact_name||"—")+" · "+(l.contact_email||"")+" "+(l.contact_phone||"");
+  var photos=[];
+  try{photos=JSON.parse(l.photos||"[]");}catch(e){}
+  var photosEl=document.getElementById("m-photos");
+  if(photos.length){
+    photosEl.innerHTML=photos.map(function(p){return '<img class="modal-photo" src="'+escHtml(p)+'" onclick="window.open(\''+escHtml(p)+'\',\'_blank\')" onerror="this.style.display=\'none\'">';}).join("");
+  } else {
+    photosEl.innerHTML='<span style="font-size:.8rem;color:#7B79AA">Aucune photo</span>';
+  }
+  document.getElementById("m-delete-btn").onclick=function(){
+    closeListingModal();
+    deleteListing(l.id, l.title);
+  };
+  document.getElementById("listing-modal").classList.add("open");
+}
+function closeListingModal(){document.getElementById("listing-modal").classList.remove("open");}
+document.getElementById("listing-modal").addEventListener("click",function(e){if(e.target===this)closeListingModal();});
+
+// ── SIGNATURES
+function statusLabel(s){
+  return {"pending_owner":"⏳ Attente proprio","owner_refused":"❌ Refusé","pending_payment":"💳 Attente paiement","completed":"✅ Finalisé"}[s]||s;
+}
+function statusBadgeClass(s){
+  return {"pending_owner":"b-pending","owner_refused":"b-refused","pending_payment":"b-payment","completed":"b-done"}[s]||"b-pending";
+}
+
+async function loadSignatures(){
   try{
     var r=await fetch(API+"/signatures?select=*&order=created_at.desc",{headers:H});
     var sigs=await r.json();
+    document.getElementById("stat-demandes").textContent=sigs.length;
+    document.getElementById("stat-attente-proprio").textContent=sigs.filter(function(s){return s.status==="pending_owner";}).length;
+    document.getElementById("stat-attente-paiement").textContent=sigs.filter(function(s){return s.status==="pending_payment";}).length;
+    var completed=sigs.filter(function(s){return s.status==="completed";});
+    document.getElementById("stat-completed").textContent=completed.length;
+    document.getElementById("stat-revenue").textContent=completed.length*9;
 
-    // Stats
-    document.getElementById("stat-total").textContent=sigs.length;
-    document.getElementById("stat-pending-owner").textContent=sigs.filter(function(s){return s.status==="pending_owner";}).length;
-    document.getElementById("stat-pending-payment").textContent=sigs.filter(function(s){return s.status==="pending_payment"||s.status==="pending_confirmation";}).length;
-    document.getElementById("stat-completed").textContent=sigs.filter(function(s){return s.status==="completed";}).length;
+    // Tab demandes : toutes
+    var allEl=document.getElementById("sigs-list");
+    allEl.innerHTML=sigs.length===0?'<div class="empty">Aucune demande.</div>':sigs.map(function(s){return sigRow(s,false);}).join("");
 
-    // Payment list
-    var toConfirm=sigs.filter(function(s){return s.status==="pending_payment"||s.status==="pending_confirmation";});
+    // Tab paiements : pending_payment seulement
+    var toConfirm=sigs.filter(function(s){return s.status==="pending_payment";});
     var payEl=document.getElementById("payment-list");
-    if(toConfirm.length===0){payEl.innerHTML='<div class="empty">Aucun virement en attente. 🎉</div>';}
-    else{payEl.innerHTML=toConfirm.map(function(s){return sigRow(s,true);}).join("");}
+    payEl.innerHTML=toConfirm.length===0?'<div class="empty">Aucun virement en attente. 🎉</div>':toConfirm.map(function(s){return sigRow(s,true);}).join("");
 
-    // All list
-    var allEl=document.getElementById("all-list");
-    if(sigs.length===0){allEl.innerHTML='<div class="empty">Aucune demande pour l\'instant.</div>';}
-    else{allEl.innerHTML=sigs.map(function(s){return sigRow(s,false);}).join("");}
-
-  }catch(e){showToast("Erreur chargement : "+e.message);}
+  }catch(e){showToast("Erreur signatures : "+e.message);}
 }
 
 function sigRow(s, showConfirmBtn){
-  var statusClass="s-"+s.status;
-  var confirmBtn=showConfirmBtn
-    ? '<button class="btn-confirm" onclick="confirmPayment(\''+s.payment_token+'\',\''+s.tenant_name+'\',\''+s.tenant_email+'\',\''+s.owner_name+'\',\''+s.owner_email+'\',\''+(s.owner_phone||'')+'\',\''+s.listing_title+'\',\''+s.listing_quartier+'\',\''+s.listing_price+'\',\''+s.payment_ref+'\')">✅ Confirmer</button>'
+  var action=showConfirmBtn
+    ? '<button class="btn-sm btn-confirm" onclick="confirmPayment(this,\''+s.payment_token+'\',\''+escHtml(s.tenant_name)+'\',\''+escHtml(s.tenant_email)+'\',\''+escHtml(s.owner_name)+'\',\''+escHtml(s.owner_email)+'\',\''+escHtml(s.owner_phone||"")+'\',\''+escHtml(s.listing_title)+'\',\''+escHtml(s.listing_quartier)+'\',\''+(s.listing_price||"")+'\',\''+escHtml(s.payment_ref)+'\')">✅ Confirmer le virement</button>'
     : '<span style="font-size:.72rem;color:#7B79AA">'+fmtDate(s.created_at)+'</span>';
   return '<div class="sig-row">'+
     '<div>'+
-      '<div class="sig-title">'+escHtml(s.listing_title||"—")+'</div>'+
-      '<div class="sig-meta">'+escHtml(s.tenant_name||"—")+' · '+escHtml(s.tenant_email||"—")+'</div>'+
-      '<div class="sig-meta" style="margin-top:2px">Proprio : '+escHtml(s.owner_name||"—")+'</div>'+
+      '<div class="row-title">'+escHtml(s.listing_title)+'</div>'+
+      '<div class="row-meta">👤 '+escHtml(s.tenant_name)+' · '+escHtml(s.tenant_email)+(s.tenant_phone?' · '+escHtml(s.tenant_phone):'')+'</div>'+
+      '<div class="row-meta">🏠 '+escHtml(s.owner_name)+' · '+escHtml(s.owner_email)+'</div>'+
     '</div>'+
     '<div class="sig-ref">'+escHtml(s.payment_ref||"—")+'</div>'+
-    '<span class="status-badge '+statusClass+'">'+statusLabel(s.status)+'</span>'+
-    '<div>'+confirmBtn+'</div>'+
+    '<span class="badge '+statusBadgeClass(s.status)+'">'+statusLabel(s.status)+'</span>'+
+    '<div>'+action+'</div>'+
   '</div>';
 }
 
-function escHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-
-async function confirmPayment(payToken, tenantName, tenantEmail, ownerName, ownerEmail, ownerPhone, listingTitle, listingQuartier, listingPrice, payRef){
-  if(!confirm("Confirmer le paiement de "+payRef+" et envoyer les coordonnées aux deux parties ?"))return;
+async function confirmPayment(btn, payToken, tenantName, tenantEmail, ownerName, ownerEmail, ownerPhone, listingTitle, listingQuartier, listingPrice, payRef){
+  if(!confirm("Confirmer le virement "+payRef+" et envoyer les coordonnées aux deux parties ?"))return;
+  btn.disabled=true; btn.textContent="…";
   try{
-    var now=new Date().toISOString();
     var r=await fetch(API+"/signatures?payment_token=eq."+payToken,{
       method:"PATCH",headers:HP,
-      body:JSON.stringify({status:"completed",payment_confirmed_at:now})
+      body:JSON.stringify({status:"completed",payment_confirmed_at:new Date().toISOString()})
     });
     if(!r.ok)throw new Error(await r.text());
 
-    // Email de confirmation aux deux parties (via mailto unused)
     var subj=encodeURIComponent("[unused] Mise en relation finalisée — "+listingTitle);
     var body=encodeURIComponent([
       "Bonjour,",
       "",
-      "La mise en relation pour l'espace « "+listingTitle+" » ("+listingQuartier+", "+listingPrice+"€/mois) est finalisée.",
-      "Réf. paiement : "+payRef,
+      "La mise en relation pour « "+listingTitle+" » ("+listingQuartier+", "+listingPrice+"€/mois) est finalisée.",
+      "Réf. : "+payRef,
       "",
       "=== COORDONNÉES PROPRIÉTAIRE ===",
       "Nom : "+ownerName,
       "Email : "+ownerEmail,
-      (ownerPhone ? "Téléphone : "+ownerPhone : ""),
+      ownerPhone?"Téléphone : "+ownerPhone:"",
       "",
       "=== COORDONNÉES LOCATAIRE ===",
       "Nom : "+tenantName,
       "Email : "+tenantEmail,
       "",
-      "Pensez à établir un contrat de mise à disposition :",
-      window.location.origin+"/contrat-stockage.html",
+      "Modèle de contrat : "+window.location.origin+"/contrat-stockage.html",
       "",
       "— unused · unused.lille@gmail.com"
     ].filter(Boolean).join("\n"));
     window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
 
     showToast("✅ Paiement confirmé !");
-    setTimeout(loadAll, 500);
-  }catch(e){showToast("Erreur : "+e.message);}
+    setTimeout(loadAll, 600);
+  }catch(e){
+    showToast("Erreur : "+e.message);
+    btn.disabled=false; btn.textContent="✅ Confirmer le virement";
+  }
 }
 </script>
 </body>
