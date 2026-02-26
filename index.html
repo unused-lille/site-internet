@@ -1201,15 +1201,21 @@ async function submitSignature() {
       "─────────────────────────────────────",
       "— unused · unused.lille@gmail.com"
     ].join("\n"));
-    window.location.href = "mailto:unused.lille@gmail.com?subject=" + subj + "&body=" + body;
-
     await addInterest(l.id);
     interests = await loadInterests();
     var countEl = document.getElementById("interest-count-wrap");
     if (countEl) { var n2 = (interests[l.id]||[]).length; countEl.textContent = n2 + " personne" + (n2!==1?"s":"") + " intéressée" + (n2!==1?"s":"") + "."; }
 
+    // Afficher succès AVANT d'ouvrir le mailto (évite que le bouton reste bloqué)
     document.getElementById("sig-step-2").style.display = "none";
     document.getElementById("sig-step-3").style.display = "block";
+    btn.textContent = "✍️ Signer et envoyer ma demande";
+    btn.disabled = false;
+
+    // Ouvrir le client mail avec un léger délai
+    setTimeout(function() {
+      window.location.href = "mailto:unused.lille@gmail.com?subject=" + subj + "&body=" + body;
+    }, 300);
 
   } catch(err) {
     showToast("Erreur : " + err.message);
