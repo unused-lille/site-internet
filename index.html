@@ -140,11 +140,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
   background:var(--indigo);color:white;
   font-size:.66rem;font-weight:700;padding:4px 10px;border-radius:100px;
 }
-.shared-badge{
-  position:absolute;top:10px;right:10px;
-  background:#7C3AED;color:white;
-  font-size:.66rem;font-weight:700;padding:4px 10px;border-radius:100px;
-}
+
 .space-card-body{padding:14px 16px;}
 .space-card-title{font-size:.95rem;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;}
 .space-card-address{font-size:.76rem;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:4px;}
@@ -341,9 +337,9 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
     <span class="logo-dot"></span>UNUSED
   </button>
   <div class="nav-links">
-    <button class="nav-btn nav-btn-ghost" onclick="showView('listing')"><span class="nav-label">Trouver un espace</span><span> 🔍</span></button>
-    <button class="nav-btn nav-btn-ghost" onclick="showView('shared')"><span class="nav-label">Espaces partagés</span><span> 👥</span></button>
-    <button class="nav-btn nav-btn-primary" onclick="showView('propose')">+ Proposer mon espace</button>
+    <button class="nav-btn nav-btn-ghost" onclick="showView('home');setActiveTab('tab-home')"><span class="nav-label">Accueil</span><span> 🏠</span></button>
+    <button class="nav-btn nav-btn-ghost" onclick="showView('listing');setActiveTab('tab-listing')"><span class="nav-label">Trouver un espace</span><span> 🔍</span></button>
+    <button class="nav-btn nav-btn-primary" onclick="showView('propose');setActiveTab('tab-propose')">+ Proposer mon espace</button>
   </div>
 </nav>
 
@@ -380,8 +376,8 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
       </div>
       <div class="concept-card">
         <div class="concept-icon">👥</div>
-        <h3>Le partage en option</h3>
-        <p>Un espace trop grand pour toi seul&nbsp;? Propose-le à d'autres étudiants pour diviser les coûts entre vous.</p>
+        <h3>Une mise en relation directe</h3>
+        <p>unused te connecte avec le propriétaire. Tu fixes un rendez-vous, tu visites, et si ça te convient — c'est à toi.</p>
       </div>
     </div>
 
@@ -416,7 +412,6 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
       <button class="filter-chip" onclick="setFilter('ecole',this)">🏫 École</button>
       <button class="filter-chip" onclick="setFilter('entreprise',this)">🏢 Entreprise</button>
       <button class="filter-chip" onclick="setFilter('autre',this)">📦 Autre</button>
-      <button class="filter-chip" onclick="setFilter('partage',this)">👥 Partagés</button>
     </div>
   </div>
   <div class="listing-layout">
@@ -430,36 +425,16 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
   <div class="detail-view" id="detail-content"></div>
 </div>
 
-<!-- ══════════ PROPOSE VIEW (choix) ══════════ -->
+<!-- ══════════ PROPOSE VIEW (formulaire unique) ══════════ -->
 <div class="view" id="view-propose">
   <div class="form-view">
+    <button class="back-btn" onclick="showView('listing')">← Retour</button>
     <h2>Proposer un espace</h2>
-    <p class="form-sub">Que veux-tu faire ?</p>
-    <div class="listing-type-selector" style="gap:14px">
-      <div class="lt-opt" onclick="showView('propose-location')" style="cursor:pointer;padding:24px 18px;text-align:center">
-        <div style="font-size:2.2rem;margin-bottom:10px">🏠</div>
-        <h4 style="font-size:1rem;margin-bottom:6px">Je loue mon espace</h4>
-        <p>Tu es propriétaire d'une cave, d'un garage, d'une salle ou d'un local vide.</p>
-      </div>
-      <div class="lt-opt" onclick="showView('propose-partage')" style="cursor:pointer;padding:24px 18px;text-align:center">
-        <div style="font-size:2.2rem;margin-bottom:10px">👥</div>
-        <h4 style="font-size:1rem;margin-bottom:6px">Je partage mon espace loué</h4>
-        <p>Tu loues déjà un espace et tu veux diviser les coûts avec d'autres étudiants.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ PROPOSE-LOCATION VIEW ══════════ -->
-<div class="view" id="view-propose-location">
-  <div class="form-view">
-    <button class="back-btn" onclick="showView('propose')">← Retour</button>
-    <h2>Lister mon espace</h2>
-    <p class="form-sub">Tu mets à disposition un espace vide que tu possèdes.</p>
+    <p class="form-sub">Tu as une cave, un garage, une salle ou un local inutilisé à Lille ? Liste-le en 2 minutes.</p>
     <form id="propose-form" novalidate onsubmit="submitPropose(event)">
-      <input type="hidden" id="listing-type" value="location">
+      <!-- L'espace -->
       <div class="form-section">
-        <p class="form-section-title">L'espace</p>
+        <p class="form-section-title">📦 L'espace</p>
         <div class="fg"><label>Titre de l'annonce</label><input type="text" id="f-title" placeholder="Ex : Cave sèche Vauban — 8 m²"></div>
         <div class="fg">
           <label>Type de pièce</label>
@@ -477,10 +452,12 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <div class="fg" style="margin:0"><label>Surface (m²)</label><input type="number" id="f-surface" placeholder="Ex : 8" min="1"></div>
           <div class="fg" style="margin:0"><label>Prix / mois (€)</label><input type="number" id="f-price" placeholder="Ex : 30" min="1"></div>
         </div>
-        <div class="fg"><label>Description</label><textarea id="f-desc" placeholder="Décris l'espace…"></textarea></div>
+        <div class="fg"><label>Description</label><textarea id="f-desc" placeholder="Décris l'espace, l'accès, les conditions…"></textarea></div>
       </div>
+
+      <!-- Localisation -->
       <div class="form-section">
-        <p class="form-section-title">Localisation</p>
+        <p class="form-section-title">📍 Localisation</p>
         <div class="fg">
           <label>Adresse complète à Lille</label>
           <input type="text" id="f-address" placeholder="Ex : 12 rue Solférino, 59000 Lille" onblur="geocodeAddress('f-address','geocode-status','f-lat','f-lng')">
@@ -492,8 +469,10 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <select id="f-quartier"><option value="">Sélectionner…</option><option>Vieux-Lille</option><option>Centre</option><option>Vauban</option><option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option><option>Hellemmes</option><option>Lomme</option><option>Euralille</option><option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option></select>
         </div>
       </div>
+
+      <!-- Contact -->
       <div class="form-section">
-        <p class="form-section-title">Contact</p>
+        <p class="form-section-title">👤 Contact</p>
         <div class="fg"><label>Ton prénom</label><input type="text" id="f-contact-name" placeholder="Ex : Jean"></div>
         <div class="fg-row">
           <div class="fg" style="margin:0"><label>Email</label><input type="email" id="f-contact-email" placeholder="jean@email.fr"></div>
@@ -504,6 +483,8 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <select id="f-owner-type"><option value="particulier">Particulier</option><option value="ecole">École / Université</option><option value="entreprise">Entreprise</option><option value="autre">Autre</option></select>
         </div>
       </div>
+
+      <!-- Photos -->
       <div class="form-section">
         <p class="form-section-title">📷 Photos <span style="font-size:.7rem;font-weight:400;color:var(--muted)">(optionnel, max 5)</span></p>
         <div class="photo-upload" onclick="document.getElementById('f-photos-input').click()">
@@ -514,113 +495,14 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
         </div>
         <div class="photo-preview" id="f-photo-preview"></div>
       </div>
+
       <button type="submit" class="btn-submit">Publier mon annonce →</button>
     </form>
   </div>
 </div>
 
-<!-- ══════════ PROPOSE-PARTAGE VIEW ══════════ -->
-<div class="view" id="view-propose-partage">
-  <div class="form-view">
-    <button class="back-btn" onclick="showView('propose')">← Retour</button>
-    <h2>Partager mon espace loué</h2>
-    <p class="form-sub">Tu loues déjà un espace et tu veux diviser les frais. Le prix est calculé automatiquement.</p>
-    <form id="partage-form" novalidate onsubmit="submitPartage(event)">
-      <div class="form-section">
-        <p class="form-section-title">📋 Ton bail actuel</p>
-        <div class="fg"><label>Titre de l'annonce</label><input type="text" id="p-title" placeholder="Ex : Cave Vauban — cherche coloc de box"></div>
-        <div class="fg">
-          <label>Type de pièce</label>
-          <div class="type-selector">
-            <div class="type-opt selected" onclick="selectPartageType('Cave','🏚️',this)"><span class="type-opt-icon">🏚️</span><span class="type-opt-label">Cave</span></div>
-            <div class="type-opt" onclick="selectPartageType('Garage','🚗',this)"><span class="type-opt-icon">🚗</span><span class="type-opt-label">Garage</span></div>
-            <div class="type-opt" onclick="selectPartageType('Salle','🏫',this)"><span class="type-opt-icon">🏫</span><span class="type-opt-label">Salle</span></div>
-            <div class="type-opt" onclick="selectPartageType('Local','🏢',this)"><span class="type-opt-icon">🏢</span><span class="type-opt-label">Local</span></div>
-            <div class="type-opt" onclick="selectPartageType('Grenier','🏠',this)"><span class="type-opt-icon">🏠</span><span class="type-opt-label">Grenier</span></div>
-            <div class="type-opt" onclick="selectPartageType('Autre','📦',this)"><span class="type-opt-icon">📦</span><span class="type-opt-label">Autre</span></div>
-          </div>
-          <input type="hidden" id="p-type" value="Cave"><input type="hidden" id="p-type-icon" value="🏚️">
-        </div>
-        <div class="fg-row">
-          <div class="fg" style="margin:0"><label>Surface totale (m²)</label><input type="number" id="p-total-surface" placeholder="Ex : 12" min="1" oninput="recalcPartage()"></div>
-          <div class="fg" style="margin:0"><label>Loyer total (€/mois)</label><input type="number" id="p-total-price" placeholder="Ex : 60" min="1" oninput="recalcPartage()"></div>
-        </div>
-        <div class="fg"><label>m² que tu n'utilises pas / dispos pour un coloc</label><input type="number" id="p-my-surface" placeholder="Ex : 6" min="1" oninput="recalcPartage()"></div>
-        <div id="partage-calc" style="display:none;background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.2);border-radius:var(--r-sm);padding:18px 20px;margin-top:4px">
-          <p style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:12px">💡 Calcul automatique</p>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center">
-            <div><div style="font-size:1.3rem;font-weight:800;color:var(--indigo)" id="calc-prixm2">—</div><div style="font-size:.7rem;color:var(--muted)">€/m²/mois</div></div>
-            <div><div style="font-size:1.3rem;font-weight:800;color:var(--indigo)" id="calc-dispo">—</div><div style="font-size:.7rem;color:var(--muted)">m² dispos</div></div>
-            <div><div style="font-size:1.3rem;font-weight:800;color:var(--indigo)" id="calc-maxgain">—</div><div style="font-size:.7rem;color:var(--muted)">€ max récup.</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="form-section" id="partage-offer-section" style="display:none">
-        <p class="form-section-title">📦 Ce que tu proposes</p>
-        <div class="fg">
-          <label>m² que tu proposes</label>
-          <input type="number" id="p-share-surface" placeholder="Ex : 4" min="1" oninput="recalcSharePrice()">
-          <div style="font-size:.72rem;color:var(--muted);margin-top:4px" id="p-share-surface-hint"></div>
-        </div>
-        <div id="price-suggestion" style="display:none;background:white;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:16px;margin-bottom:14px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-            <p style="font-size:.75rem;font-weight:700;color:var(--muted)">Prix suggéré</p>
-            <div style="font-size:1.4rem;font-weight:800;color:var(--indigo)" id="suggested-price-display">—</div>
-          </div>
-          <div style="background:var(--cream);border-radius:8px;padding:10px 12px;font-size:.75rem;color:var(--muted)" id="price-explanation"></div>
-        </div>
-        <div class="fg"><label>Prix demandé (€/mois) <span style="color:var(--indigo);font-size:.72rem">— modifiable</span></label><input type="number" id="p-share-price" min="1"></div>
-        <div class="fg"><label>Nb max de colocataires</label><input type="number" id="p-share-max" placeholder="Ex : 2" min="1" max="8"></div>
-        <div class="fg"><label>Description</label><textarea id="p-desc" placeholder="Décris l'espace, les conditions…"></textarea></div>
-      </div>
-      <div class="form-section" id="partage-loc-section" style="display:none">
-        <p class="form-section-title">📍 Localisation</p>
-        <div class="fg">
-          <label>Adresse complète à Lille</label>
-          <input type="text" id="p-address" placeholder="Ex : 12 rue Solférino, 59000 Lille" onblur="geocodeAddress('p-address','p-geocode-status','p-lat','p-lng')">
-          <div id="p-geocode-status" style="font-size:.72rem;margin-top:5px;min-height:16px"></div>
-          <input type="hidden" id="p-lat"><input type="hidden" id="p-lng">
-          <div id="p-map-preview" style="display:none;height:180px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border);margin-top:10px"></div>
-        </div>
-        <div class="fg"><label>Quartier</label>
-          <select id="p-quartier"><option value="">Sélectionner…</option><option>Vieux-Lille</option><option>Centre</option><option>Vauban</option><option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option><option>Hellemmes</option><option>Lomme</option><option>Euralille</option><option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option></select>
-        </div>
-      </div>
-      <div class="form-section" id="partage-contact-section" style="display:none">
-        <p class="form-section-title">👤 Contact</p>
-        <div class="fg"><label>Ton prénom</label><input type="text" id="p-contact-name" placeholder="Ex : Marie"></div>
-        <div class="fg-row">
-          <div class="fg" style="margin:0"><label>Email</label><input type="email" id="p-contact-email" placeholder="marie@email.fr"></div>
-          <div class="fg" style="margin:0"><label>Téléphone</label><input type="tel" id="p-contact-phone" placeholder="06 12 34 56 78"></div>
-        </div>
-        <p style="font-size:.72rem;color:var(--muted);margin-bottom:14px">Au moins un des deux requis.</p>
-        <div class="form-section" style="display:block">
-          <p class="form-section-title">📷 Photos <span style="font-size:.7rem;font-weight:400;color:var(--muted)">(optionnel, max 5)</span></p>
-          <div class="photo-upload" onclick="document.getElementById('p-photos-input').click()">
-            <input type="file" id="p-photos-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect('p','p-photos-input')">
-            <div class="photo-upload-icon">📷</div>
-            <p>Clique pour ajouter des photos</p>
-            <p style="font-size:.72rem;margin-top:4px;color:var(--muted)">JPG, PNG — max 5 Mo par photo</p>
-          </div>
-          <div class="photo-preview" id="p-photo-preview"></div>
-        </div>
-        <button type="submit" class="btn-submit">Publier mon annonce de partage →</button>
-      </div>
-    </form>
-  </div>
-</div>
 
-<!-- ══════════ SHARED VIEW ══════════ -->
-<div class="view" id="view-shared">
-  <div class="shared-view">
-    <div style="margin-bottom:24px">
-      <p class="section-label">Espaces partagés</p>
-      <h2 class="section-title" style="margin-bottom:8px">Rejoindre un <em>box partagé</em></h2>
-      <p class="section-sub">Des étudiants qui louent déjà un espace proposent d'y accueillir d'autres colocataires de box pour diviser les frais. Tu n'utilises que les m² dont tu as besoin.</p>
-    </div>
-    <div id="shared-panel" style="display:grid;grid-template-columns:1fr;gap:12px;"></div>
-  </div>
-</div>
+
 
 <!-- DELETE KEY MODAL (shown after publish) -->
 <div class="modal-overlay" id="deletekey-modal">
@@ -692,7 +574,6 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
   <div class="bottom-tabs-inner">
     <button class="tab-btn" id="tab-home" onclick="showView('home');setActiveTab('tab-home')"><span class="tab-icon">🏠</span>Accueil</button>
     <button class="tab-btn" id="tab-listing" onclick="showView('listing');setActiveTab('tab-listing')"><span class="tab-icon">🔍</span>Trouver</button>
-    <button class="tab-btn" id="tab-shared" onclick="showView('shared');setActiveTab('tab-shared')"><span class="tab-icon">👥</span>Partagés</button>
     <button class="tab-btn tab-primary" id="tab-propose" onclick="showView('propose');setActiveTab('tab-propose')"><span class="tab-icon">＋</span>Proposer</button>
   </div>
 </div>
@@ -728,6 +609,7 @@ function dbToListing(r) {
     contactName:r.contact_name, contactEmail:r.contact_email, contactPhone:r.contact_phone,
     ownerType:r.owner_type, listingType:r.listing_type,
     shareSurface:r.share_surface, sharePrice:r.share_price, shareMax:r.share_max,
+    surfaceRemaining:(r.surface_remaining !== undefined && r.surface_remaining !== null) ? r.surface_remaining : r.surface,
     coords:r.coords, deleteKey:r.delete_key, photos:r.photos||[], status:(r.status||'disponible').toLowerCase()
   };
 }
@@ -739,6 +621,7 @@ function listingToDb(l) {
     contact_name:l.contactName, contact_email:l.contactEmail, contact_phone:l.contactPhone,
     owner_type:l.ownerType, listing_type:l.listingType,
     share_surface:l.shareSurface, share_price:l.sharePrice, share_max:l.shareMax,
+    surface_remaining:l.surfaceRemaining !== undefined ? l.surfaceRemaining : l.surface,
     coords:l.coords, delete_key:l.deleteKey, photos:l.photos||[], status:l.status||'disponible'
   };
 }
@@ -850,9 +733,7 @@ function showView(name, listingId) {
   window.scrollTo(0, 0);
   if (name === "listing") { renderListing(); setTimeout(initMap, 100); }
   if (name === "detail" && listingId !== undefined) renderDetail(listingId);
-  if (name === "shared") renderShared();
-  if (name === "propose-location") resetForm();
-  if (name === "propose-partage") resetPartageForm();
+  if (name === "propose") resetForm();
 }
 
 function setActiveTab(tabId) {
@@ -875,12 +756,9 @@ function updateMapMarkers() {
   markers = [];
   listings.forEach(function(l) {
     if (!l.coords) return;
-    var isS = l.listingType === "partage";
-    var price = isS ? (l.sharePrice || l.price) : l.price;
-    var color = isS ? "#7C3AED" : "#3D3BF3";
     var icon = L.divIcon({
       className: "",
-      html: "<div style=\"background:" + color + ";color:white;padding:5px 10px;border-radius:100px;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)\">" + price + "€<\/div>",
+      html: "<div style=\"background:var(--indigo);color:white;padding:5px 10px;border-radius:100px;font-weight:700;font-size:.72rem;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)\">" + l.price + "€<\/div>",
       iconAnchor: [20, 10]
     });
     var m = L.marker(l.coords, {icon:icon}).addTo(leafletMap);
@@ -897,9 +775,7 @@ function updateMapMarkers() {
 function getFilteredListings() {
   var q = searchQuery.toLowerCase().trim();
   return listings.filter(function(l) {
-    if (l.listingType !== "location" && l.listingType !== "partage") return false;
-    if (activeFilter !== "all" && activeFilter !== "partage" && l.ownerType !== activeFilter) return false;
-    if (activeFilter === "partage" && l.listingType !== "partage") return false;
+    if (activeFilter !== "all" && l.ownerType !== activeFilter) return false;
     if (!q) return true;
     return (l.title && l.title.toLowerCase().includes(q)) ||
            (l.quartier && l.quartier.toLowerCase().includes(q)) ||
@@ -923,7 +799,6 @@ function setFilter(f, el) {
 
 function makeCard(l) {
   var n = (interests[l.id] || []).length;
-  var isS = l.listingType === "partage";
   var div = document.createElement("div");
   div.className = "space-card";
   div.setAttribute("data-id", l.id);
@@ -947,13 +822,6 @@ function makeCard(l) {
   badge.textContent = capitalize(l.ownerType);
   imgDiv.appendChild(badge);
 
-  if (isS) {
-    var sb = document.createElement("div");
-    sb.className = "shared-badge";
-    sb.textContent = "Partage";
-    imgDiv.appendChild(sb);
-  }
-
   var body = document.createElement("div");
   body.className = "space-card-body";
 
@@ -972,19 +840,11 @@ function makeCard(l) {
   idBadge.textContent = "#" + l.id;
   body.appendChild(idBadge);
 
-  if (isS && l.shareSurface) {
-    var shareInfo = document.createElement("div");
-    shareInfo.style.cssText = "font-size:.78rem;color:#7C3AED;margin-bottom:8px;font-weight:600";
-    shareInfo.textContent = l.shareSurface + " m2 dispos" + (l.shareMax ? " - max " + l.shareMax + " coloc." : "");
-    body.appendChild(shareInfo);
-  }
-
   var footer = document.createElement("div");
   footer.className = "space-card-footer";
   var priceEl = document.createElement("div");
   priceEl.className = "space-card-price";
-  var displayPrice = isS ? (l.sharePrice || l.price) : l.price;
-  priceEl.textContent = displayPrice + "€/mois";
+  priceEl.textContent = l.price + "€/mois";
   var metaEl = document.createElement("div");
   metaEl.className = "space-card-meta";
   metaEl.textContent = n + " intéressé" + (n !== 1 ? "s" : "");
@@ -1011,25 +871,16 @@ function renderListing() {
   filtered.forEach(function(l) { panel.appendChild(makeCard(l)); });
 }
 
-function renderShared() {
-  var panel = document.getElementById("shared-panel");
-  var shared = listings.filter(function(l) { return l.listingType === "partage"; });
-  panel.innerHTML = "";
-  if (shared.length === 0) {
-    panel.innerHTML = "<div class=\"empty-state\"><div class=\"ei\">no shared<\/div><p>Aucun espace partage pour le moment.<\/p><\/div>";
-    return;
-  }
-  shared.forEach(function(l) { panel.appendChild(makeCard(l)); });
-}
+/* renderShared removed — espaces partagés maintenant intégrés dans listing */
+
 
 function renderDetail(id) {
   var l = null;
   for (var i = 0; i < listings.length; i++) { if (listings[i].id == id) { l = listings[i]; break; } }
   if (!l) { showView("home"); return; }
   var n = (interests[l.id] || []).length;
-  var isS = l.listingType === "partage";
-  var price = isS ? (l.sharePrice || l.price) : l.price;
-  var surface = isS ? (l.shareSurface || l.surface) : l.surface;
+  var price = l.price;
+  var surface = l.surface;
   var dc = document.getElementById("detail-content");
   dc.innerHTML = "";
 
@@ -1041,7 +892,7 @@ function renderDetail(id) {
   }
 
   var backBtn = el("button", "back-btn", "← Retour");
-  backBtn.addEventListener("click", function() { showView(isS ? "shared" : "listing"); });
+  backBtn.addEventListener("click", function() { showView("listing"); });
   dc.appendChild(backBtn);
 
   if (l.photos && l.photos.length > 0) {
@@ -1108,18 +959,10 @@ function renderDetail(id) {
   dc.appendChild(header);
 
   var meta = el("div", "detail-meta");
-  [l.typeIcon + " " + l.type, surface + " m2", l.quartier, capitalize(l.ownerType)].forEach(function(t) {
+  [l.typeIcon + " " + l.type, surface + " m²", l.quartier, capitalize(l.ownerType)].forEach(function(t) {
     meta.appendChild(el("div", "meta-chip", t));
   });
-  if (isS) { var sc = el("div", "meta-chip", "Partage"); sc.style.color = "#7C3AED"; meta.appendChild(sc); }
   dc.appendChild(meta);
-
-  if (isS && l.sharePrice) {
-    var box = el("div");
-    box.style.cssText = "background:rgba(124,58,237,.07);border:1.5px solid rgba(124,58,237,.2);border-radius:16px;padding:18px;margin-bottom:20px";
-    box.appendChild(el("p", null, "Espace partage: " + l.shareSurface + " m2 pour " + l.sharePrice + "€/mois. Max " + (l.shareMax || "?") + " colocataires."));
-    dc.appendChild(box);
-  }
 
   dc.appendChild(el("p", "detail-section-title", "Description"));
   var descP = el("p", "detail-desc");
@@ -1137,14 +980,15 @@ function renderDetail(id) {
   dc.appendChild(mapContainer);
 
   var cbox = el("div", "contact-box");
-  cbox.appendChild(el("h3", null, "Interesse ?"));
-  cbox.appendChild(el("p", null, "Contacte unused.lille@gmail.com pour etre mis en relation."));
+  cbox.appendChild(el("h3", null, "Intéressé(e) ?"));
+  cbox.appendChild(el("p", null, "Contacte unused.lille@gmail.com pour être mis en relation avec le propriétaire."));
   var cBtn = el("button", "btn btn-primary", "Contacter pour cet espace");
   cBtn.style.cssText = "width:100%;justify-content:center";
   cBtn.addEventListener("click", function() { openContact(l.id); });
   cbox.appendChild(cBtn);
-  var ciDiv = el("div", null, n + " personne(s)" + (n !== 1 ? "s" : "") + " intéressée(s).");
+  var ciDiv = el("div", null, n + " personne" + (n !== 1 ? "s" : "") + " intéressée" + (n !== 1 ? "s" : "") + ".");
   ciDiv.id = "interest-count-wrap";
+  ciDiv.style.cssText = "font-size:.78rem;color:var(--muted);margin-top:12px";
   cbox.appendChild(ciDiv);
   dc.appendChild(cbox);
 
@@ -1176,12 +1020,10 @@ function renderDetail(id) {
     }
     var dm2 = L.map(dmId).setView(l.coords, 16);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution:"© OpenStreetMap", maxZoom:19}).addTo(dm2);
-    var col = isS ? "#7C3AED" : "#3D3BF3";
-    /* Cercle de zone floue pour protéger l'adresse exacte */
-    L.circle(l.coords, {radius:80, color:col, fillColor:col, fillOpacity:0.15, weight:2}).addTo(dm2);
+    L.circle(l.coords, {radius:80, color:"#3D3BF3", fillColor:"#3D3BF3", fillOpacity:0.15, weight:2}).addTo(dm2);
     L.marker(l.coords, {icon: L.divIcon({
       className:"",
-      html: "<div style=\"background:" + col + ";color:white;padding:5px 12px;border-radius:100px;font-size:.72rem;font-weight:700;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)\">" + (l.typeIcon||"📦") + " " + price + "€/mois<\/div>",
+      html: "<div style=\"background:#3D3BF3;color:white;padding:5px 12px;border-radius:100px;font-size:.72rem;font-weight:700;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2)\">" + (l.typeIcon||"📦") + " " + price + "€/mois<\/div>",
       iconAnchor:[40,10]
     })}).addTo(dm2);
   }, 150);
@@ -1230,6 +1072,8 @@ function resetForm() {
   var fp = document.getElementById("f-photo-preview"); if (fp) fp.innerHTML = "";
   var fmap = document.getElementById("f-map-preview"); if (fmap) fmap.style.display = "none";
 }
+function recalcPricePerM2() {}
+
 async function submitPropose(e) {
   e.preventDefault();
   function g(id) { return document.getElementById(id).value.trim(); }
@@ -1261,89 +1105,15 @@ async function submitPropose(e) {
     listings=await loadListings(); interests=await loadInterests();
     showDeleteKeyModal(listing);
   } catch(err) { showToast("Erreur: "+err.message); }
-  finally { btn.textContent="Publier mon annonce"; btn.disabled=false; }
+  finally { btn.textContent="Publier mon annonce →"; btn.disabled=false; }
 }
 
-var partageCalc = {prixM2:0, dispo:0};
-function selectPartageType(name, icon, el) {
-  el.closest(".type-selector").querySelectorAll(".type-opt").forEach(function(o) { o.classList.remove("selected"); });
-  el.classList.add("selected");
-  document.getElementById("p-type").value = name;
-  document.getElementById("p-type-icon").value = icon;
-}
-function resetPartageForm() {
-  var form = document.getElementById("partage-form"); if (form) form.reset();
-  ["p-lat","p-lng"].forEach(function(id) { var e=document.getElementById(id); if(e) e.value=""; });
-  var ps=document.getElementById("p-geocode-status"); if(ps) ps.textContent="";
-  ["partage-calc","partage-offer-section","partage-loc-section","partage-contact-section","price-suggestion"].forEach(function(id) {
-    var e=document.getElementById(id); if(e) e.style.display="none";
-  });
-  document.getElementById("p-type").value="Cave";
-  document.getElementById("p-type-icon").value="🏚️";
-  partageCalc={prixM2:0,dispo:0};
-}
-function recalcPartage() {
-  var total=parseFloat(document.getElementById("p-total-surface").value)||0;
-  var loyer=parseFloat(document.getElementById("p-total-price").value)||0;
-  var dispo=parseFloat(document.getElementById("p-my-surface").value)||0;
-  if (total>0&&loyer>0&&dispo>0&&dispo<=total) {
-    var prixM2=loyer/total;
-    partageCalc={prixM2:prixM2, dispo:dispo};
-    document.getElementById("calc-prixm2").textContent=prixM2.toFixed(2);
-    document.getElementById("calc-dispo").textContent=dispo.toFixed(1);
-    document.getElementById("calc-maxgain").textContent=Math.round(dispo*prixM2)+"€";
-    ["partage-calc","partage-offer-section","partage-loc-section","partage-contact-section"].forEach(function(id) {
-      var e=document.getElementById(id); if(e) e.style.display="block";
-    });
-    recalcSharePrice();
-  }
-}
-function recalcSharePrice() {
-  var s=parseFloat(document.getElementById("p-share-surface").value)||0;
-  if (s>0&&partageCalc.prixM2>0) {
-    var sug=Math.round(s*partageCalc.prixM2);
-    document.getElementById("suggested-price-display").textContent=sug+"€/mois";
-    document.getElementById("price-explanation").textContent=s+" m2 x "+partageCalc.prixM2.toFixed(2)+"€/m2 = "+sug+"€/mois.";
-    document.getElementById("price-suggestion").style.display="block";
-    document.getElementById("p-share-price").value=sug;
-  }
-}
-async function submitPartage(e) {
-  e.preventDefault();
-  function g(id) { return document.getElementById(id).value.trim(); }
-  var title=g("p-title"), totalS=parseFloat(g("p-total-surface"))||0;
-  var totalP=parseFloat(g("p-total-price"))||0, myS=parseFloat(g("p-my-surface"))||0;
-  var shS=parseFloat(g("p-share-surface"))||0, shP=parseInt(g("p-share-price"))||0;
-  var shM=parseInt(g("p-share-max"))||null, desc=g("p-desc"), address=g("p-address");
-  var quartier=document.getElementById("p-quartier").value;
-  var cName=g("p-contact-name"), cEmail=g("p-contact-email"), cPhone=g("p-contact-phone");
-  if (!title||!totalS||!totalP||!myS||!shS||!shP||!desc||!address||!quartier||!cName||(!cEmail&&!cPhone)) {
-    showToast("Remplis tous les champs obligatoires."); return;
-  }
-  var lat=parseFloat(document.getElementById("p-lat").value);
-  var lng=parseFloat(document.getElementById("p-lng").value);
-  var coords=(!isNaN(lat)&&!isNaN(lng))?[lat,lng]:getCoords(quartier);
-  var listing={
-    id:Date.now(), title:title,
-    type:document.getElementById("p-type").value,
-    typeIcon:document.getElementById("p-type-icon").value,
-    surface:totalS, price:totalP, shareSurface:shS, sharePrice:shP, shareMax:shM,
-    desc:desc, address:address, quartier:quartier,
-    contactName:cName, contactEmail:cEmail, contactPhone:cPhone,
-    ownerType:"particulier", listingType:"partage",
-    coords:coords, deleteKey:Math.random().toString(36).slice(2,8).toUpperCase()
-  };
-  var btn=e.target.querySelector(".btn-submit");
-  btn.textContent="Publication..."; btn.disabled=true;
-  try {
-    var photoUrls = await uploadPhotos("p", listing.id);
-    listing.photos = photoUrls;
-    await saveNewListing(listing);
-    listings=await loadListings(); interests=await loadInterests();
-    showDeleteKeyModal(listing);
-  } catch(err) { showToast("Erreur: "+err.message); }
-  finally { btn.textContent="Publier"; btn.disabled=false; }
-}
+/* ══ OLD PARTAGE STUBS (kept for data compat) ══ */
+function selectPartageType() {}
+function resetPartageForm() {}
+function recalcPartage() {}
+function recalcSharePrice() {}
+async function submitPartage(e) { e.preventDefault(); }
 
 /* ══ PHOTOS ══ */
 var selectedPhotos = {f: [], p: []};
@@ -1470,7 +1240,7 @@ async function confirmDelete() {
     await deleteListing(currentDeleteId);
     listings=await loadListings(); interests=await loadInterests();
     closeDeleteModal(); showToast("Annonce supprimee.");
-    setTimeout(function() { showView(listing.listingType==="partage"?"shared":"listing"); },400);
+    setTimeout(function() { showView("listing"); },400);
   } catch(err) { showToast("Erreur lors de la suppression."); }
 }
 
