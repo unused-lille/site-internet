@@ -3,608 +3,220 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>unused — Admin</title>
+<title>Admin — unused</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --indigo: #3D3BF3;
-  --indigo-d: #2A28C8;
-  --indigo-l: #6B69FF;
-  --indigo-pale: #EEEEFF;
-  --cream: #FAF8F2;
-  --cream-d: #EEEAE0;
-  --ink: #12111E;
-  --muted: #7B7A9A;
-  --white: #fff;
-  --border: rgba(61,59,243,.1);
-  --red: #E53E3E;
-  --red-pale: #FFF5F5;
-  --green: #38A169;
-  --green-pale: #F0FFF4;
-  --shadow: 0 2px 16px rgba(61,59,243,.07);
-  --shadow-md: 0 6px 32px rgba(61,59,243,.12);
-  --r: 16px;
-  --r-sm: 10px;
-}
+:root{--indigo:#3D3BF3;--indigo-d:#2A28C8;--indigo-pale:#EEEEFF;--cream:#FAF8F2;--cream-d:#EEEAE0;--ink:#12111E;--muted:#7B7A9A;--border:rgba(61,59,243,.1);--r:12px;--r-sm:8px;}
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:'Bricolage Grotesque',sans-serif;background:#0E0D1A;color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased;}
+body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6FF;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:#1A1828;border-bottom:1px solid rgba(255,255,255,.06);}
+.logo{font-size:1rem;font-weight:800;letter-spacing:-.04em;color:white;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:6px;height:6px;background:var(--indigo);border-radius:50%;}
+.admin-badge{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(61,59,243,.3);color:#9B99FF;padding:3px 10px;border-radius:100px;}
+.page{max-width:900px;margin:0 auto;padding:32px 24px 60px;}
 
-/* ── LOGIN SCREEN ── */
-#login-screen {
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  background:#0E0D1A;position:relative;overflow:hidden;
-}
-#login-screen::before {
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 60% 60% at 50% 40%, rgba(61,59,243,.18) 0%, transparent 70%);
-  pointer-events:none;
-}
-.login-box {
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:24px;padding:48px 40px;width:100%;max-width:400px;
-  backdrop-filter:blur(20px);position:relative;z-index:1;
-}
-.login-logo {
-  display:flex;align-items:center;gap:8px;margin-bottom:32px;
-  font-size:1.1rem;font-weight:800;letter-spacing:-.05em;
-}
-.login-logo-dot{width:8px;height:8px;background:var(--indigo);border-radius:50%;}
-.login-tag {
-  font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  background:rgba(61,59,243,.25);color:var(--indigo-l);
-  padding:4px 10px;border-radius:100px;border:1px solid rgba(61,59,243,.3);margin-left:4px;
-}
-.login-box h1{font-size:1.6rem;font-weight:800;letter-spacing:-.04em;margin-bottom:6px;}
-.login-box p{font-size:.85rem;color:rgba(255,255,255,.45);margin-bottom:28px;line-height:1.6;}
-.login-field {
-  width:100%;padding:14px 16px;border-radius:var(--r-sm);
-  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);
-  color:white;font-family:inherit;font-size:.95rem;outline:none;
-  transition:border-color .18s;margin-bottom:12px;letter-spacing:.12em;
-}
-.login-field::placeholder{color:rgba(255,255,255,.25);letter-spacing:0;}
-.login-field:focus{border-color:var(--indigo);}
-.login-btn {
-  width:100%;padding:14px;background:var(--indigo);color:white;border:none;
-  border-radius:100px;font-family:inherit;font-weight:700;font-size:.9rem;
-  cursor:pointer;transition:all .18s;
-}
-.login-btn:hover{background:var(--indigo-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(61,59,243,.4);}
-.login-error{font-size:.8rem;color:#FC8181;margin-top:10px;display:none;text-align:center;}
+/* Auth gate */
+.auth-gate{max-width:360px;margin:80px auto;text-align:center;}
+.auth-gate h2{font-size:1.2rem;font-weight:800;margin-bottom:16px;color:white;}
+.auth-input{width:100%;padding:12px 16px;background:#1A1828;border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;color:white;outline:none;letter-spacing:.08em;text-align:center;transition:border-color .18s;}
+.auth-input:focus{border-color:var(--indigo);}
+.auth-btn{margin-top:12px;width:100%;padding:12px;background:var(--indigo);color:white;border:none;border-radius:var(--r-sm);font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;transition:background .18s;}
+.auth-btn:hover{background:var(--indigo-d);}
+.auth-err{font-size:.78rem;color:#FC8181;margin-top:8px;display:none;}
 
-/* ── ADMIN LAYOUT ── */
-#admin-screen{display:none;min-height:100vh;background:#0E0D1A;}
+/* Dashboard */
+#dashboard{display:none;}
+.section-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7B79AA;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;}
+.stat-card{background:#1A1828;border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:18px 20px;}
+.stat-value{font-size:1.8rem;font-weight:800;color:white;letter-spacing:-.04em;}
+.stat-label{font-size:.72rem;color:#7B79AA;margin-top:4px;}
 
-.admin-nav {
-  position:sticky;top:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 28px;
-  background:rgba(14,13,26,.92);backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(255,255,255,.07);
-}
-.admin-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:800;letter-spacing:-.05em;}
-.admin-logo-dot{width:7px;height:7px;background:var(--indigo);border-radius:50%;animation:pulse 2.5s ease-in-out infinite;}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5);opacity:.6}}
-.admin-nav-right{display:flex;align-items:center;gap:12px;}
-.admin-status{font-size:.75rem;color:rgba(255,255,255,.35);}
-.logout-btn {
-  padding:7px 16px;border-radius:100px;background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);
-  font-family:inherit;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;
-}
-.logout-btn:hover{background:rgba(229,62,62,.15);color:#FC8181;border-color:rgba(229,62,62,.3);}
+/* Table */
+.table-wrap{background:#1A1828;border:1px solid rgba(255,255,255,.06);border-radius:var(--r);overflow:hidden;margin-bottom:32px;}
+.table-header{padding:14px 20px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;border-bottom:1px solid rgba(255,255,255,.06);}
+.sig-row{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.04);display:grid;grid-template-columns:1fr 140px 100px 120px;gap:12px;align-items:center;}
+.sig-row:last-child{border-bottom:none;}
+.sig-row:hover{background:rgba(255,255,255,.02);}
+.sig-title{font-size:.88rem;font-weight:600;color:white;margin-bottom:3px;}
+.sig-meta{font-size:.72rem;color:#7B79AA;}
+.sig-ref{font-family:monospace;font-size:.75rem;color:#9B99FF;letter-spacing:.06em;}
+.status-badge{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;}
+.s-pending_owner{background:rgba(246,173,85,.15);color:#F6AD55;}
+.s-owner_refused{background:rgba(229,62,62,.12);color:#FC8181;}
+.s-pending_payment{background:rgba(154,230,180,.12);color:#68D391;}
+.s-pending_confirmation{background:rgba(99,179,237,.12);color:#63B3ED;}
+.s-completed{background:rgba(72,187,120,.15);color:#48BB78;}
+.btn-confirm{padding:7px 14px;background:var(--indigo);color:white;border:none;border-radius:var(--r-sm);font-family:inherit;font-weight:700;font-size:.76rem;cursor:pointer;transition:background .18s;white-space:nowrap;}
+.btn-confirm:hover{background:var(--indigo-d);}
+.btn-confirm:disabled{opacity:.4;cursor:not-allowed;}
+.empty{padding:32px;text-align:center;color:#7B79AA;font-size:.88rem;}
 
-.admin-body{padding:28px;max-width:1400px;margin:0 auto;}
-
-/* ── STATS ROW ── */
-.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px;}
-@media(min-width:700px){.stats-row{grid-template-columns:repeat(4,1fr);}}
-.stat-card {
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r);padding:20px 22px;transition:border-color .2s;
-}
-.stat-card:hover{border-color:rgba(61,59,243,.4);}
-.stat-val{font-size:2rem;font-weight:800;letter-spacing:-.05em;color:white;margin-bottom:2px;}
-.stat-val.indigo{color:var(--indigo-l);}
-.stat-val.green{color:#68D391;}
-.stat-val.orange{color:#F6AD55;}
-.stat-label{font-size:.72rem;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
-
-/* ── TABS ── */
-.admin-tabs{display:flex;gap:4px;margin-bottom:24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:100px;padding:4px;width:fit-content;}
-.admin-tab{
-  padding:8px 20px;border-radius:100px;font-family:inherit;font-size:.8rem;font-weight:700;
-  cursor:pointer;border:none;background:none;color:rgba(255,255,255,.4);transition:all .18s;
-}
-.admin-tab.active{background:var(--indigo);color:white;box-shadow:0 3px 12px rgba(61,59,243,.35);}
-.admin-tab:not(.active):hover{color:white;}
-
-/* ── TABLE ── */
-.table-header {
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
-  margin-bottom:16px;
-}
-.table-title{font-size:1rem;font-weight:800;letter-spacing:-.03em;}
-.search-box {
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:100px;padding:8px 16px;
-}
-.search-box input{background:none;border:none;color:white;font-family:inherit;font-size:.8rem;outline:none;width:200px;}
-.search-box input::placeholder{color:rgba(255,255,255,.25);}
-
-.table-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid rgba(255,255,255,.07);}
-table{width:100%;border-collapse:collapse;}
-thead tr{background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.07);}
-th{padding:12px 16px;text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);white-space:nowrap;}
-tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
-tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:rgba(255,255,255,.03);}
-td{padding:14px 16px;font-size:.82rem;color:rgba(255,255,255,.8);vertical-align:middle;}
-td.muted{color:rgba(255,255,255,.35);}
-td.mono{font-family:monospace;font-size:.75rem;color:var(--indigo-l);}
-
-.badge {
-  display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;
-  font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-}
-.badge-blue{background:rgba(61,59,243,.2);color:var(--indigo-l);border:1px solid rgba(61,59,243,.25);}
-.badge-purple{background:rgba(124,58,237,.2);color:#C4B5FD;border:1px solid rgba(124,58,237,.25);}
-.badge-green{background:rgba(56,161,105,.2);color:#68D391;border:1px solid rgba(56,161,105,.25);}
-.badge-orange{background:rgba(237,137,54,.2);color:#F6AD55;border:1px solid rgba(237,137,54,.25);}
-
-.action-btn {
-  padding:5px 12px;border-radius:100px;font-family:inherit;font-size:.72rem;font-weight:700;
-  cursor:pointer;border:none;transition:all .15s;
-}
-.action-del{background:rgba(229,62,62,.15);color:#FC8181;border:1px solid rgba(229,62,62,.2);}
-.action-del:hover{background:rgba(229,62,62,.3);}
-
-/* contact chips */
-.contact-chip{display:flex;flex-direction:column;gap:2px;}
-.contact-name{font-weight:700;color:white;font-size:.82rem;}
-.contact-info{font-size:.72rem;color:rgba(255,255,255,.4);}
-.contact-info a{color:var(--indigo-l);text-decoration:none;}
-.contact-info a:hover{text-decoration:underline;}
-
-/* ── LOADING ── */
-.loading-row td{text-align:center;padding:48px;color:rgba(255,255,255,.25);font-size:.85rem;}
-.spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--indigo);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── TOAST ── */
-#admin-toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);
-  background:#1a1830;color:white;padding:12px 22px;border-radius:100px;
-  font-size:.84rem;font-weight:600;z-index:999;opacity:0;pointer-events:none;
-  border:1px solid rgba(255,255,255,.1);
-  transition:all .32s cubic-bezier(.34,1.56,.64,1);
-}
-
-/* ── CONFIRM MODAL ── */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(10,9,20,.8);backdrop-filter:blur(8px);
-  z-index:800;opacity:0;pointer-events:none;transition:opacity .24s;
-  display:flex;align-items:center;justify-content:center;padding:20px;
-}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal-box{
-  background:#1A1830;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;
-  max-width:420px;width:100%;
-  transform:scale(.95);transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-}
-.modal-overlay.open .modal-box{transform:scale(1);}
-.modal-box h3{font-size:1.1rem;font-weight:800;margin-bottom:8px;}
-.modal-box p{font-size:.84rem;color:rgba(255,255,255,.45);line-height:1.65;margin-bottom:24px;}
-.modal-actions{display:flex;gap:10px;}
-.btn-danger{flex:1;padding:12px;background:var(--red);color:white;border:none;border-radius:100px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .18s;}
-.btn-danger:hover{background:#C53030;}
-.btn-cancel{padding:12px 20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);border-radius:100px;font-family:inherit;font-weight:600;font-size:.85rem;cursor:pointer;transition:all .18s;}
-.btn-cancel:hover{color:white;}
-
-.empty-state{text-align:center;padding:64px 24px;color:rgba(255,255,255,.2);}
-.empty-state .ei{font-size:2.5rem;margin-bottom:12px;opacity:.4;}
-.empty-state p{font-size:.85rem;}
-
-/* refresh btn */
-.refresh-btn{
-  padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.4);
-  font-family:inherit;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:6px;
-}
-.refresh-btn:hover{color:white;border-color:rgba(255,255,255,.2);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:white;color:var(--ink);padding:10px 20px;border-radius:100px;font-size:.82rem;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;}
 </style>
 </head>
 <body>
+<nav class="nav">
+  <div class="logo"><span class="logo-dot"></span>UNUSED</div>
+  <span class="admin-badge">⚙️ Admin</span>
+</nav>
+<div class="page">
 
-<!-- ══════════ LOGIN ══════════ -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="login-logo-dot"></div>
-      UNUSED
-      <span class="login-tag">ADMIN</span>
-    </div>
-    <h1>Accès restreint</h1>
-    <p>Interface de modération réservée à l'équipe unused. Entre ton mot de passe pour continuer.</p>
-    <input type="password" class="login-field" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')tryLogin()">
-    <button class="login-btn" onclick="tryLogin()">Accéder au tableau de bord →</button>
-    <p class="login-error" id="login-error">❌ Mot de passe incorrect.</p>
+  <!-- AUTH -->
+  <div id="auth-gate" class="auth-gate">
+    <h2>Accès administrateur</h2>
+    <input type="password" class="auth-input" id="admin-pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkAuth()">
+    <button class="auth-btn" onclick="checkAuth()">Connexion</button>
+    <p class="auth-err" id="auth-err">Mot de passe incorrect.</p>
   </div>
-</div>
 
-<!-- ══════════ ADMIN ══════════ -->
-<div id="admin-screen">
-  <nav class="admin-nav">
-    <div class="admin-logo">
-      <div class="admin-logo-dot"></div>
-      UNUSED
-      <span class="login-tag" style="font-size:.6rem">ADMIN</span>
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div style="margin-bottom:28px">
+      <h1 style="font-size:1.4rem;font-weight:800;color:white;margin-bottom:4px">Tableau de bord</h1>
+      <p style="font-size:.82rem;color:#7B79AA">Gestion des mises en relation · <span id="last-refresh">—</span> · <button onclick="loadAll()" style="background:none;border:none;color:var(--indigo);font-family:inherit;font-size:.82rem;cursor:pointer;font-weight:600">↻ Actualiser</button></p>
     </div>
-    <div class="admin-nav-right">
-      <span class="admin-status" id="last-refresh">—</span>
-      <button class="refresh-btn" onclick="loadAll()">↻ Rafraîchir</button>
-      <button class="logout-btn" onclick="logout()">Déconnexion</button>
-    </div>
-  </nav>
-
-  <div class="admin-body">
 
     <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-val indigo" id="stat-total">—</div>
-        <div class="stat-label">Annonces totales</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="stat-location">—</div>
-        <div class="stat-label">Locations</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" style="color:#C4B5FD" id="stat-partage">—</div>
-        <div class="stat-label">Partages</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val green" id="stat-interests">—</div>
-        <div class="stat-label">Demandes reçues</div>
-      </div>
+    <div class="section-title">Vue d'ensemble</div>
+    <div class="stats">
+      <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total demandes</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-pending-owner" style="color:#F6AD55">—</div><div class="stat-label">En attente proprio</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-pending-payment" style="color:#68D391">—</div><div class="stat-label">En attente paiement</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-completed" style="color:#48BB78">—</div><div class="stat-label">Finalisées</div></div>
     </div>
 
-    <!-- TABS -->
-    <div class="admin-tabs">
-      <button class="admin-tab active" onclick="switchTab('annonces',this)">📋 Annonces</button>
-      <button class="admin-tab" onclick="switchTab('interets',this)">💌 Demandes</button>
+    <!-- À CONFIRMER (pending_payment) -->
+    <div class="section-title">💳 Virements à confirmer</div>
+    <div class="table-wrap">
+      <div id="payment-list"><div class="empty">Aucun virement en attente.</div></div>
     </div>
 
-    <!-- TAB : ANNONCES -->
-    <div id="tab-annonces">
-      <div class="table-header">
-        <div class="table-title">Toutes les annonces</div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <div class="search-box">
-            <span style="opacity:.4;font-size:.9rem">🔍</span>
-            <input type="text" id="admin-search" placeholder="Titre, quartier, #ID, prénom…" oninput="renderTable()">
-          </div>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#ID</th>
-              <th>Annonce</th>
-              <th>Type</th>
-              <th>Prix</th>
-              <th>Propriétaire</th>
-              <th>Contact</th>
-              <th>Intérêts</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="listings-tbody">
-            <tr class="loading-row"><td colspan="8"><span class="spinner"></span>Chargement…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- TAB : INTÉRÊTS -->
-    <div id="tab-interets" style="display:none">
-      <div class="table-header">
-        <div class="table-title">Demandes de mise en relation</div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Annonce</th>
-              <th>Propriétaire</th>
-              <th>Nb demandes</th>
-              <th>Contact propriétaire</th>
-            </tr>
-          </thead>
-          <tbody id="interests-tbody">
-            <tr class="loading-row"><td colspan="4"><span class="spinner"></span>Chargement…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- CONFIRM DELETE MODAL -->
-<div class="modal-overlay" id="confirm-modal">
-  <div class="modal-box">
-    <h3>🗑️ Supprimer cette annonce ?</h3>
-    <p id="confirm-text">Cette action est irréversible.</p>
-    <div class="modal-actions">
-      <button class="btn-danger" onclick="confirmDelete()">Supprimer définitivement</button>
-      <button class="btn-cancel" onclick="closeConfirm()">Annuler</button>
+    <!-- TOUTES LES DEMANDES -->
+    <div class="section-title">📋 Toutes les demandes</div>
+    <div class="table-wrap">
+      <div id="all-list"><div class="empty">Chargement…</div></div>
     </div>
   </div>
 </div>
-
-<div id="admin-toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-/* ══ CONFIG ══ */
-var ADMIN_PASSWORD = "unused2025";
-var SUPABASE_URL = "https://wncoflfsrorictwndffa.supabase.co";
-var SUPABASE_KEY = "sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3";
-var API = SUPABASE_URL + "/rest/v1";
-var H = {
-  "apikey": SUPABASE_KEY,
-  "Authorization": "Bearer " + SUPABASE_KEY,
-  "Content-Type": "application/json"
-};
+var SUPABASE_URL="https://wncoflfsrorictwndffa.supabase.co";
+var SUPABASE_KEY="sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3";
+var API=SUPABASE_URL+"/rest/v1";
+var H={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=representation"};
+var HP={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=minimal"};
 
-/* ══ AUTH ══ */
-function tryLogin() {
-  var val = document.getElementById("pwd-input").value;
-  if (val === ADMIN_PASSWORD) {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("admin-screen").style.display = "block";
+// ── Auth (mot de passe local simple — à changer avant déploiement)
+// CHANGE CE MOT DE PASSE AVANT DE DÉPLOYER
+var ADMIN_PWD = "unused2026admin";
+
+function checkAuth(){
+  var pwd=document.getElementById("admin-pwd").value;
+  if(pwd===ADMIN_PWD){
+    document.getElementById("auth-gate").style.display="none";
+    document.getElementById("dashboard").style.display="block";
     loadAll();
   } else {
-    var err = document.getElementById("login-error");
-    err.style.display = "block";
-    document.getElementById("pwd-input").style.borderColor = "rgba(229,62,62,.5)";
-    setTimeout(function() {
-      err.style.display = "none";
-      document.getElementById("pwd-input").style.borderColor = "";
-    }, 2500);
-  }
-}
-function logout() {
-  document.getElementById("admin-screen").style.display = "none";
-  document.getElementById("login-screen").style.display = "flex";
-  document.getElementById("pwd-input").value = "";
-}
-document.getElementById("pwd-input").addEventListener("keydown", function(e) {
-  if (e.key === "Enter") tryLogin();
-});
-
-/* ══ DATA ══ */
-var allListings = [];
-var allInterests = [];
-
-async function loadAll() {
-  try {
-    var [lRes, iRes] = await Promise.all([
-      fetch(API + "/listings?select=*&order=created_at.desc", {headers: H}),
-      fetch(API + "/interests?select=*&order=created_at.desc", {headers: H})
-    ]);
-    allListings = lRes.ok ? await lRes.json() : [];
-    allInterests = iRes.ok ? await iRes.json() : [];
-    updateStats();
-    renderTable();
-    renderInterests();
-    var now = new Date();
-    document.getElementById("last-refresh").textContent =
-      "Mis à jour à " + now.getHours() + "h" + String(now.getMinutes()).padStart(2,"0");
-  } catch(e) {
-    showToast("Erreur de connexion à la base de données.");
+    document.getElementById("auth-err").style.display="block";
   }
 }
 
-function updateStats() {
-  document.getElementById("stat-total").textContent = allListings.length;
-  document.getElementById("stat-location").textContent = allListings.filter(function(l){return l.listing_type==="location";}).length;
-  document.getElementById("stat-partage").textContent = allListings.filter(function(l){return l.listing_type==="partage";}).length;
-  document.getElementById("stat-interests").textContent = allInterests.length;
+function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
+
+function fmtDate(iso){if(!iso)return "—";var d=new Date(iso);return d.toLocaleDateString("fr-FR")+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
+
+function statusLabel(s){
+  var map={"pending_owner":"⏳ Attente proprio","owner_refused":"❌ Refusé","pending_payment":"💳 Attente paiement","pending_confirmation":"🔍 Virement reçu ?","completed":"✅ Finalisé"};
+  return map[s]||s;
 }
 
-/* ══ TABS ══ */
-function switchTab(name, btn) {
-  document.querySelectorAll(".admin-tab").forEach(function(b){b.classList.remove("active");});
-  btn.classList.add("active");
-  document.getElementById("tab-annonces").style.display = name === "annonces" ? "block" : "none";
-  document.getElementById("tab-interets").style.display = name === "interets" ? "block" : "none";
+async function loadAll(){
+  document.getElementById("last-refresh").textContent="Actualisé à "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  try{
+    var r=await fetch(API+"/signatures?select=*&order=created_at.desc",{headers:H});
+    var sigs=await r.json();
+
+    // Stats
+    document.getElementById("stat-total").textContent=sigs.length;
+    document.getElementById("stat-pending-owner").textContent=sigs.filter(function(s){return s.status==="pending_owner";}).length;
+    document.getElementById("stat-pending-payment").textContent=sigs.filter(function(s){return s.status==="pending_payment"||s.status==="pending_confirmation";}).length;
+    document.getElementById("stat-completed").textContent=sigs.filter(function(s){return s.status==="completed";}).length;
+
+    // Payment list
+    var toConfirm=sigs.filter(function(s){return s.status==="pending_payment"||s.status==="pending_confirmation";});
+    var payEl=document.getElementById("payment-list");
+    if(toConfirm.length===0){payEl.innerHTML='<div class="empty">Aucun virement en attente. 🎉</div>';}
+    else{payEl.innerHTML=toConfirm.map(function(s){return sigRow(s,true);}).join("");}
+
+    // All list
+    var allEl=document.getElementById("all-list");
+    if(sigs.length===0){allEl.innerHTML='<div class="empty">Aucune demande pour l\'instant.</div>';}
+    else{allEl.innerHTML=sigs.map(function(s){return sigRow(s,false);}).join("");}
+
+  }catch(e){showToast("Erreur chargement : "+e.message);}
 }
 
-/* ══ LISTINGS TABLE ══ */
-function renderTable() {
-  var q = (document.getElementById("admin-search").value || "").toLowerCase().trim();
-  var filtered = allListings.filter(function(l) {
-    if (!q) return true;
-    return (l.title && l.title.toLowerCase().includes(q)) ||
-           (l.quartier && l.quartier.toLowerCase().includes(q)) ||
-           (l.contact_name && l.contact_name.toLowerCase().includes(q)) ||
-           (String(l.id).includes(q));
-  });
-
-  var tbody = document.getElementById("listings-tbody");
-  if (filtered.length === 0) {
-    tbody.innerHTML = "<tr><td colspan=\"8\"><div class=\"empty-state\"><div class=\"ei\">📭</div><p>Aucune annonce trouvée.</p></div></td></tr>";
-    return;
-  }
-
-  tbody.innerHTML = "";
-  filtered.forEach(function(l) {
-    var interestCount = allInterests.filter(function(i){return i.listing_id == l.id;}).length;
-    var isS = l.listing_type === "partage";
-    var price = isS ? (l.share_price || l.price) : l.price;
-    var tr = document.createElement("tr");
-
-    /* #ID */
-    var tdId = document.createElement("td");
-    tdId.className = "mono";
-    tdId.textContent = "#" + l.id;
-    tr.appendChild(tdId);
-
-    /* Titre + quartier */
-    var tdTitle = document.createElement("td");
-    tdTitle.innerHTML =
-      "<div style=\"font-weight:700;color:white;margin-bottom:3px\">" + esc(l.title) + "</div>" +
-      "<div style=\"font-size:.72rem;color:rgba(255,255,255,.35)\">" + esc(l.quartier) + (l.surface ? " · " + l.surface + " m²" : "") + "</div>";
-    tr.appendChild(tdTitle);
-
-    /* Type badge */
-    var tdType = document.createElement("td");
-    var badgeCls = isS ? "badge-purple" : "badge-blue";
-    var badgeTxt = isS ? "Partage" : "Location";
-    tdType.innerHTML = "<span class=\"badge " + badgeCls + "\">" + badgeTxt + "</span>" +
-      "<div style=\"font-size:.7rem;color:rgba(255,255,255,.3);margin-top:4px\">" + esc(l.owner_type || "") + "</div>";
-    tr.appendChild(tdType);
-
-    /* Prix */
-    var tdPrice = document.createElement("td");
-    tdPrice.innerHTML = "<span style=\"font-weight:800;color:white\">" + (price || "—") + "€</span><span style=\"font-size:.7rem;color:rgba(255,255,255,.3)\">/mois</span>";
-    tr.appendChild(tdPrice);
-
-    /* Propriétaire */
-    var tdOwner = document.createElement("td");
-    tdOwner.innerHTML = "<div style=\"font-weight:700;color:white\">" + esc(l.contact_name || "—") + "</div>";
-    tr.appendChild(tdOwner);
-
-    /* Contact */
-    var tdContact = document.createElement("td");
-    var emailHtml = l.contact_email ? "<div><a href=\"mailto:" + esc(l.contact_email) + "\" style=\"color:var(--indigo-l);text-decoration:none;font-size:.75rem\">" + esc(l.contact_email) + "</a></div>" : "";
-    var phoneHtml = l.contact_phone ? "<div style=\"font-size:.75rem;color:rgba(255,255,255,.4)\">" + esc(l.contact_phone) + "</div>" : "";
-    tdContact.innerHTML = emailHtml + phoneHtml || "<span style=\"color:rgba(255,255,255,.2)\">—</span>";
-    tr.appendChild(tdContact);
-
-    /* Intérêts */
-    var tdInt = document.createElement("td");
-    var intColor = interestCount > 0 ? "#68D391" : "rgba(255,255,255,.25)";
-    tdInt.innerHTML = "<span style=\"font-weight:800;color:" + intColor + ";font-size:1rem\">" + interestCount + "</span>";
-    tr.appendChild(tdInt);
-
-    /* Action supprimer */
-    var tdAction = document.createElement("td");
-    var delBtn = document.createElement("button");
-    delBtn.className = "action-btn action-del";
-    delBtn.textContent = "🗑️ Supprimer";
-    delBtn.addEventListener("click", function() { openConfirm(l.id, l.title); });
-    tdAction.appendChild(delBtn);
-    tr.appendChild(tdAction);
-
-    tbody.appendChild(tr);
-  });
+function sigRow(s, showConfirmBtn){
+  var statusClass="s-"+s.status;
+  var confirmBtn=showConfirmBtn
+    ? '<button class="btn-confirm" onclick="confirmPayment(\''+s.payment_token+'\',\''+s.tenant_name+'\',\''+s.tenant_email+'\',\''+s.owner_name+'\',\''+s.owner_email+'\',\''+(s.owner_phone||'')+'\',\''+s.listing_title+'\',\''+s.listing_quartier+'\',\''+s.listing_price+'\',\''+s.payment_ref+'\')">✅ Confirmer</button>'
+    : '<span style="font-size:.72rem;color:#7B79AA">'+fmtDate(s.created_at)+'</span>';
+  return '<div class="sig-row">'+
+    '<div>'+
+      '<div class="sig-title">'+escHtml(s.listing_title||"—")+'</div>'+
+      '<div class="sig-meta">'+escHtml(s.tenant_name||"—")+' · '+escHtml(s.tenant_email||"—")+'</div>'+
+      '<div class="sig-meta" style="margin-top:2px">Proprio : '+escHtml(s.owner_name||"—")+'</div>'+
+    '</div>'+
+    '<div class="sig-ref">'+escHtml(s.payment_ref||"—")+'</div>'+
+    '<span class="status-badge '+statusClass+'">'+statusLabel(s.status)+'</span>'+
+    '<div>'+confirmBtn+'</div>'+
+  '</div>';
 }
 
-/* ══ INTERESTS TABLE ══ */
-function renderInterests() {
-  var tbody = document.getElementById("interests-tbody");
+function escHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 
-  /* Group interests by listing_id */
-  var grouped = {};
-  allInterests.forEach(function(i) {
-    if (!grouped[i.listing_id]) grouped[i.listing_id] = 0;
-    grouped[i.listing_id]++;
-  });
+async function confirmPayment(payToken, tenantName, tenantEmail, ownerName, ownerEmail, ownerPhone, listingTitle, listingQuartier, listingPrice, payRef){
+  if(!confirm("Confirmer le paiement de "+payRef+" et envoyer les coordonnées aux deux parties ?"))return;
+  try{
+    var now=new Date().toISOString();
+    var r=await fetch(API+"/signatures?payment_token=eq."+payToken,{
+      method:"PATCH",headers:HP,
+      body:JSON.stringify({status:"completed",payment_confirmed_at:now})
+    });
+    if(!r.ok)throw new Error(await r.text());
 
-  var keys = Object.keys(grouped).sort(function(a,b){return grouped[b]-grouped[a];});
+    // Email de confirmation aux deux parties (via mailto unused)
+    var subj=encodeURIComponent("[unused] Mise en relation finalisée — "+listingTitle);
+    var body=encodeURIComponent([
+      "Bonjour,",
+      "",
+      "La mise en relation pour l'espace « "+listingTitle+" » ("+listingQuartier+", "+listingPrice+"€/mois) est finalisée.",
+      "Réf. paiement : "+payRef,
+      "",
+      "=== COORDONNÉES PROPRIÉTAIRE ===",
+      "Nom : "+ownerName,
+      "Email : "+ownerEmail,
+      (ownerPhone ? "Téléphone : "+ownerPhone : ""),
+      "",
+      "=== COORDONNÉES LOCATAIRE ===",
+      "Nom : "+tenantName,
+      "Email : "+tenantEmail,
+      "",
+      "Pensez à établir un contrat de mise à disposition :",
+      window.location.origin+"/contrat-stockage.html",
+      "",
+      "— unused · unused.lille@gmail.com"
+    ].filter(Boolean).join("\n"));
+    window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
 
-  if (keys.length === 0) {
-    tbody.innerHTML = "<tr><td colspan=\"4\"><div class=\"empty-state\"><div class=\"ei\">💌</div><p>Aucune demande pour l'instant.</p></div></td></tr>";
-    return;
-  }
-
-  tbody.innerHTML = "";
-  keys.forEach(function(lid) {
-    var listing = allListings.find(function(l){return String(l.id) === String(lid);});
-    var count = grouped[lid];
-    var tr = document.createElement("tr");
-
-    /* Annonce */
-    var tdTitle = document.createElement("td");
-    if (listing) {
-      tdTitle.innerHTML =
-        "<div style=\"font-weight:700;color:white\">" + esc(listing.title) + "</div>" +
-        "<div class=\"mono\" style=\"margin-top:3px\">#" + listing.id + "</div>";
-    } else {
-      tdTitle.innerHTML = "<span style=\"color:rgba(255,255,255,.25)\">Annonce supprimée (#" + lid + ")</span>";
-    }
-    tr.appendChild(tdTitle);
-
-    /* Propriétaire */
-    var tdOwner = document.createElement("td");
-    tdOwner.innerHTML = listing
-      ? "<span style=\"font-weight:700\">" + esc(listing.contact_name || "—") + "</span>"
-      : "<span style=\"color:rgba(255,255,255,.25)\">—</span>";
-    tr.appendChild(tdOwner);
-
-    /* Nb demandes */
-    var tdCount = document.createElement("td");
-    tdCount.innerHTML = "<span style=\"font-size:1.3rem;font-weight:800;color:#68D391\">" + count + "</span>";
-    tr.appendChild(tdCount);
-
-    /* Contact propriétaire */
-    var tdContact = document.createElement("td");
-    if (listing) {
-      var emailHtml = listing.contact_email ? "<a href=\"mailto:" + esc(listing.contact_email) + "\" style=\"color:var(--indigo-l);font-size:.78rem;text-decoration:none\">" + esc(listing.contact_email) + "</a>" : "";
-      var phoneHtml = listing.contact_phone ? "<div style=\"font-size:.75rem;color:rgba(255,255,255,.4);margin-top:2px\">" + esc(listing.contact_phone) + "</div>" : "";
-      tdContact.innerHTML = emailHtml + phoneHtml;
-    } else {
-      tdContact.innerHTML = "<span style=\"color:rgba(255,255,255,.25)\">—</span>";
-    }
-    tr.appendChild(tdContact);
-
-    tbody.appendChild(tr);
-  });
+    showToast("✅ Paiement confirmé !");
+    setTimeout(loadAll, 500);
+  }catch(e){showToast("Erreur : "+e.message);}
 }
-
-/* ══ DELETE ══ */
-var pendingDeleteId = null;
-function openConfirm(id, title) {
-  pendingDeleteId = id;
-  document.getElementById("confirm-text").textContent =
-    "Tu vas supprimer : \"" + title + "\" (#" + id + "). Cette action est irréversible.";
-  document.getElementById("confirm-modal").classList.add("open");
-}
-function closeConfirm() {
-  document.getElementById("confirm-modal").classList.remove("open");
-  pendingDeleteId = null;
-}
-async function confirmDelete() {
-  if (!pendingDeleteId) return;
-  try {
-    var r = await fetch(API + "/listings?id=eq." + pendingDeleteId, {method:"DELETE", headers:H});
-    if (!r.ok) throw new Error();
-    closeConfirm();
-    showToast("✅ Annonce supprimée.");
-    await loadAll();
-  } catch(e) {
-    showToast("❌ Erreur lors de la suppression.");
-  }
-}
-document.getElementById("confirm-modal").addEventListener("click", function(e) {
-  if (e.target === this) closeConfirm();
-});
-
-/* ══ UTILS ══ */
-function showToast(msg) {
-  var t = document.getElementById("admin-toast");
-  t.textContent = msg;
-  t.style.opacity = "1"; t.style.transform = "translateX(-50%) translateY(0)";
-  setTimeout(function() { t.style.opacity = "0"; t.style.transform = "translateX(-50%) translateY(14px)"; }, 3000);
-}
-function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 </script>
 </body>
 </html>
