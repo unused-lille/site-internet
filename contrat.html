@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contrat de mise à disposition — unused</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#3D3BF3;--indigo-d:#2A28C8;--indigo-pale:#EEEEFF;
+  --cream:#FAF8F2;--cream-d:#EEEAE0;--ink:#12111E;--muted:#7B7A9A;
+  --border:rgba(61,59,243,.1);--shadow:0 6px 32px rgba(61,59,243,.1);
+  --r:16px;--r-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;}
+.nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(250,248,242,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.logo{font-size:1.1rem;font-weight:800;letter-spacing:-.05em;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:7px;}
+.logo-dot{width:7px;height:7px;background:var(--indigo);border-radius:50%;animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5);opacity:.6}}
+
+.page{max-width:640px;margin:0 auto;padding:36px 20px 80px;}
+
+/* Loading */
+.loading{text-align:center;padding:80px 20px;}
+.spinner{width:36px;height:36px;border:3px solid var(--indigo-pale);border-top-color:var(--indigo);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Cards */
+.card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow);margin-bottom:20px;}
+
+/* Header */
+.contract-header{text-align:center;margin-bottom:32px;}
+.contract-logo{font-size:1.4rem;font-weight:800;letter-spacing:-.05em;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;}
+.contract-title{font-size:1.5rem;font-weight:800;letter-spacing:-.04em;line-height:1.15;margin-bottom:6px;}
+.contract-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--indigo);}
+.contract-subtitle{font-size:.84rem;color:var(--muted);line-height:1.65;}
+
+/* Annonce recap */
+.annonce-recap{background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.2);border-radius:var(--r-sm);padding:16px 18px;margin-bottom:28px;}
+.annonce-title{font-size:1rem;font-weight:700;margin-bottom:8px;}
+.annonce-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{background:white;border:1px solid var(--border);border-radius:100px;padding:4px 12px;font-size:.76rem;font-weight:600;color:var(--ink);}
+
+/* Section titles */
+.section-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:16px;padding-bottom:8px;border-bottom:1.5px solid var(--indigo-pale);}
+
+/* Form fields */
+.field{margin-bottom:18px;}
+.field label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:6px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--cream-d);border-radius:var(--r-sm);
+  font-family:inherit;font-size:.9rem;color:var(--ink);
+  background:white;outline:none;transition:border-color .18s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--indigo);}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field-hint{font-size:.74rem;color:var(--muted);margin-top:5px;line-height:1.5;}
+
+/* Radio/checkbox groups */
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--cream-d);border-radius:var(--r-sm);cursor:pointer;transition:all .15s;}
+.option:hover{border-color:var(--indigo);background:var(--indigo-pale);}
+.option.selected{border-color:var(--indigo);background:var(--indigo-pale);}
+.option input[type=radio],.option input[type=checkbox]{accent-color:var(--indigo);width:15px;height:15px;flex-shrink:0;}
+.option-label{font-size:.88rem;font-weight:600;color:var(--ink);}
+.option-sub{font-size:.76rem;color:var(--muted);margin-top:1px;}
+
+/* Info box */
+.info-box{background:#FFFBEB;border:1.5px solid #F6E05E;border-radius:var(--r-sm);padding:14px 16px;font-size:.82rem;color:#744210;line-height:1.65;margin-bottom:18px;}
+
+/* Signature block */
+.sig-block{background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.2);border-radius:var(--r-sm);padding:16px;margin-bottom:14px;}
+.sig-check{display:flex;align-items:flex-start;gap:10px;}
+.sig-check input[type=checkbox]{margin-top:3px;width:16px;height:16px;accent-color:var(--indigo);flex-shrink:0;cursor:pointer;}
+.sig-check label{font-size:.84rem;color:var(--ink);line-height:1.6;cursor:pointer;}
+.ts-line{font-size:.72rem;color:var(--muted);margin-top:10px;line-height:1.5;}
+
+/* Buttons */
+.btn-primary{width:100%;padding:15px;background:var(--indigo);color:white;border:none;border-radius:100px;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s;}
+.btn-primary:hover{background:var(--indigo-d);transform:translateY(-1px);box-shadow:0 8px 24px rgba(61,59,243,.3);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-back{width:100%;padding:13px;background:white;color:var(--muted);border:1.5px solid var(--cream-d);border-radius:100px;font-family:inherit;font-weight:700;font-size:.88rem;cursor:pointer;margin-top:10px;transition:all .18s;}
+.btn-back:hover{border-color:var(--indigo);color:var(--indigo);}
+
+/* Error */
+.err{font-size:.78rem;color:#E53E3E;display:none;margin-bottom:12px;}
+
+footer{border-top:1px solid var(--border);padding:20px;text-align:center;font-size:.74rem;color:var(--muted);}
+footer a{color:var(--indigo);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html"><span class="logo-dot"></span>UNUSED</a>
+  <span style="font-size:.74rem;color:var(--muted);font-weight:600">Contrat de mise à disposition</span>
+</nav>
+
+<div class="page">
+
+  <!-- LOADING -->
+  <div id="state-loading">
+    <div class="loading"><div class="spinner"></div><p style="color:var(--muted)">Chargement de l'annonce…</p></div>
+  </div>
+
+  <!-- ERREUR -->
+  <div id="state-error" style="display:none">
+    <div class="card" style="text-align:center;padding:40px">
+      <div style="font-size:3rem;margin-bottom:16px">❌</div>
+      <h2 style="margin-bottom:8px">Annonce introuvable</h2>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:24px">Cette annonce n'existe plus ou le lien est invalide.</p>
+      <a href="index.html" style="display:inline-block;padding:12px 24px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.88rem;text-decoration:none">Voir les annonces</a>
+    </div>
+  </div>
+
+  <!-- FORMULAIRE -->
+  <div id="state-form" style="display:none">
+
+    <div class="contract-header">
+      <div class="contract-logo"><span class="logo-dot"></span>UNUSED</div>
+      <h1 class="contract-title">Contrat de mise à <em>disposition</em></h1>
+      <p class="contract-subtitle">Remplis ce contrat pour soumettre ta demande au propriétaire. Tes coordonnées ne lui seront transmises qu'après double signature et paiement des frais de mise en relation (9€).</p>
+    </div>
+
+    <!-- RECAP ANNONCE -->
+    <div class="annonce-recap">
+      <div class="annonce-title" id="f-listing-title">—</div>
+      <div class="annonce-chips">
+        <span class="chip" id="f-listing-quartier">—</span>
+        <span class="chip" id="f-listing-surface">—</span>
+        <span class="chip" id="f-listing-price">—</span>
+        <span class="chip" id="f-listing-type">—</span>
+      </div>
+    </div>
+
+    <!-- SECTION 1 : INFOS PERSONNELLES -->
+    <div class="card">
+      <div class="section-label">1 — Tes informations</div>
+      <div class="field">
+        <label>Prénom et nom *</label>
+        <input type="text" id="f-name" placeholder="Ex : Marie Dupont">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Email *</label>
+          <input type="email" id="f-email" placeholder="marie@email.fr">
+        </div>
+        <div class="field">
+          <label>Téléphone *</label>
+          <input type="tel" id="f-phone" placeholder="06 12 34 56 78">
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 : MODALITÉS -->
+    <div class="card">
+      <div class="section-label">2 — Modalités souhaitées</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Date de début souhaitée *</label>
+          <input type="date" id="f-start-date">
+        </div>
+        <div class="field">
+          <label>Durée souhaitée *</label>
+          <select id="f-duration">
+            <option value="">— Choisir</option>
+            <option value="1 mois">1 mois</option>
+            <option value="3 mois">3 mois</option>
+            <option value="6 mois">6 mois</option>
+            <option value="1 an">1 an</option>
+            <option value="Indéterminée">Indéterminée</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Fréquence d'accès à l'espace *</label>
+        <div class="options" id="f-access">
+          <div class="option" onclick="selectOption('f-access', this, 'Aucun accès nécessaire')">
+            <input type="radio" name="access"><div><div class="option-label">🔒 Aucun accès nécessaire</div><div class="option-sub">Je dépose mes affaires et n'y touche pas jusqu'à la fin</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-access', this, 'Occasionnel — environ 1 fois par mois')">
+            <input type="radio" name="access"><div><div class="option-label">📅 Occasionnel</div><div class="option-sub">Environ 1 fois par mois</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-access', this, 'Régulier — environ 1 fois par semaine')">
+            <input type="radio" name="access"><div><div class="option-label">🔄 Régulier</div><div class="option-sub">Environ 1 fois par semaine</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-access', this, 'Fréquent — plusieurs fois par semaine')">
+            <input type="radio" name="access"><div><div class="option-label">⚡ Fréquent</div><div class="option-sub">Plusieurs fois par semaine</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nature des biens à stocker *</label>
+        <div class="options" id="f-goods">
+          <div class="option" onclick="selectOption('f-goods', this, 'Quelques cartons / affaires personnelles')">
+            <input type="radio" name="goods"><div><div class="option-label">📦 Quelques cartons</div><div class="option-sub">Affaires personnelles, livres, vêtements</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-goods', this, 'Contenu d\'un coffre de voiture')">
+            <input type="radio" name="goods"><div><div class="option-label">🚗 Coffre de voiture</div><div class="option-sub">Matériel sportif, valises, équipement</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-goods', this, 'Contenu d\'une chambre')">
+            <input type="radio" name="goods"><div><div class="option-label">🛏 Contenu d'une chambre</div><div class="option-sub">Mobilier léger, cartons, électroménager</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-goods', this, 'Contenu d\'un studio')">
+            <input type="radio" name="goods"><div><div class="option-label">🏠 Contenu d'un studio</div><div class="option-sub">Volume important, mobilier</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Précisions sur les biens (optionnel)</label>
+        <textarea id="f-goods-detail" placeholder="Ex : vélo + cartons de livres + valise..."></textarea>
+      </div>
+    </div>
+
+    <!-- SECTION 3 : CONDITIONS FINANCIÈRES -->
+    <div class="card">
+      <div class="section-label">3 — Conditions financières</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Prix mensuel accepté (€) *</label>
+          <input type="number" id="f-price" min="1" placeholder="Ex : 50">
+          <div class="field-hint">Prix affiché sur l'annonce : <strong id="f-price-hint">—</strong>€/mois</div>
+        </div>
+        <div class="field">
+          <label>Préavis de départ *</label>
+          <select id="f-notice">
+            <option value="">— Choisir</option>
+            <option value="1 semaine">1 semaine</option>
+            <option value="2 semaines">2 semaines</option>
+            <option value="1 mois">1 mois</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Modalité de paiement du loyer au propriétaire *</label>
+        <div class="options" id="f-payment">
+          <div class="option" onclick="selectOption('f-payment', this, 'Virement bancaire')">
+            <input type="radio" name="payment"><div><div class="option-label">🏦 Virement bancaire</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-payment', this, 'Espèces')">
+            <input type="radio" name="payment"><div><div class="option-label">💵 Espèces</div></div>
+          </div>
+          <div class="option" onclick="selectOption('f-payment', this, 'Chèque')">
+            <input type="radio" name="payment"><div><div class="option-label">📝 Chèque</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4 : ENGAGEMENTS -->
+    <div class="card">
+      <div class="section-label">4 — Engagements</div>
+
+      <div class="info-box">
+        🛡️ <strong>Assurance</strong> — Pense à vérifier auprès de ton assureur que tes biens sont couverts en dehors de ton domicile. La plupart des assurances habitation ne le prévoient pas par défaut.
+      </div>
+
+      <div class="field">
+        <div class="options">
+          <div class="option" id="opt-no-dangerous" onclick="toggleEngagement(this)">
+            <input type="checkbox" id="cb-no-dangerous">
+            <div>
+              <div class="option-label">⛔ Aucun bien dangereux ou illicite</div>
+              <div class="option-sub">Je m'engage à ne stocker aucun produit dangereux, inflammable ou illicite</div>
+            </div>
+          </div>
+          <div class="option" id="opt-access-emergency" onclick="toggleEngagement(this)">
+            <input type="checkbox" id="cb-access-emergency">
+            <div>
+              <div class="option-label">🔑 Accès d'urgence propriétaire</div>
+              <div class="option-sub">J'accepte que le propriétaire puisse accéder à l'espace en cas d'urgence, avec préavis sauf danger immédiat</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="err" id="err-engagements">❌ Les deux engagements sont obligatoires.</p>
+    </div>
+
+    <!-- SECTION 5 : SIGNATURE -->
+    <div class="card">
+      <div class="section-label">5 — Signature électronique</div>
+      <p style="font-size:.84rem;color:var(--muted);line-height:1.65;margin-bottom:16px">En signant, tu confirmes que les informations ci-dessus sont exactes et tu t'engages sur les modalités proposées. Ce contrat sera soumis au propriétaire pour acceptation.</p>
+
+      <div class="sig-block">
+        <div class="sig-check">
+          <input type="checkbox" id="cb-sign">
+          <label for="cb-sign">Je, <strong id="sig-name">—</strong>, déclare avoir lu et accepté l'ensemble des conditions de ce contrat de mise à disposition. En cochant cette case, j'appose ma <strong>signature électronique</strong> au sens de l'article 1367 du Code civil français.</label>
+        </div>
+        <div class="ts-line">📅 <span id="sig-ts">—</span> · Annonce <span id="sig-ref">—</span></div>
+      </div>
+
+      <p class="err" id="err-sign">❌ Coche la case pour apposer ta signature.</p>
+      <p class="err" id="err-fields">❌ Remplis tous les champs obligatoires.</p>
+
+      <button class="btn-primary" id="btn-submit" onclick="submitContract()">✍️ Signer et envoyer ma demande</button>
+      <button class="btn-back" onclick="window.history.back()">← Retour aux annonces</button>
+    </div>
+
+  </div>
+
+  <!-- CONFIRMATION -->
+  <div id="state-confirm" style="display:none;text-align:center;padding:40px 0">
+    <div style="font-size:3.5rem;margin-bottom:16px">✅</div>
+    <h2 style="font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:8px">Contrat envoyé !</h2>
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:6px;max-width:400px;margin-left:auto;margin-right:auto">Ton contrat a été enregistré et transmis à unused. Le propriétaire va être contacté avec les modalités que tu as proposées.</p>
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:28px;max-width:400px;margin-left:auto;margin-right:auto">S'il accepte, tu recevras un email pour régler les 9€ de frais de mise en relation. Tes coordonnées ne lui seront transmises qu'après paiement.</p>
+    <a href="index.html" style="display:inline-block;padding:13px 28px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.9rem;text-decoration:none">Retour aux annonces</a>
+  </div>
+
+</div>
+
+<footer><p>© 2026 unused — Projet étudiant · Lille &nbsp;·&nbsp; <a href="cgu.html">CGU</a></p></footer>
+
+<script>
+var SUPABASE_URL="https://wncoflfsrorictwndffa.supabase.co";
+var SUPABASE_KEY="sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3";
+var API=SUPABASE_URL+"/rest/v1";
+var H={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=representation"};
+var HP={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=minimal"};
+
+var listing=null;
+var formValues={access:null, goods:null, payment:null};
+
+// ── INIT
+async function init(){
+  var params=new URLSearchParams(window.location.search);
+  var id=params.get("listing");
+  if(!id){setState("error");return;}
+  try{
+    var r=await fetch(API+"/listings?id=eq."+id+"&select=*",{headers:H});
+    var data=await r.json();
+    if(!data||!data.length){setState("error");return;}
+    listing=data[0];
+    populateListing();
+    setState("form");
+  }catch(e){setState("error");}
+}
+
+function setState(name){
+  ["loading","error","form","confirm"].forEach(function(s){
+    document.getElementById("state-"+s).style.display=s===name?"block":"none";
+  });
+  if(name==="form"){
+    var now=new Date();
+    document.getElementById("sig-ts").textContent=now.toLocaleDateString("fr-FR")+" à "+now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("sig-ref").textContent="#"+listing.id;
+    // Set min date to today
+    document.getElementById("f-start-date").min=now.toISOString().split("T")[0];
+    // Update sig name on input
+    document.getElementById("f-name").addEventListener("input",function(){
+      document.getElementById("sig-name").textContent=this.value.trim()||"—";
+    });
+  }
+}
+
+function populateListing(){
+  document.getElementById("f-listing-title").textContent=listing.title||"—";
+  document.getElementById("f-listing-quartier").textContent=listing.quartier||"—";
+  document.getElementById("f-listing-surface").textContent=(listing.surface||"?")+" m²";
+  document.getElementById("f-listing-price").textContent=(listing.price||"?")+"€/mois";
+  document.getElementById("f-listing-type").textContent=(listing.type_icon||"")+" "+(listing.type||"—");
+  document.getElementById("f-price").value=listing.price||"";
+  document.getElementById("f-price-hint").textContent=listing.price||"?";
+}
+
+// ── OPTION SELECTORS
+function selectOption(groupId, el, value){
+  var group=document.getElementById(groupId);
+  group.querySelectorAll(".option").forEach(function(o){
+    o.classList.remove("selected");
+    o.querySelector("input[type=radio]").checked=false;
+  });
+  el.classList.add("selected");
+  el.querySelector("input[type=radio]").checked=true;
+  formValues[groupId.replace("f-","")]=value;
+}
+
+function toggleEngagement(el){
+  var cb=el.querySelector("input[type=checkbox]");
+  cb.checked=!cb.checked;
+  el.classList.toggle("selected",cb.checked);
+}
+
+// ── VALIDATION
+function validate(){
+  var name=document.getElementById("f-name").value.trim();
+  var email=document.getElementById("f-email").value.trim();
+  var phone=document.getElementById("f-phone").value.trim();
+  var startDate=document.getElementById("f-start-date").value;
+  var duration=document.getElementById("f-duration").value;
+  var price=document.getElementById("f-price").value;
+  var notice=document.getElementById("f-notice").value;
+
+  if(!name||!email||!email.includes("@")||!phone||!startDate||!duration||!price||!notice||!formValues.access||!formValues.goods||!formValues.payment){
+    document.getElementById("err-fields").style.display="block";
+    return false;
+  }
+  document.getElementById("err-fields").style.display="none";
+
+  var cb1=document.getElementById("cb-no-dangerous").checked;
+  var cb2=document.getElementById("cb-access-emergency").checked;
+  if(!cb1||!cb2){
+    document.getElementById("err-engagements").style.display="block";
+    return false;
+  }
+  document.getElementById("err-engagements").style.display="none";
+
+  if(!document.getElementById("cb-sign").checked){
+    document.getElementById("err-sign").style.display="block";
+    return false;
+  }
+  document.getElementById("err-sign").style.display="none";
+
+  return true;
+}
+
+// ── SUBMIT
+async function submitContract(){
+  if(!validate())return;
+
+  var btn=document.getElementById("btn-submit");
+  btn.textContent="Envoi…";btn.disabled=true;
+
+  var name=document.getElementById("f-name").value.trim();
+  var email=document.getElementById("f-email").value.trim();
+  var phone=document.getElementById("f-phone").value.trim();
+  var startDate=document.getElementById("f-start-date").value;
+  var duration=document.getElementById("f-duration").value;
+  var price=document.getElementById("f-price").value;
+  var notice=document.getElementById("f-notice").value;
+  var goodsDetail=document.getElementById("f-goods-detail").value.trim();
+  var now=new Date().toISOString();
+
+  function makeToken(){return Math.random().toString(36).slice(2,10).toUpperCase()+Math.random().toString(36).slice(2,10).toUpperCase();}
+  var ownerToken=makeToken();
+  var paymentToken=makeToken();
+  var paymentRef="UNUSED-"+String(listing.id).slice(-4)+"-"+makeToken().slice(0,6);
+
+  // Résumé du contrat pour le mail
+  var contractSummary=[
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+    "CONTRAT DE MISE À DISPOSITION — unused",
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+    "",
+    "📋 ANNONCE",
+    "Titre : "+listing.title,
+    "Quartier : "+listing.quartier,
+    "Surface : "+(listing.surface||"?")+" m²",
+    "Prix annoncé : "+(listing.price||"?")+"€/mois",
+    "Référence : #"+listing.id,
+    "",
+    "👤 LOCATAIRE",
+    "Nom : "+name,
+    "Email : "+email,
+    "Téléphone : "+phone,
+    "",
+    "📅 MODALITÉS PROPOSÉES",
+    "Date de début : "+new Date(startDate).toLocaleDateString("fr-FR"),
+    "Durée : "+duration,
+    "Fréquence d'accès : "+formValues.access,
+    "Biens à stocker : "+formValues.goods+(goodsDetail?" ("+goodsDetail+")":""),
+    "",
+    "💰 CONDITIONS FINANCIÈRES",
+    "Prix mensuel proposé : "+price+"€/mois",
+    "Modalité de paiement : "+formValues.payment,
+    "Préavis de départ : "+notice,
+    "",
+    "✅ ENGAGEMENTS",
+    "• Aucun bien dangereux ou illicite",
+    "• Accès d'urgence propriétaire accepté",
+    "",
+    "✍️ SIGNATURE ÉLECTRONIQUE",
+    "Signé par : "+name,
+    "Horodatage : "+new Date().toLocaleString("fr-FR"),
+    "Au sens de l'article 1367 du Code civil français",
+    "",
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+    "Ref. paiement : "+paymentRef,
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  ].join("\n");
+
+  try{
+    // Enregistrer en base Supabase
+    var record={
+      owner_token:ownerToken,
+      payment_token:paymentToken,
+      payment_ref:paymentRef,
+      listing_id:listing.id,
+      listing_title:listing.title,
+      listing_address:listing.address||null,
+      listing_quartier:listing.quartier||null,
+      listing_surface:listing.surface||null,
+      listing_price:listing.price||null,
+      tenant_name:name,
+      tenant_email:email,
+      tenant_phone:phone,
+      tenant_signed_at:now,
+      owner_name:listing.contact_name||listing.contactName||null,
+      owner_email:listing.contact_email||listing.contactEmail||null,
+      owner_phone:listing.contact_phone||listing.contactPhone||null,
+      status:"pending_owner",
+      // Champs contrat enrichis
+      contract_start_date:startDate,
+      contract_duration:duration,
+      contract_access:formValues.access,
+      contract_goods:formValues.goods+(goodsDetail?" — "+goodsDetail:""),
+      contract_price:parseInt(price),
+      contract_payment:formValues.payment,
+      contract_notice:notice
+    };
+
+    var r=await fetch(API+"/signatures",{method:"POST",headers:H,body:JSON.stringify(record)});
+    if(!r.ok)throw new Error(await r.text());
+
+    // Ouvrir le client mail avec le contrat en corps
+    var subj=encodeURIComponent("[unused] 📄 Nouveau contrat — "+listing.title+" #"+listing.id);
+    var body=encodeURIComponent(contractSummary+"\n\n— Envoyé depuis unused.fr");
+    setTimeout(function(){
+      window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
+    },300);
+
+    setState("confirm");
+
+  }catch(e){
+    alert("Erreur : "+e.message);
+    btn.textContent="✍️ Signer et envoyer ma demande";
+    btn.disabled=false;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
