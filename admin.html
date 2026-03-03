@@ -216,7 +216,6 @@ function switchTab(name){
 async function loadAll(){
   document.getElementById("last-refresh").textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
   await Promise.all([loadListings(), loadSignatures()]);
-}
 
 // ── ANNONCES
 var allListings=[];
