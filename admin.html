@@ -308,10 +308,24 @@ document.getElementById("listing-modal").addEventListener("click",function(e){if
 
 // ── SIGNATURES
 function statusLabel(s){
-  return {"pending_owner":"⏳ Attente proprio","owner_refused":"❌ Refusé","pending_payment":"💳 Attente paiement","completed":"✅ Finalisé"}[s]||s;
+  return {
+    "pending_owner":    "📬 Contrat reçu",
+    "owner_contacted":  "📞 Proprio contacté",
+    "owner_accepted":   "✅ Proprio accepté",
+    "pending_payment":  "💳 Paiement en attente",
+    "completed":        "🎉 Contacts envoyés",
+    "owner_refused":    "❌ Refusé"
+  }[s]||s;
 }
 function statusBadgeClass(s){
-  return {"pending_owner":"b-pending","owner_refused":"b-refused","pending_payment":"b-payment","completed":"b-done"}[s]||"b-pending";
+  return {
+    "pending_owner":    "b-pending",
+    "owner_contacted":  "b-pending",
+    "owner_accepted":   "b-payment",
+    "pending_payment":  "b-payment",
+    "completed":        "b-done",
+    "owner_refused":    "b-refused"
+  }[s]||"b-pending";
 }
 
 async function loadSignatures(){
@@ -319,8 +333,8 @@ async function loadSignatures(){
     var r=await fetch(API+"/signatures?select=*&order=created_at.desc",{headers:H});
     var sigs=await r.json();
     document.getElementById("stat-demandes").textContent=sigs.length;
-    document.getElementById("stat-attente-proprio").textContent=sigs.filter(function(s){return s.status==="pending_owner";}).length;
-    document.getElementById("stat-attente-paiement").textContent=sigs.filter(function(s){return s.status==="pending_payment";}).length;
+    document.getElementById("stat-attente-proprio").textContent=sigs.filter(function(s){return s.status==="pending_owner"||s.status==="owner_contacted";}).length;
+    document.getElementById("stat-attente-paiement").textContent=sigs.filter(function(s){return s.status==="owner_accepted"||s.status==="pending_payment";}).length;
     var completed=sigs.filter(function(s){return s.status==="completed";});
     document.getElementById("stat-completed").textContent=completed.length;
     document.getElementById("stat-revenue").textContent=completed.length*9;
@@ -338,23 +352,74 @@ async function loadSignatures(){
 }
 
 function sigRow(s, showConfirmBtn){
-  var action=showConfirmBtn
-    ? '<button class="btn-sm btn-confirm" onclick="confirmPayment(this,\''+s.payment_token+'\',\''+escHtml(s.tenant_name)+'\',\''+escHtml(s.tenant_email)+'\',\''+escHtml(s.owner_name)+'\',\''+escHtml(s.owner_email)+'\',\''+escHtml(s.owner_phone||"")+'\',\''+escHtml(s.listing_title)+'\',\''+escHtml(s.listing_quartier)+'\',\''+(s.listing_price||"")+'\',\''+escHtml(s.payment_ref)+'\')">✅ Confirmer le virement</button>'
-    : '<span style="font-size:.72rem;color:#7B79AA">'+fmtDate(s.created_at)+'</span>';
+  var actions="";
+
+  if(showConfirmBtn){
+    // Tab paiements
+    actions='<button class="btn-sm btn-confirm" onclick="advanceStatus(this,\''+s.payment_token+'\',\'completed\',\''+escHtml(s.tenant_name)+'\',\''+escHtml(s.tenant_email)+'\',\''+escHtml(s.owner_name)+'\',\''+escHtml(s.owner_email)+'\',\''+escHtml(s.owner_phone||"")+'\',\''+escHtml(s.listing_title)+'\',\''+escHtml(s.listing_quartier)+'\',\''+(s.listing_price||"")+'\',\''+escHtml(s.payment_ref)+'\')">🎉 Contacts envoyés</button>';
+  } else {
+    // Bouton d'action selon statut
+    if(s.status==="pending_owner"){
+      actions=
+        '<button class="btn-sm btn-confirm" onclick="copyOwnerLink(\''+s.owner_token+'\')" style="margin-bottom:4px;display:block">📋 Copier lien proprio</button>'+
+        '<button class="btn-sm btn-view" onclick="setStatus(\''+s.owner_token+'\',\'owner_contacted\')">📞 Marquer contacté</button>';
+    } else if(s.status==="owner_contacted"){
+      actions=
+        '<button class="btn-sm btn-confirm" onclick="copyOwnerLink(\''+s.owner_token+'\')" style="margin-bottom:4px;display:block">📋 Copier lien proprio</button>'+
+        '<button class="btn-sm btn-view" onclick="setStatus(\''+s.owner_token+'\',\'owner_accepted\')">✅ Marquer accepté</button>';
+    } else if(s.status==="owner_accepted"){
+      actions='<button class="btn-sm btn-confirm" onclick="setStatus(\''+s.owner_token+'\',\'pending_payment\')">💳 Marquer payé</button>';
+    } else if(s.status==="pending_payment"){
+      actions='<button class="btn-sm btn-confirm" onclick="advanceStatus(this,\''+s.payment_token+'\',\'completed\',\''+escHtml(s.tenant_name)+'\',\''+escHtml(s.tenant_email)+'\',\''+escHtml(s.owner_name)+'\',\''+escHtml(s.owner_email)+'\',\''+escHtml(s.owner_phone||"")+'\',\''+escHtml(s.listing_title)+'\',\''+escHtml(s.listing_quartier)+'\',\''+(s.listing_price||"")+'\',\''+escHtml(s.payment_ref)+'\')">🎉 Envoyer contacts</button>';
+    } else {
+      actions='<span style="font-size:.72rem;color:#7B79AA">'+fmtDate(s.created_at)+'</span>';
+    }
+  }
+
   return '<div class="sig-row">'+
     '<div>'+
       '<div class="row-title">'+escHtml(s.listing_title)+'</div>'+
       '<div class="row-meta">👤 '+escHtml(s.tenant_name)+' · '+escHtml(s.tenant_email)+(s.tenant_phone?' · '+escHtml(s.tenant_phone):'')+'</div>'+
-      '<div class="row-meta">🏠 '+escHtml(s.owner_name)+' · '+escHtml(s.owner_email)+'</div>'+
+      '<div class="row-meta">🏠 '+escHtml(s.owner_name||"—")+' · '+escHtml(s.owner_email||"—")+'</div>'+
+      (s.contract_start_date?'<div class="row-meta" style="margin-top:3px">📅 '+fmtDate(s.contract_start_date)+' · '+escHtml(s.contract_duration||"—")+' · '+(s.contract_price||s.listing_price||"?")+'€/mois</div>':'')+
     '</div>'+
     '<div class="sig-ref">'+escHtml(s.payment_ref||"—")+'</div>'+
     '<span class="badge '+statusBadgeClass(s.status)+'">'+statusLabel(s.status)+'</span>'+
-    '<div>'+action+'</div>'+
+    '<div>'+actions+'</div>'+
   '</div>';
 }
 
-async function confirmPayment(btn, payToken, tenantName, tenantEmail, ownerName, ownerEmail, ownerPhone, listingTitle, listingQuartier, listingPrice, payRef){
-  if(!confirm("Confirmer le virement "+payRef+" et envoyer les coordonnées aux deux parties ?"))return;
+// Copier le lien proprio dans le presse-papier
+function copyOwnerLink(ownerToken){
+  var base=window.location.href.replace(/\/[^\/]*$/, "");
+  var link=base+"/contrat-proprio.html?token="+ownerToken;
+  navigator.clipboard.writeText(link).then(function(){
+    showToast("📋 Lien copié ! Envoie-le au proprio par mail.");
+  }).catch(function(){
+    prompt("Copie ce lien à envoyer au propriétaire :", link);
+  });
+}
+
+// Avancer le statut manuellement (sans email)
+async function setStatus(ownerToken, newStatus){
+  var labels={"owner_contacted":"proprio contacté","owner_accepted":"proprio accepté","pending_payment":"paiement reçu"};
+  if(!confirm("Marquer comme « "+labels[newStatus]+" » ?"))return;
+  try{
+    var r=await fetch(API+"/signatures?owner_token=eq."+ownerToken,{
+      method:"PATCH",headers:HP,
+      body:JSON.stringify({status:newStatus})
+    });
+    if(!r.ok)throw new Error(await r.text());
+    showToast("✅ Statut mis à jour.");
+    setTimeout(loadAll,400);
+  }catch(e){showToast("Erreur : "+e.message);}
+}
+
+}
+
+// Envoyer les contacts (statut completed) + ouvrir le mail
+async function advanceStatus(btn, payToken, newStatus, tenantName, tenantEmail, ownerName, ownerEmail, ownerPhone, listingTitle, listingQuartier, listingPrice, payRef){
+  if(!confirm("Envoyer les coordonnées aux deux parties et marquer comme finalisé ?"))return;
   btn.disabled=true; btn.textContent="…";
   try{
     var r=await fetch(API+"/signatures?payment_token=eq."+payToken,{
@@ -363,33 +428,38 @@ async function confirmPayment(btn, payToken, tenantName, tenantEmail, ownerName,
     });
     if(!r.ok)throw new Error(await r.text());
 
+    // Mail pré-rempli avec les coordonnées des deux parties à envoyer
     var subj=encodeURIComponent("[unused] Mise en relation finalisée — "+listingTitle);
     var body=encodeURIComponent([
       "Bonjour,",
       "",
-      "La mise en relation pour « "+listingTitle+" » ("+listingQuartier+", "+listingPrice+"€/mois) est finalisée.",
-      "Réf. : "+payRef,
+      "Votre mise en relation pour l'espace « "+listingTitle+" » ("+listingQuartier+") est finalisée.",
+      "Voici les coordonnées de l'autre partie :",
       "",
-      "=== COORDONNÉES PROPRIÉTAIRE ===",
+      "─── PROPRIÉTAIRE ───",
       "Nom : "+ownerName,
       "Email : "+ownerEmail,
       ownerPhone?"Téléphone : "+ownerPhone:"",
       "",
-      "=== COORDONNÉES LOCATAIRE ===",
+      "─── LOCATAIRE ───",
       "Nom : "+tenantName,
       "Email : "+tenantEmail,
       "",
-      "Modèle de contrat : "+window.location.origin+"/contrat-stockage.html",
+      "Vous pouvez maintenant convenir ensemble des modalités pratiques.",
+      "Réf. contrat : "+payRef,
       "",
       "— unused · unused.lille@gmail.com"
     ].filter(Boolean).join("\n"));
-    window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
 
-    showToast("✅ Paiement confirmé !");
-    setTimeout(loadAll, 600);
+    setTimeout(function(){
+      window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
+    },300);
+
+    showToast("🎉 Contacts envoyés !");
+    setTimeout(loadAll,600);
   }catch(e){
     showToast("Erreur : "+e.message);
-    btn.disabled=false; btn.textContent="✅ Confirmer le virement";
+    btn.disabled=false; btn.textContent="🎉 Envoyer contacts";
   }
 }
 </script>
