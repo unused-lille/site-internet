@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signature propriétaire — unused</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#3D3BF3;--indigo-d:#2A28C8;--indigo-pale:#EEEEFF;
+  --cream:#FAF8F2;--cream-d:#EEEAE0;--ink:#12111E;--muted:#7B7A9A;
+  --border:rgba(61,59,243,.1);--shadow:0 6px 32px rgba(61,59,243,.1);
+  --r:16px;--r-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;}
+.nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(250,248,242,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.logo{font-size:1.1rem;font-weight:800;letter-spacing:-.05em;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:7px;}
+.logo-dot{width:7px;height:7px;background:var(--indigo);border-radius:50%;animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5);opacity:.6}}
+
+.page{max-width:640px;margin:0 auto;padding:36px 20px 80px;}
+.state{display:none;}.state.active{display:block;}
+
+/* Loading */
+.loading{text-align:center;padding:80px 20px;}
+.spinner{width:36px;height:36px;border:3px solid var(--indigo-pale);border-top-color:var(--indigo);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Cards */
+.card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow);margin-bottom:20px;}
+
+/* Header */
+.contract-header{text-align:center;margin-bottom:28px;}
+.contract-title{font-size:1.5rem;font-weight:800;letter-spacing:-.04em;line-height:1.15;margin-bottom:6px;}
+.contract-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--indigo);}
+.contract-subtitle{font-size:.84rem;color:var(--muted);line-height:1.65;}
+
+/* Section titles */
+.section-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:16px;padding-bottom:8px;border-bottom:1.5px solid var(--indigo-pale);}
+
+/* Readonly rows */
+.readonly-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px;}
+.readonly-row{margin-bottom:14px;}
+.readonly-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.readonly-value{font-size:.92rem;font-weight:600;color:var(--ink);background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;line-height:1.5;}
+
+/* Highlight box */
+.highlight{background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.2);border-radius:var(--r-sm);padding:16px 18px;margin-bottom:20px;}
+.highlight-title{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo);margin-bottom:10px;}
+.highlight-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:.86rem;}
+.highlight-row:last-child{margin-bottom:0;}
+.highlight-key{color:var(--muted);}
+.highlight-val{font-weight:700;color:var(--ink);}
+
+/* Anon badge */
+.anon-box{background:#FFFBEB;border:1.5px solid #F6E05E;border-radius:var(--r-sm);padding:14px 16px;font-size:.82rem;color:#744210;line-height:1.65;margin-bottom:20px;}
+
+/* Form fields */
+.field{margin-bottom:18px;}
+.field label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:6px;}
+.field input{width:100%;padding:11px 14px;border:1.5px solid var(--cream-d);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;color:var(--ink);background:white;outline:none;transition:border-color .18s;}
+.field input:focus{border-color:var(--indigo);}
+
+/* Sig block */
+.sig-block{background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.2);border-radius:var(--r-sm);padding:16px;margin-bottom:14px;}
+.sig-check{display:flex;align-items:flex-start;gap:10px;}
+.sig-check input[type=checkbox]{margin-top:3px;width:16px;height:16px;accent-color:var(--indigo);flex-shrink:0;cursor:pointer;}
+.sig-check label{font-size:.84rem;color:var(--ink);line-height:1.6;cursor:pointer;}
+.ts-line{font-size:.72rem;color:var(--muted);margin-top:10px;line-height:1.5;}
+
+/* Buttons */
+.btn-primary{width:100%;padding:15px;background:var(--indigo);color:white;border:none;border-radius:100px;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s;}
+.btn-primary:hover{background:var(--indigo-d);transform:translateY(-1px);box-shadow:0 8px 24px rgba(61,59,243,.3);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.err{font-size:.78rem;color:#E53E3E;display:none;margin-bottom:12px;}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:100px;margin-bottom:14px;}
+.badge-orange{background:#FFF7ED;color:#C05621;}
+.badge-green{background:#F0FFF4;color:#276749;}
+
+footer{border-top:1px solid var(--border);padding:20px;text-align:center;font-size:.74rem;color:var(--muted);}
+footer a{color:var(--indigo);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html"><span class="logo-dot"></span>UNUSED</a>
+  <span style="font-size:.74rem;color:var(--muted);font-weight:600">Signature propriétaire</span>
+</nav>
+
+<div class="page">
+
+  <!-- LOADING -->
+  <div class="state active" id="state-loading">
+    <div class="loading"><div class="spinner"></div><p style="color:var(--muted)">Chargement du contrat…</p></div>
+  </div>
+
+  <!-- ERREUR -->
+  <div class="state" id="state-error">
+    <div class="card" style="text-align:center;padding:40px">
+      <div style="font-size:3rem;margin-bottom:16px">❌</div>
+      <h2 style="margin-bottom:8px">Lien invalide ou expiré</h2>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:24px">Ce lien n'est plus valide ou a déjà été utilisé.</p>
+      <a href="index.html" style="display:inline-block;padding:12px 24px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.88rem;text-decoration:none">Retour au site</a>
+    </div>
+  </div>
+
+  <!-- DÉJÀ SIGNÉ -->
+  <div class="state" id="state-done">
+    <div class="card" style="text-align:center;padding:40px">
+      <div style="font-size:3rem;margin-bottom:16px">✅</div>
+      <h2 style="margin-bottom:8px">Contrat déjà signé</h2>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:24px">Vous avez déjà signé ce contrat. unused va vous mettre en contact avec le locataire très prochainement.</p>
+      <a href="index.html" style="display:inline-block;padding:12px 24px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.88rem;text-decoration:none">Retour au site</a>
+    </div>
+  </div>
+
+  <!-- FORMULAIRE PROPRIO -->
+  <div class="state" id="state-form">
+
+    <div class="contract-header">
+      <div class="badge badge-orange">📋 Signature requise</div>
+      <h1 class="contract-title">Contrat de mise à <em>disposition</em></h1>
+      <p class="contract-subtitle">Un étudiant souhaite louer votre espace. Voici les modalités qu'il propose. Lisez attentivement avant de signer.</p>
+    </div>
+
+    <!-- ANNONCE -->
+    <div class="card">
+      <div class="section-label">L'espace concerné</div>
+      <div class="highlight">
+        <div class="highlight-title">Votre annonce</div>
+        <div class="highlight-row"><span class="highlight-key">Titre</span><span class="highlight-val" id="p-listing-title">—</span></div>
+        <div class="highlight-row"><span class="highlight-key">Quartier</span><span class="highlight-val" id="p-listing-quartier">—</span></div>
+        <div class="highlight-row"><span class="highlight-key">Surface</span><span class="highlight-val" id="p-listing-surface">—</span></div>
+        <div class="highlight-row"><span class="highlight-key">Prix annoncé</span><span class="highlight-val" id="p-listing-price">—</span></div>
+      </div>
+    </div>
+
+    <!-- MODALITÉS PROPOSÉES PAR L'ÉTUDIANT -->
+    <div class="card">
+      <div class="section-label">Modalités proposées par l'étudiant</div>
+
+      <div class="anon-box">
+        🔒 <strong>Identité non communiquée</strong> — Les coordonnées de l'étudiant vous seront transmises par unused après finalisation de la mise en relation.
+      </div>
+
+      <div class="readonly-grid">
+        <div class="readonly-row">
+          <div class="readonly-label">Date de début</div>
+          <div class="readonly-value" id="p-start-date">—</div>
+        </div>
+        <div class="readonly-row">
+          <div class="readonly-label">Durée</div>
+          <div class="readonly-value" id="p-duration">—</div>
+        </div>
+      </div>
+      <div class="readonly-grid">
+        <div class="readonly-row">
+          <div class="readonly-label">Prix mensuel proposé</div>
+          <div class="readonly-value" id="p-price">—</div>
+        </div>
+        <div class="readonly-row">
+          <div class="readonly-label">Préavis de départ</div>
+          <div class="readonly-value" id="p-notice">—</div>
+        </div>
+      </div>
+      <div class="readonly-row">
+        <div class="readonly-label">Fréquence d'accès</div>
+        <div class="readonly-value" id="p-access">—</div>
+      </div>
+      <div class="readonly-row">
+        <div class="readonly-label">Biens à stocker</div>
+        <div class="readonly-value" id="p-goods">—</div>
+      </div>
+      <div class="readonly-row">
+        <div class="readonly-label">Modalité de paiement du loyer</div>
+        <div class="readonly-value" id="p-payment">—</div>
+      </div>
+    </div>
+
+    <!-- ENGAGEMENTS PROPRIO -->
+    <div class="card">
+      <div class="section-label">Vos engagements</div>
+      <p style="font-size:.84rem;color:var(--muted);line-height:1.65;margin-bottom:16px">En signant ce contrat, vous confirmez accepter les modalités ci-dessus et vous engagez sur les points suivants.</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--cream);border-radius:var(--r-sm);border:1px solid var(--border);">
+          <span style="font-size:1.1rem">✅</span>
+          <div>
+            <div style="font-size:.86rem;font-weight:700;margin-bottom:2px">Droit de disposer</div>
+            <div style="font-size:.78rem;color:var(--muted);line-height:1.55">Vous garantissez avoir le droit légal de mettre cet espace à disposition (propriété ou autorisation du bailleur).</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--cream);border-radius:var(--r-sm);border:1px solid var(--border);">
+          <span style="font-size:1.1rem">✅</span>
+          <div>
+            <div style="font-size:.86rem;font-weight:700;margin-bottom:2px">Disponibilité de l'espace</div>
+            <div style="font-size:.78rem;color:var(--muted);line-height:1.55">L'espace sera disponible à la date de début indiquée et dans l'état décrit dans votre annonce.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--cream);border-radius:var(--r-sm);border:1px solid var(--border);">
+          <span style="font-size:1.1rem">✅</span>
+          <div>
+            <div style="font-size:.86rem;font-weight:700;margin-bottom:2px">Respect des modalités</div>
+            <div style="font-size:.78rem;color:var(--muted);line-height:1.55">Vous acceptez les modalités proposées par l'étudiant telles qu'elles apparaissent ci-dessus.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--cream);border-radius:var(--r-sm);border:1px solid var(--border);">
+          <span style="font-size:1.1rem">✅</span>
+          <div>
+            <div style="font-size:.86rem;font-weight:700;margin-bottom:2px">Contact via unused</div>
+            <div style="font-size:.78rem;color:var(--muted);line-height:1.55">Cette mise en relation est initiée par unused. Tout contournement de la plateforme est contraire aux CGU.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="card">
+      <div class="section-label">Votre signature</div>
+
+      <div class="field">
+        <label>Votre prénom et nom *</label>
+        <input type="text" id="p-name" placeholder="Ex : Jean Dupont" oninput="document.getElementById('sig-name').textContent=this.value.trim()||'—'">
+      </div>
+
+      <div class="sig-block">
+        <div class="sig-check">
+          <input type="checkbox" id="cb-sign">
+          <label for="cb-sign">Je, <strong id="sig-name">—</strong>, déclare avoir lu et accepté les modalités du contrat ci-dessus. En cochant cette case, j'appose ma <strong>signature électronique</strong> au sens de l'article 1367 du Code civil français.</label>
+        </div>
+        <div class="ts-line">📅 <span id="sig-ts">—</span> · Référence <span id="sig-ref">—</span></div>
+      </div>
+
+      <p class="err" id="err-name">❌ Remplis ton nom pour signer.</p>
+      <p class="err" id="err-sign">❌ Coche la case pour apposer ta signature.</p>
+
+      <button class="btn-primary" id="btn-submit" onclick="submitOwnerSign()">✍️ Signer le contrat</button>
+    </div>
+
+  </div>
+
+  <!-- CONFIRMATION -->
+  <div class="state" id="state-confirm">
+    <div class="card" style="text-align:center;padding:40px">
+      <div style="font-size:3.5rem;margin-bottom:16px">🎉</div>
+      <div class="badge badge-green" style="margin:0 auto 14px">Double signature ✓</div>
+      <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:8px">Contrat signé !</h2>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:6px;max-width:400px;margin-left:auto;margin-right:auto">Les deux parties ont signé. unused va finaliser la mise en relation.</p>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">Vous recevrez les coordonnées du locataire par email très prochainement.</p>
+      <a href="index.html" style="display:inline-block;padding:12px 24px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.88rem;text-decoration:none">Retour au site</a>
+    </div>
+  </div>
+
+</div>
+
+<footer><p>© 2026 unused — Projet étudiant · Lille &nbsp;·&nbsp; <a href="cgu.html">CGU</a></p></footer>
+
+<script>
+var SUPABASE_URL="https://wncoflfsrorictwndffa.supabase.co";
+var SUPABASE_KEY="sb_publishable_Qwz9qffUkYNm04rGayB2PQ_otMJD1X3";
+var API=SUPABASE_URL+"/rest/v1";
+var H={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=representation"};
+var HP={"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=minimal"};
+
+var sig=null;
+
+function setState(name){
+  document.querySelectorAll(".state").forEach(function(s){s.classList.remove("active");});
+  var el=document.getElementById("state-"+name);
+  if(el)el.classList.add("active");
+}
+
+function fmtDate(iso){
+  if(!iso)return "—";
+  // Handle both ISO datetime and date-only strings
+  var d=new Date(iso);
+  return d.toLocaleDateString("fr-FR");
+}
+
+async function init(){
+  var token=new URLSearchParams(window.location.search).get("token");
+  if(!token){setState("error");return;}
+  try{
+    var r=await fetch(API+"/signatures?owner_token=eq."+token+"&select=*",{headers:H});
+    if(!r.ok){setState("error");return;}
+    var data=await r.json();
+    if(!data||!data.length){setState("error");return;}
+    sig=data[0];
+
+    // Déjà signé ou finalisé
+    if(sig.status!=="pending_owner"){setState("done");return;}
+
+    // Expiry check (7 jours)
+    if(new Date()-new Date(sig.tenant_signed_at)>7*24*60*60*1000){setState("error");return;}
+
+    // Remplir les champs
+    document.getElementById("p-listing-title").textContent=sig.listing_title||"—";
+    document.getElementById("p-listing-quartier").textContent=sig.listing_quartier||"—";
+    document.getElementById("p-listing-surface").textContent=(sig.listing_surface||"?")+" m²";
+    document.getElementById("p-listing-price").textContent=(sig.listing_price||"?")+"€/mois";
+    document.getElementById("p-start-date").textContent=fmtDate(sig.contract_start_date);
+    document.getElementById("p-duration").textContent=sig.contract_duration||"—";
+    document.getElementById("p-price").textContent=(sig.contract_price||sig.listing_price||"?")+"€/mois";
+    document.getElementById("p-notice").textContent=sig.contract_notice||"—";
+    document.getElementById("p-access").textContent=sig.contract_access||"—";
+    document.getElementById("p-goods").textContent=sig.contract_goods||"—";
+    document.getElementById("p-payment").textContent=sig.contract_payment||"—";
+
+    // Signature timestamp
+    var now=new Date();
+    document.getElementById("sig-ts").textContent=now.toLocaleDateString("fr-FR")+" à "+now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("sig-ref").textContent="#"+sig.listing_id;
+
+    setState("form");
+  }catch(e){setState("error");}
+}
+
+async function submitOwnerSign(){
+  var name=document.getElementById("p-name").value.trim();
+  if(!name){document.getElementById("err-name").style.display="block";return;}
+  document.getElementById("err-name").style.display="none";
+
+  if(!document.getElementById("cb-sign").checked){document.getElementById("err-sign").style.display="block";return;}
+  document.getElementById("err-sign").style.display="none";
+
+  var btn=document.getElementById("btn-submit");
+  btn.textContent="Envoi…";btn.disabled=true;
+
+  try{
+    var now=new Date().toISOString();
+    var r=await fetch(API+"/signatures?owner_token=eq."+sig.owner_token,{
+      method:"PATCH",headers:HP,
+      body:JSON.stringify({owner_signed_at:now, owner_name:name, status:"pending_payment"})
+    });
+    if(!r.ok)throw new Error(await r.text());
+
+    var subj=encodeURIComponent("[unused] ✅ Double signature — "+sig.listing_title);
+    var body=encodeURIComponent([
+      "Le propriétaire "+name+" a signé le contrat pour l'annonce « "+sig.listing_title+" ».",
+      "",
+      "─────────────────────────────────",
+      "ÉTUDIANT",
+      "Nom : "+sig.tenant_name,
+      "Email : "+sig.tenant_email,
+      "Téléphone : "+(sig.tenant_phone||"—"),
+      "",
+      "PROPRIÉTAIRE",
+      "Nom : "+name,
+      "Email : "+(sig.owner_email||"—"),
+      "",
+      "CONTRAT",
+      "Annonce : "+sig.listing_title+" · "+sig.listing_quartier,
+      "Prix : "+(sig.contract_price||sig.listing_price)+"€/mois",
+      "Date de début : "+fmtDate(sig.contract_start_date),
+      "Durée : "+sig.contract_duration,
+      "Réf. : "+sig.payment_ref,
+      "─────────────────────────────────",
+      "— unused · unused.lille@gmail.com"
+    ].join("\n"));
+
+    setTimeout(function(){
+      window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
+    },300);
+
+    setState("confirm");
+  }catch(e){
+    alert("Erreur : "+e.message);
+    btn.textContent="✍️ Signer le contrat";
+    btn.disabled=false;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
