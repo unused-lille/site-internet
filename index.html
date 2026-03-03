@@ -631,7 +631,7 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
   © 2026 unused · Projet étudiant · Lille &nbsp;·&nbsp;
   <a href="cgu.html" style="color:var(--indigo);text-decoration:none;font-weight:600">CGU & Mentions légales</a>
   &nbsp;·&nbsp;
-  <a href="contrat-stockage.html" style="color:var(--indigo);text-decoration:none;font-weight:600">📄 Modèle de contrat</a>
+  <a href="contrat.html" style="color:var(--indigo);text-decoration:none;font-weight:600">📄 Modèle de contrat</a>
 </div>
 
 <!-- ══════════ BOTTOM TAB BAR ══════════ -->
@@ -1049,7 +1049,7 @@ function renderDetail(id) {
   cbox.appendChild(el("p", null, "Contacte unused.lille@gmail.com pour être mis en relation avec le propriétaire."));
   var cBtn = el("button", "btn btn-primary", "Contacter pour cet espace");
   cBtn.style.cssText = "width:100%;justify-content:center";
-  cBtn.addEventListener("click", function() { openContact(l.id); });
+  cBtn.addEventListener("click", function() { window.location.href = "contrat.html?listing=" + l.id; });
   cbox.appendChild(cBtn);
   var ciDiv = el("div", null, n + " personne" + (n !== 1 ? "s" : "") + " intéressée" + (n !== 1 ? "s" : "") + ".");
   ciDiv.id = "interest-count-wrap";
