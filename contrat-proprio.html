@@ -341,7 +341,7 @@ async function submitOwnerSign(){
     });
     if(!r.ok)throw new Error(await r.text());
 
-    var subj=encodeURIComponent("[unused] ✅ Double signature — "+sig.listing_title);
+    var subj=encodeURIComponent("[unused] ✅ Double signature — "+sig.listing_title+" · Annonce #"+sig.listing_id+" · Réf. "+sig.payment_ref);
     var body=encodeURIComponent([
       "Le propriétaire "+name+" a signé le contrat pour l'annonce « "+sig.listing_title+" ».",
       "",
