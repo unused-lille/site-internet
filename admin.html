@@ -136,6 +136,10 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
 
     <!-- TAB : ANNONCES -->
     <div class="tab-panel active" id="tab-annonces">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <input type="text" id="search-listings" placeholder="🔍 Rechercher par code, titre, quartier…" oninput="filterListings()" style="flex:1;padding:10px 14px;background:#1A1828;border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);font-family:inherit;font-size:.86rem;color:white;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+        <button onclick="document.getElementById('search-listings').value='';filterListings()" style="padding:10px 14px;background:rgba(255,255,255,.07);color:#7B79AA;border:none;border-radius:var(--r-sm);font-family:inherit;font-size:.82rem;cursor:pointer;">✕ Effacer</button>
+      </div>
       <div class="section-title">Toutes les annonces publiées</div>
       <div class="table-wrap">
         <div id="listings-list"><div class="empty">Chargement…</div></div>
@@ -177,6 +181,11 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
     <div class="modal-field"><div class="modal-label">Description</div><div class="modal-value" id="m-desc">—</div></div>
     <div class="modal-field"><div class="modal-label">Contact propriétaire</div><div class="modal-value" id="m-contact">—</div></div>
     <div class="modal-field"><div class="modal-label">Photos</div><div class="modal-photos" id="m-photos"></div></div>
+    <!-- DEMANDES LIÉES -->
+    <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,.08);padding-top:16px">
+      <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:12px">Demandes de mise en relation</div>
+      <div id="m-demands"><div style="font-size:.82rem;color:#7B79AA">Chargement…</div></div>
+    </div>
     <div class="modal-actions">
       <button class="btn-sm btn-delete" id="m-delete-btn">🗑️ Supprimer cette annonce</button>
       <button class="btn-sm btn-view" onclick="closeListingModal()">Fermer</button>
@@ -220,6 +229,7 @@ async function loadAll(){
 
 // ── ANNONCES
 var allListings=[];
+var allSignatures=[];
 async function loadListings(){
   try{
     var r=await fetch(API+"/listings?select=*&order=created_at.desc",{headers:H});
@@ -229,19 +239,36 @@ async function loadListings(){
   }catch(e){showToast("Erreur annonces : "+e.message);}
 }
 
-function renderListings(){
+function filterListings(){
+  var q=document.getElementById("search-listings").value.trim().toLowerCase();
+  var filtered=allListings.filter(function(l){
+    return !q ||
+      String(l.id).includes(q) ||
+      (l.title||"").toLowerCase().includes(q) ||
+      (l.quartier||"").toLowerCase().includes(q) ||
+      (l.contact_name||"").toLowerCase().includes(q) ||
+      (l.contact_email||"").toLowerCase().includes(q);
+  });
+  renderListings(filtered);
+}
+
+function renderListings(list){
+  var data=list||allListings;
   var el=document.getElementById("listings-list");
-  if(!allListings.length){el.innerHTML='<div class="empty">Aucune annonce.</div>';return;}
-  el.innerHTML=allListings.map(function(l){
+  if(!data.length){el.innerHTML='<div class="empty">Aucune annonce trouvée.</div>';return;}
+  el.innerHTML=data.map(function(l){
     var photos=[];
     try{photos=JSON.parse(l.photos||"[]");}catch(e){}
     var thumb=photos.length>0?'<img class="photo-thumb" src="'+escHtml(photos[0])+'" onerror="this.style.display=\'none\'">':'<div style="width:40px;height:40px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1rem">📦</div>';
+    // Nombre de demandes liées
+    var nbDemandes=allSignatures.filter(function(s){return s.listing_id===l.id;}).length;
+    var demandesBadge=nbDemandes>0?'<span style="background:rgba(61,59,243,.3);color:#9B99FF;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px;margin-left:6px">'+nbDemandes+' demande'+(nbDemandes>1?'s':'')+'</span>':'';
     return '<div class="listing-row">'+
-      '<div style="display:flex;gap:12px;align-items:center">>'+
+      '<div style="display:flex;gap:12px;align-items:center">'+
         thumb+
         '<div>'+
-          '<div class="row-title">'+escHtml(l.title)+'</div>'+
-          '<div class="row-meta">'+escHtml(l.quartier||"—")+' · '+(l.surface||"?")+'m² · '+(l.price||"?")+'€/mois</div>'+
+          '<div class="row-title">'+escHtml(l.title)+demandesBadge+'</div>'+
+          '<div class="row-meta">'+escHtml(l.quartier||"—")+' · '+(l.surface||"?")+'m² · '+(l.price||"?")+'€/mois · <span style="color:#9B99FF">Réf. #'+l.id+'</span></div>'+
           '<div class="row-meta">'+escHtml(l.contact_name||"—")+' · '+escHtml(l.contact_email||l.contact_phone||"—")+'</div>'+
         '</div>'+
       '</div>'+
@@ -290,6 +317,30 @@ function openListingModal(id){
     closeListingModal();
     deleteListing(l.id, l.title);
   };
+
+  // Demandes liées à cette annonce
+  var demands=allSignatures.filter(function(s){return s.listing_id===l.id;});
+  var demandsEl=document.getElementById("m-demands");
+  if(!demands.length){
+    demandsEl.innerHTML='<div style="font-size:.82rem;color:#7B79AA;font-style:italic">Aucune demande pour cette annonce.</div>';
+  } else {
+    demandsEl.innerHTML=demands.map(function(s){
+      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
+          '<span style="font-size:.86rem;font-weight:700;color:white">'+escHtml(s.tenant_name||"—")+'</span>'+
+          '<span class="badge '+statusBadgeClass(s.status)+'">'+statusLabel(s.status)+'</span>'+
+        '</div>'+
+        '<div style="font-size:.74rem;color:#7B79AA;line-height:1.6">'+
+          escHtml(s.tenant_email||"—")+(s.tenant_phone?' · '+escHtml(s.tenant_phone):'')+'<br>'+
+          (s.contract_start_date?'📅 '+fmtDate(s.contract_start_date)+' · '+escHtml(s.contract_duration||"—")+' · '+(s.contract_price||s.listing_price||"?")+'€/mois<br>':'')+
+          (s.contract_goods?'📦 '+escHtml(s.contract_goods)+'<br>':'')+
+          (s.contract_access?'🔑 '+escHtml(s.contract_access):'')+'<br>'+
+          '<span style="color:#9B99FF">Réf. '+escHtml(s.payment_ref||"—")+'</span> · '+fmtDate(s.tenant_signed_at)+
+        '</div>'+
+      '</div>';
+    }).join("");
+  }
+
   document.getElementById("listing-modal").classList.add("open");
 }
 function closeListingModal(){document.getElementById("listing-modal").classList.remove("open");}
@@ -321,6 +372,7 @@ async function loadSignatures(){
   try{
     var r=await fetch(API+"/signatures?select=*&order=created_at.desc",{headers:H});
     var sigs=await r.json();
+    allSignatures=sigs;
     document.getElementById("stat-demandes").textContent=sigs.length;
     document.getElementById("stat-attente-proprio").textContent=sigs.filter(function(s){return s.status==="pending_owner"||s.status==="owner_contacted";}).length;
     document.getElementById("stat-attente-paiement").textContent=sigs.filter(function(s){return s.status==="owner_accepted"||s.status==="pending_payment";}).length;
