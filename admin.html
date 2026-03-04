@@ -183,7 +183,8 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
     <div class="modal-field"><div class="modal-label">Photos</div><div class="modal-photos" id="m-photos"></div></div>
     <!-- DEMANDES LIÉES -->
     <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,.08);padding-top:16px">
-      <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:12px">Demandes de mise en relation</div>
+      <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:10px">Demandes de mise en relation</div>
+      <input type="text" id="search-demands" placeholder="🔍 Rechercher par réf. (ex: UNUSED-9043-AB8F2C)…" oninput="filterDemands()" style="width:100%;padding:9px 12px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);font-family:inherit;font-size:.82rem;color:white;outline:none;margin-bottom:10px;transition:border-color .18s;" onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
       <div id="m-demands"><div style="font-size:.82rem;color:#7B79AA">Chargement…</div></div>
     </div>
     <div class="modal-actions">
@@ -230,6 +231,7 @@ async function loadAll(){
 // ── ANNONCES
 var allListings=[];
 var allSignatures=[];
+var currentModalDemands=[];
 async function loadListings(){
   try{
     var r=await fetch(API+"/listings?select=*&order=created_at.desc",{headers:H});
@@ -240,7 +242,7 @@ async function loadListings(){
 }
 
 function filterListings(){
-  var q=document.getElementById("search-listings").value.trim().toLowerCase();
+  var q=document.getElementById("search-listings").value.trim().toLowerCase().replace(/^#/,"");
   var filtered=allListings.filter(function(l){
     return !q ||
       String(l.id).includes(q) ||
@@ -320,28 +322,46 @@ function openListingModal(id){
 
   // Demandes liées à cette annonce
   var demands=allSignatures.filter(function(s){return s.listing_id===l.id;});
-  var demandsEl=document.getElementById("m-demands");
-  if(!demands.length){
-    demandsEl.innerHTML='<div style="font-size:.82rem;color:#7B79AA;font-style:italic">Aucune demande pour cette annonce.</div>';
-  } else {
-    demandsEl.innerHTML=demands.map(function(s){
-      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
-          '<span style="font-size:.86rem;font-weight:700;color:white">'+escHtml(s.tenant_name||"—")+'</span>'+
-          '<span class="badge '+statusBadgeClass(s.status)+'">'+statusLabel(s.status)+'</span>'+
-        '</div>'+
-        '<div style="font-size:.74rem;color:#7B79AA;line-height:1.6">'+
-          escHtml(s.tenant_email||"—")+(s.tenant_phone?' · '+escHtml(s.tenant_phone):'')+'<br>'+
-          (s.contract_start_date?'📅 '+fmtDate(s.contract_start_date)+' · '+escHtml(s.contract_duration||"—")+' · '+(s.contract_price||s.listing_price||"?")+'€/mois<br>':'')+
-          (s.contract_goods?'📦 '+escHtml(s.contract_goods)+'<br>':'')+
-          (s.contract_access?'🔑 '+escHtml(s.contract_access):'')+'<br>'+
-          '<span style="color:#9B99FF">Réf. '+escHtml(s.payment_ref||"—")+'</span> · '+fmtDate(s.tenant_signed_at)+
-        '</div>'+
-      '</div>';
-    }).join("");
-  }
+  currentModalDemands=demands;
+  document.getElementById("search-demands").value="";
+  renderDemands(demands);
 
   document.getElementById("listing-modal").classList.add("open");
+}
+
+function filterDemands(){
+  var q=document.getElementById("search-demands").value.trim().toLowerCase();
+  var filtered=currentModalDemands.filter(function(s){
+    return !q ||
+      (s.payment_ref||"").toLowerCase().includes(q) ||
+      (s.tenant_name||"").toLowerCase().includes(q) ||
+      (s.tenant_email||"").toLowerCase().includes(q) ||
+      (s.owner_token||"").toLowerCase().includes(q);
+  });
+  renderDemands(filtered);
+}
+
+function renderDemands(demands){
+  var demandsEl=document.getElementById("m-demands");
+  if(!demands.length){
+    demandsEl.innerHTML='<div style="font-size:.82rem;color:#7B79AA;font-style:italic">Aucune demande trouvée.</div>';
+    return;
+  }
+  demandsEl.innerHTML=demands.map(function(s){
+    return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px">'+
+        '<span style="font-size:.86rem;font-weight:700;color:white">'+escHtml(s.tenant_name||"—")+'</span>'+
+        '<span class="badge '+statusBadgeClass(s.status)+'">'+statusLabel(s.status)+'</span>'+
+      '</div>'+
+      '<div style="font-size:.74rem;color:#7B79AA;line-height:1.7">'+
+        escHtml(s.tenant_email||"—")+(s.tenant_phone?' · '+escHtml(s.tenant_phone):'')+'<br>'+
+        (s.contract_start_date?'📅 '+fmtDate(s.contract_start_date)+' · '+escHtml(s.contract_duration||"—")+' · '+(s.contract_price||s.listing_price||"?")+'€/mois<br>':'')+
+        (s.contract_goods?'📦 '+escHtml(s.contract_goods)+'<br>':'')+
+        (s.contract_access?'🔑 '+escHtml(s.contract_access)+'<br>':'')+
+        '<span style="color:#9B99FF;font-family:monospace;font-size:.8rem">'+escHtml(s.payment_ref||"—")+'</span> · '+fmtDate(s.tenant_signed_at)+
+      '</div>'+
+    '</div>';
+  }).join("");
 }
 function closeListingModal(){document.getElementById("listing-modal").classList.remove("open");}
 document.getElementById("listing-modal").addEventListener("click",function(e){if(e.target===this)closeListingModal();});
