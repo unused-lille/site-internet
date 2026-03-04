@@ -140,7 +140,7 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
         <input type="text" id="search-listings" placeholder="🔍 Rechercher par code, titre, quartier…" oninput="filterListings()" style="flex:1;padding:10px 14px;background:#1A1828;border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);font-family:inherit;font-size:.86rem;color:white;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
         <button onclick="document.getElementById('search-listings').value='';filterListings()" style="padding:10px 14px;background:rgba(255,255,255,.07);color:#7B79AA;border:none;border-radius:var(--r-sm);font-family:inherit;font-size:.82rem;cursor:pointer;">✕ Effacer</button>
       </div>
-      <div class="section-title">Toutes les annonces publiées</div>
+      <div class="section-title">Toutes les annonces — clique sur une annonce pour voir ses demandes</div>
       <div class="table-wrap">
         <div id="listings-list"><div class="empty">Chargement…</div></div>
       </div>
@@ -148,7 +148,15 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
 
     <!-- TAB : MISES EN RELATION -->
     <div class="tab-panel" id="tab-demandes">
-      <div class="section-title">Toutes les demandes de mise en relation</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <div id="demandes-filter-badge" style="display:none;background:var(--indigo);color:white;font-size:.74rem;font-weight:700;padding:6px 14px;border-radius:100px;display:none;align-items:center;gap:8px">
+          <span id="demandes-filter-label">—</span>
+          <button onclick="clearDemandesFilter()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:.9rem;cursor:pointer;padding:0;line-height:1">✕</button>
+        </div>
+        <input type="text" id="search-demandes" placeholder="🔍 Rechercher par réf. (ex: UNUSED-9043-AB8F2C)…" oninput="filterDemandes()" style="flex:1;min-width:200px;padding:10px 14px;background:#1A1828;border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);font-family:inherit;font-size:.86rem;color:white;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+        <button onclick="document.getElementById('search-demandes').value='';filterDemandes()" style="padding:10px 14px;background:rgba(255,255,255,.07);color:#7B79AA;border:none;border-radius:var(--r-sm);font-family:inherit;font-size:.82rem;cursor:pointer;">✕ Effacer</button>
+      </div>
+      <div class="section-title" id="demandes-section-title">Toutes les demandes de mise en relation</div>
       <div class="table-wrap">
         <div id="sigs-list"><div class="empty">Chargement…</div></div>
       </div>
@@ -265,7 +273,7 @@ function renderListings(list){
     // Nombre de demandes liées
     var nbDemandes=allSignatures.filter(function(s){return s.listing_id===l.id;}).length;
     var demandesBadge=nbDemandes>0?'<span style="background:rgba(61,59,243,.3);color:#9B99FF;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px;margin-left:6px">'+nbDemandes+' demande'+(nbDemandes>1?'s':'')+'</span>':'';
-    return '<div class="listing-row">'+
+    return '<div class="listing-row" style="cursor:pointer" onclick="viewDemandesForListing('+l.id+',\''+escHtml(l.title)+'\')">'+
       '<div style="display:flex;gap:12px;align-items:center">'+
         thumb+
         '<div>'+
@@ -276,7 +284,7 @@ function renderListings(list){
       '</div>'+
       '<div style="font-size:.72rem;color:#7B79AA">'+fmtDate(l.created_at)+'</div>'+
       '<span class="badge b-active">✅ Active</span>'+
-      '<div class="btn-actions">'+
+      '<div class="btn-actions" onclick="event.stopPropagation()">'+
         '<button class="btn-sm btn-view" onclick="openListingModal('+l.id+')">👁 Détail</button>'+
         '<button class="btn-sm btn-delete" onclick="deleteListing('+l.id+',\''+escHtml(l.title)+'\')">🗑️</button>'+
       '</div>'+
@@ -367,6 +375,40 @@ function closeListingModal(){document.getElementById("listing-modal").classList.
 document.getElementById("listing-modal").addEventListener("click",function(e){if(e.target===this)closeListingModal();});
 
 // ── SIGNATURES
+var currentListingFilter=null;
+
+function viewDemandesForListing(listingId, listingTitle){
+  currentListingFilter=listingId;
+  document.getElementById("search-demandes").value="";
+  document.getElementById("demandes-filter-badge").style.display="flex";
+  document.getElementById("demandes-filter-label").textContent="Annonce : "+listingTitle;
+  document.getElementById("demandes-section-title").textContent="Demandes pour : "+listingTitle;
+  switchTab("demandes");
+  filterDemandes();
+}
+
+function clearDemandesFilter(){
+  currentListingFilter=null;
+  document.getElementById("search-demandes").value="";
+  document.getElementById("demandes-filter-badge").style.display="none";
+  document.getElementById("demandes-section-title").textContent="Toutes les demandes de mise en relation";
+  filterDemandes();
+}
+
+function filterDemandes(){
+  var q=document.getElementById("search-demandes").value.trim().toLowerCase();
+  var filtered=allSignatures.filter(function(s){
+    var matchListing=!currentListingFilter||(s.listing_id===currentListingFilter);
+    var matchSearch=!q||
+      (s.payment_ref||"").toLowerCase().includes(q)||
+      (s.tenant_name||"").toLowerCase().includes(q)||
+      (s.tenant_email||"").toLowerCase().includes(q)||
+      (s.owner_token||"").toLowerCase().includes(q);
+    return matchListing&&matchSearch;
+  });
+  var el=document.getElementById("sigs-list");
+  el.innerHTML=filtered.length===0?'<div class="empty">Aucune demande trouvée.</div>':filtered.map(function(s){return sigRow(s,false);}).join("");
+}
 function statusLabel(s){
   return {
     "pending_owner":    "📬 Contrat reçu",
@@ -400,9 +442,8 @@ async function loadSignatures(){
     document.getElementById("stat-completed").textContent=completed.length;
     document.getElementById("stat-revenue").textContent=completed.length*9;
 
-    // Tab demandes : toutes
-    var allEl=document.getElementById("sigs-list");
-    allEl.innerHTML=sigs.length===0?'<div class="empty">Aucune demande.</div>':sigs.map(function(s){return sigRow(s,false);}).join("");
+    // Tab demandes : via filterDemandes (respecte le filtre actif)
+    filterDemandes();
 
     // Tab paiements : pending_payment seulement
     var toConfirm=sigs.filter(function(s){return s.status==="pending_payment";});
