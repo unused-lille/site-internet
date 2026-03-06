@@ -202,6 +202,33 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
   </div>
 </div>
 
+<div class="modal-overlay" id="contacts-modal">
+  <div class="modal-box" style="max-width:620px">
+    <h3 style="margin-bottom:6px">🎉 Mise en relation finalisée</h3>
+    <p style="font-size:.82rem;color:#7B79AA;margin-bottom:20px">Copie chaque bloc et envoie les mails depuis unused.lille@gmail.com</p>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:8px">📧 Mail à envoyer au locataire</div>
+      <div style="position:relative">
+        <textarea id="mail-tenant" readonly style="width:100%;min-height:140px;background:#0F0E1A;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;font-family:monospace;font-size:.78rem;color:#E8E6FF;line-height:1.6;resize:none;outline:none;"></textarea>
+        <button onclick="copyBlock('mail-tenant','btn-copy-tenant')" id="btn-copy-tenant" style="position:absolute;top:8px;right:8px;padding:5px 12px;background:var(--indigo);color:white;border:none;border-radius:6px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;">📋 Copier</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:8px">📧 Mail à envoyer au propriétaire</div>
+      <div style="position:relative">
+        <textarea id="mail-owner" readonly style="width:100%;min-height:140px;background:#0F0E1A;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;font-family:monospace;font-size:.78rem;color:#E8E6FF;line-height:1.6;resize:none;outline:none;"></textarea>
+        <button onclick="copyBlock('mail-owner','btn-copy-owner')" id="btn-copy-owner" style="position:absolute;top:8px;right:8px;padding:5px 12px;background:var(--indigo);color:white;border:none;border-radius:6px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;">📋 Copier</button>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end">
+      <button onclick="closeContactsModal()" class="btn-sm btn-view">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -517,9 +544,9 @@ async function setStatus(ownerToken, newStatus){
   }catch(e){showToast("Erreur : "+e.message);}
 }
 
-// Envoyer les contacts (statut completed) + ouvrir le mail
+// Envoyer les contacts — affiche le panneau de copie
 async function advanceStatus(btn, payToken, newStatus, tenantName, tenantEmail, ownerName, ownerEmail, ownerPhone, listingTitle, listingQuartier, listingPrice, payRef){
-  if(!confirm("Envoyer les coordonnées aux deux parties et marquer comme finalisé ?"))return;
+  if(!confirm("Marquer comme finalisé et afficher les contacts à envoyer ?"))return;
   btn.disabled=true; btn.textContent="…";
   try{
     var r=await fetch(API+"/signatures?payment_token=eq."+payToken,{
@@ -528,39 +555,68 @@ async function advanceStatus(btn, payToken, newStatus, tenantName, tenantEmail, 
     });
     if(!r.ok)throw new Error(await r.text());
 
-    // Mail pré-rempli avec les coordonnées des deux parties à envoyer
-    var subj=encodeURIComponent("[unused] Mise en relation finalisée — "+listingTitle);
-    var body=encodeURIComponent([
-      "Bonjour,",
+    // Préparer les deux mails
+    var mailTenant=[
+      "Objet : [unused] Votre stockage est confirmé — "+listingTitle,
       "",
-      "Votre mise en relation pour l'espace « "+listingTitle+" » ("+listingQuartier+") est finalisée.",
-      "Voici les coordonnées de l'autre partie :",
+      "Bonjour "+tenantName+",",
       "",
-      "─── PROPRIÉTAIRE ───",
+      "Bonne nouvelle ! Votre mise en relation est finalisée.",
+      "Voici les coordonnées de votre propriétaire :",
+      "",
       "Nom : "+ownerName,
       "Email : "+ownerEmail,
-      ownerPhone?"Téléphone : "+ownerPhone:"",
+      (ownerPhone?"Téléphone : "+ownerPhone:""),
       "",
-      "─── LOCATAIRE ───",
+      "Vous pouvez maintenant le contacter directement pour organiser le stockage.",
+      "Réf. : "+payRef,
+      "",
+      "— L'équipe unused"
+    ].filter(Boolean).join("\n");
+
+    var mailOwner=[
+      "Objet : [unused] Mise en relation finalisée — "+listingTitle,
+      "",
+      "Bonjour "+ownerName+",",
+      "",
+      "La mise en relation pour votre annonce « "+listingTitle+" » est finalisée.",
+      "Voici les coordonnées de votre locataire :",
+      "",
       "Nom : "+tenantName,
       "Email : "+tenantEmail,
       "",
-      "Vous pouvez maintenant convenir ensemble des modalités pratiques.",
-      "Réf. contrat : "+payRef,
+      "Il va vous contacter prochainement pour organiser le stockage.",
+      "Réf. : "+payRef,
       "",
-      "— unused · unused.lille@gmail.com"
-    ].filter(Boolean).join("\n"));
+      "— L'équipe unused"
+    ].join("\n");
 
-    setTimeout(function(){
-      window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
-    },300);
+    document.getElementById("mail-tenant").value=mailTenant;
+    document.getElementById("mail-owner").value=mailOwner;
+    document.getElementById("contacts-modal").classList.add("open");
 
-    showToast("🎉 Contacts envoyés !");
+    showToast("🎉 Finalisé ! Envoie les deux mails.");
     setTimeout(loadAll,600);
   }catch(e){
     showToast("Erreur : "+e.message);
     btn.disabled=false; btn.textContent="🎉 Envoyer contacts";
   }
+}
+
+function copyBlock(id, btnId){
+  var val=document.getElementById(id).value;
+  navigator.clipboard.writeText(val).then(function(){
+    var btn=document.getElementById(btnId);
+    btn.textContent="✅ Copié !";
+    setTimeout(function(){btn.textContent="📋 Copier";},2000);
+  }).catch(function(){
+    document.getElementById(id).select();
+    document.execCommand("copy");
+  });
+}
+
+function closeContactsModal(){
+  document.getElementById("contacts-modal").classList.remove("open");
 }
 // Chargement automatique au démarrage
 loadAll();
