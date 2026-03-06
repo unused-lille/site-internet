@@ -131,7 +131,7 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
     <div class="tabs">
       <button class="tab active" onclick="switchTab('annonces')">📋 Annonces</button>
       <button class="tab" onclick="switchTab('demandes')">✍️ Mises en relation</button>
-      <button class="tab" onclick="switchTab('paiements')">💳 Paiements à confirmer</button>
+      <button class="tab" onclick="switchTab('paiements')">💳 Paiement en attente</button>
     </div>
 
     <!-- TAB : ANNONCES -->
@@ -164,9 +164,9 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
 
     <!-- TAB : PAIEMENTS -->
     <div class="tab-panel" id="tab-paiements">
-      <div class="section-title">💳 Virements reçus à confirmer</div>
+      <div class="section-title">💳 Paiements en attente — proprio a accepté, en attente de règlement</div>
       <div class="table-wrap">
-        <div id="payment-list"><div class="empty">Aucun virement en attente.</div></div>
+        <div id="payment-list"><div class="empty">Aucun paiement en attente.</div></div>
       </div>
     </div>
 
@@ -445,10 +445,10 @@ async function loadSignatures(){
     // Tab demandes : via filterDemandes (respecte le filtre actif)
     filterDemandes();
 
-    // Tab paiements : pending_payment seulement
-    var toConfirm=sigs.filter(function(s){return s.status==="pending_payment";});
+    // Tab paiements : proprio accepté ou paiement en attente
+    var toConfirm=sigs.filter(function(s){return s.status==="owner_accepted"||s.status==="pending_payment";});
     var payEl=document.getElementById("payment-list");
-    payEl.innerHTML=toConfirm.length===0?'<div class="empty">Aucun virement en attente. 🎉</div>':toConfirm.map(function(s){return sigRow(s,true);}).join("");
+    payEl.innerHTML=toConfirm.length===0?'<div class="empty">Aucun paiement en attente. 🎉</div>':toConfirm.map(function(s){return sigRow(s,true);}).join("");
 
   }catch(e){showToast("Erreur signatures : "+e.message);}
 }
