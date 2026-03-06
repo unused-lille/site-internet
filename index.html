@@ -452,18 +452,18 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <div class="fg" style="margin:0"><label>Surface (m²)</label><input type="number" id="f-surface" placeholder="Ex : 8" min="1"></div>
           <div class="fg" style="margin:0"><label>Prix / mois (€)</label><input type="number" id="f-price" placeholder="Ex : 30" min="1"></div>
         </div>
-        <div class="fg">
+        <div class="fg" style="margin-top:20px">
           <label>Cet espace peut-il être partagé entre plusieurs étudiants ?</label>
-          <div style="background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.15);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:10px;font-size:.8rem;color:var(--ink);line-height:1.6">
-            💡 <strong>Le stockage partagé</strong> — Tu peux louer ton espace à plusieurs étudiants en même temps. Chacun loue une partie des m² selon ses besoins et paie proportionnellement. Exemple : une cave de 40m² louée à 3 étudiants qui prennent chacun 10-15m².
+          <div style="background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.15);border-radius:var(--r-sm);padding:16px 18px;margin-bottom:14px;font-size:.82rem;color:var(--ink);line-height:1.7">
+            💡 <strong>Le stockage partagé</strong> — Autorise plusieurs étudiants à se partager ton espace, chacun louant la surface dont il a besoin et payant proportionnellement. C'est un excellent moyen de <strong>trouver preneur plus rapidement</strong> — plutôt qu'attendre un étudiant qui a besoin de exactement 40m², tu peux en accueillir 2 ou 3 qui se partagent l'espace. Et si un étudiant veut louer tout l'espace, c'est toujours possible — il signe simplement pour les 100% de la surface.
           </div>
-          <div style="display:flex;gap:10px">
-            <div id="share-no" onclick="setShared(false)" style="flex:1;padding:12px;border:2px solid var(--indigo);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:var(--indigo);color:white;font-weight:700;font-size:.84rem;transition:all .15s">🔒 Non partagé<br><span style="font-size:.72rem;font-weight:400;opacity:.8">1 seul étudiant</span></div>
-            <div id="share-yes" onclick="setShared(true)" style="flex:1;padding:12px;border:2px solid var(--cream-d);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:white;color:var(--muted);font-weight:700;font-size:.84rem;transition:all .15s">👥 Partagé<br><span style="font-size:.72rem;font-weight:400">Plusieurs étudiants</span></div>
+          <div style="display:flex;gap:12px">
+            <div id="share-no" onclick="setShared(false)" style="flex:1;padding:14px;border:2px solid var(--indigo);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:var(--indigo);color:white;font-weight:700;font-size:.84rem;transition:all .15s;line-height:1.6">🔒 Non partagé<br><span style="font-size:.74rem;font-weight:400;opacity:.8">1 seul étudiant</span></div>
+            <div id="share-yes" onclick="setShared(true)" style="flex:1;padding:14px;border:2px solid var(--cream-d);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:white;color:var(--muted);font-weight:700;font-size:.84rem;transition:all .15s;line-height:1.6">👥 Partagé<br><span style="font-size:.74rem;font-weight:400">Plusieurs étudiants</span></div>
           </div>
           <input type="hidden" id="f-is-shared" value="false">
         </div>
-        <div id="share-options" style="display:none">
+        <div id="share-options" style="display:none;margin-top:14px">
           <div class="fg" style="margin-bottom:10px">
             <label>Nombre maximum d'étudiants simultanés</label>
             <select id="f-max-tenants" style="width:100%;padding:11px 14px;border:1.5px solid var(--cream-d);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;color:var(--ink);background:white;outline:none;">
