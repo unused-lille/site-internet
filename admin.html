@@ -564,16 +564,22 @@ async function advanceStatus(btn, payToken, newStatus, tenantName, tenantEmail, 
 
     // Si espace partagé : déduire les m² loués de surface_remaining
     if(sig&&sig.listing_id&&sig.contract_sqm){
+      console.log("Déduction m²:", sig.contract_sqm, "pour listing", sig.listing_id);
       var rListing=await fetch(API+"/listings?id=eq."+sig.listing_id+"&select=surface_remaining,surface",{headers:H});
       var listingData=await rListing.json();
+      console.log("Listing data:", listingData);
       if(listingData&&listingData.length){
         var current=listingData[0].surface_remaining!==null?listingData[0].surface_remaining:listingData[0].surface;
         var newRemaining=Math.max(0,current-sig.contract_sqm);
-        await fetch(API+"/listings?id=eq."+sig.listing_id,{
+        console.log("surface_remaining:", current, "→", newRemaining);
+        var rPatch=await fetch(API+"/listings?id=eq."+sig.listing_id,{
           method:"PATCH",headers:HP,
           body:JSON.stringify({surface_remaining:newRemaining})
         });
+        console.log("Patch status:", rPatch.status);
       }
+    } else {
+      console.log("Pas de déduction — sig:", sig);
     }
 
     // Préparer les deux mails
