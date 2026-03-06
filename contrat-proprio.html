@@ -160,6 +160,10 @@ footer a{color:var(--indigo);text-decoration:none;}
           <div class="readonly-value" id="p-duration">—</div>
         </div>
       </div>
+      <div id="p-sqm-row" class="readonly-row" style="display:none">
+        <div class="readonly-label">Surface louée</div>
+        <div class="readonly-value" id="p-sqm">—</div>
+      </div>
       <div class="readonly-grid">
         <div class="readonly-row">
           <div class="readonly-label">Prix mensuel proposé</div>
@@ -311,6 +315,12 @@ async function init(){
     document.getElementById("p-notice").textContent=sig.contract_notice||"—";
     document.getElementById("p-access").textContent=sig.contract_access||"—";
     document.getElementById("p-goods").textContent=sig.contract_goods||"—";
+
+    // Surface louée si espace partagé
+    if(sig.contract_sqm){
+      document.getElementById("p-sqm-row").style.display="block";
+      document.getElementById("p-sqm").textContent=sig.contract_sqm+" m² sur "+(sig.listing_surface||"?")+" m² total";
+    }
     document.getElementById("p-payment").textContent=sig.contract_payment||"—";
 
     // Signature timestamp
@@ -358,6 +368,7 @@ async function submitOwnerSign(){
       "CONTRAT",
       "Annonce : "+sig.listing_title+" · "+sig.listing_quartier,
       "Prix : "+(sig.contract_price||sig.listing_price)+"€/mois",
+      sig.contract_sqm?"Surface louée : "+sig.contract_sqm+" m² sur "+(sig.listing_surface||"?")+" m²":"",
       "Date de début : "+fmtDate(sig.contract_start_date),
       "Durée : "+sig.contract_duration,
       "Réf. : "+sig.payment_ref,
