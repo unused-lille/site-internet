@@ -208,7 +208,8 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
     <p style="font-size:.82rem;color:#7B79AA;margin-bottom:20px">Copie chaque bloc et envoie les mails depuis unused.lille@gmail.com</p>
 
     <div style="margin-bottom:16px">
-      <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:8px">📧 Mail à envoyer au locataire</div>
+      <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:6px">📧 Mail à envoyer au locataire</div>
+      <div style="font-size:.8rem;color:#9B99FF;font-weight:600;margin-bottom:8px">À : <span id="mail-tenant-email">—</span></div>
       <div style="position:relative">
         <textarea id="mail-tenant" readonly style="width:100%;min-height:140px;background:#0F0E1A;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;font-family:monospace;font-size:.78rem;color:#E8E6FF;line-height:1.6;resize:none;outline:none;"></textarea>
         <button onclick="copyBlock('mail-tenant','btn-copy-tenant')" id="btn-copy-tenant" style="position:absolute;top:8px;right:8px;padding:5px 12px;background:var(--indigo);color:white;border:none;border-radius:6px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;">📋 Copier</button>
@@ -216,7 +217,8 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
     </div>
 
     <div style="margin-bottom:20px">
-      <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:8px">📧 Mail à envoyer au propriétaire</div>
+      <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:6px">📧 Mail à envoyer au propriétaire</div>
+      <div style="font-size:.8rem;color:#9B99FF;font-weight:600;margin-bottom:8px">À : <span id="mail-owner-email">—</span></div>
       <div style="position:relative">
         <textarea id="mail-owner" readonly style="width:100%;min-height:140px;background:#0F0E1A;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;font-family:monospace;font-size:.78rem;color:#E8E6FF;line-height:1.6;resize:none;outline:none;"></textarea>
         <button onclick="copyBlock('mail-owner','btn-copy-owner')" id="btn-copy-owner" style="position:absolute;top:8px;right:8px;padding:5px 12px;background:var(--indigo);color:white;border:none;border-radius:6px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;">📋 Copier</button>
@@ -591,6 +593,8 @@ async function advanceStatus(btn, payToken, newStatus, tenantName, tenantEmail, 
       "— L'équipe unused"
     ].join("\n");
 
+    document.getElementById("mail-tenant-email").textContent=tenantEmail;
+    document.getElementById("mail-owner-email").textContent=ownerEmail||"—";
     document.getElementById("mail-tenant").value=mailTenant;
     document.getElementById("mail-owner").value=mailOwner;
     document.getElementById("contacts-modal").classList.add("open");
