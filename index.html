@@ -940,7 +940,7 @@ function makeCard(l) {
   }
   var metaEl = document.createElement("div");
   metaEl.className = "space-card-meta";
-  metaEl.textContent = n + " intéressé" + (n !== 1 ? "s" : "");
+  metaEl.textContent = l.surface + "m² · " + n + " intéressé" + (n !== 1 ? "s" : "");
   footer.appendChild(priceEl);
   footer.appendChild(metaEl);
 
