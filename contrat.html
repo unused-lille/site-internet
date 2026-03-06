@@ -225,11 +225,18 @@ footer a{color:var(--indigo);text-decoration:none;}
     <div class="card">
       <div class="section-label">3 — Conditions financières</div>
 
+      <!-- Champ m² uniquement pour les espaces partagés -->
+      <div class="field" id="sqm-field" style="display:none">
+        <label>Combien de m² souhaitez-vous louer ? *</label>
+        <input type="number" id="f-sqm" min="1" placeholder="Ex : 15" oninput="recalcPrice()">
+        <div class="field-hint">Disponibles : <strong id="f-sqm-max">—</strong>m² · Prix : <strong id="f-price-per-sqm">—</strong>€/m²/mois</div>
+      </div>
+
       <div class="field-row">
         <div class="field">
-          <label>Prix mensuel accepté (€) *</label>
+          <label>Prix mensuel (€) *</label>
           <input type="number" id="f-price" min="1" placeholder="Ex : 50">
-          <div class="field-hint">Prix affiché sur l'annonce : <strong id="f-price-hint">—</strong>€/mois</div>
+          <div class="field-hint" id="price-hint-wrap">Prix affiché sur l'annonce : <strong id="f-price-hint">—</strong>€/mois</div>
         </div>
         <div class="field">
           <label>Préavis de départ *</label>
@@ -371,8 +378,32 @@ function populateListing(){
   document.getElementById("f-listing-surface").textContent=(listing.surface||"?")+" m²";
   document.getElementById("f-listing-price").textContent=(listing.price||"?")+"€/mois";
   document.getElementById("f-listing-type").textContent=(listing.type_icon||"")+" "+(listing.type||"—");
-  document.getElementById("f-price").value=listing.price||"";
-  document.getElementById("f-price-hint").textContent=listing.price||"?";
+
+  if(listing.is_shared && listing.price_per_sqm){
+    // Espace partagé : afficher le champ m² et calculer le prix
+    document.getElementById("sqm-field").style.display="block";
+    document.getElementById("f-sqm-max").textContent=listing.surface_remaining||listing.surface||"?";
+    document.getElementById("f-price-per-sqm").textContent=listing.price_per_sqm||"?";
+    document.getElementById("f-price").value="";
+    document.getElementById("f-price").readOnly=true;
+    document.getElementById("f-price").placeholder="Calculé automatiquement";
+    document.getElementById("price-hint-wrap").innerHTML='Prix au m² : <strong>'+(listing.price_per_sqm||"?")+'</strong>€/m²/mois · Total annonce : <strong>'+(listing.price||"?")+'</strong>€/mois';
+  } else {
+    document.getElementById("f-price").value=listing.price||"";
+    document.getElementById("f-price-hint").textContent=listing.price||"?";
+  }
+}
+
+function recalcPrice(){
+  if(!listing||!listing.is_shared||!listing.price_per_sqm)return;
+  var sqm=parseInt(document.getElementById("f-sqm").value)||0;
+  var max=listing.surface_remaining||listing.surface||0;
+  if(sqm>max){
+    document.getElementById("f-sqm").value=max;
+    sqm=max;
+  }
+  var total=Math.round(sqm*listing.price_per_sqm);
+  document.getElementById("f-price").value=total>0?total:"";
 }
 
 // ── OPTION SELECTORS
@@ -448,6 +479,8 @@ async function submitContract(){
   var paymentToken=makeToken();
   var paymentRef="UNUSED-"+String(listing.id).slice(-4)+"-"+makeToken().slice(0,6);
 
+  var sqm=listing.is_shared?parseInt(document.getElementById("f-sqm").value)||null:null;
+
   // Résumé du contrat pour le mail
   var contractSummary=[
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
@@ -457,8 +490,9 @@ async function submitContract(){
     "📋 ANNONCE",
     "Titre : "+listing.title,
     "Quartier : "+listing.quartier,
-    "Surface : "+(listing.surface||"?")+" m²",
-    "Prix annoncé : "+(listing.price||"?")+"€/mois",
+    "Surface totale : "+(listing.surface||"?")+" m²",
+    listing.is_shared?"Surface louée : "+(sqm||"?")+" m² sur "+(listing.surface||"?")+" m²":"",
+    "Prix : "+(listing.price||"?")+"€/mois"+(listing.is_shared&&listing.price_per_sqm?" ("+listing.price_per_sqm+"€/m²)":""),
     "Référence : #"+listing.id,
     "",
     "👤 LOCATAIRE",
@@ -518,7 +552,8 @@ async function submitContract(){
       contract_goods:formValues.goods+(goodsDetail?" — "+goodsDetail:""),
       contract_price:parseInt(price),
       contract_payment:formValues.payment,
-      contract_notice:notice
+      contract_notice:notice,
+      contract_sqm:sqm
     };
 
     var r=await fetch(API+"/signatures",{method:"POST",headers:H,body:JSON.stringify(record)});
