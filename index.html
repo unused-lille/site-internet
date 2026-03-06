@@ -953,7 +953,7 @@ function makeCard(l) {
     barWrap.innerHTML =
       '<div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:4px">' +
         '<span>👥 Espace partagé</span>' +
-        '<span style="color:'+(pct>50?'var(--indigo)':'#E53E3E');font-weight:700">'+remaining+'m² dispo</span>' +
+        '<span style="color:'+(pct>50?'var(--indigo)':'#E53E3E')+';font-weight:700">'+remaining+'m² dispo</span>' +
       '</div>' +
       '<div style="height:5px;background:var(--cream-d);border-radius:100px;overflow:hidden">' +
         '<div style="height:100%;width:'+pct+'%;background:'+(pct>50?'var(--indigo)':pct>25?'#F6AD55':'#E53E3E')+';border-radius:100px;transition:width .3s"></div>' +
