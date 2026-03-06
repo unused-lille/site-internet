@@ -452,6 +452,28 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
           <div class="fg" style="margin:0"><label>Surface (m²)</label><input type="number" id="f-surface" placeholder="Ex : 8" min="1"></div>
           <div class="fg" style="margin:0"><label>Prix / mois (€)</label><input type="number" id="f-price" placeholder="Ex : 30" min="1"></div>
         </div>
+        <div class="fg">
+          <label>Cet espace peut-il être partagé entre plusieurs étudiants ?</label>
+          <div style="background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.15);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:10px;font-size:.8rem;color:var(--ink);line-height:1.6">
+            💡 <strong>Le stockage partagé</strong> — Tu peux louer ton espace à plusieurs étudiants en même temps. Chacun loue une partie des m² selon ses besoins et paie proportionnellement. Exemple : une cave de 40m² louée à 3 étudiants qui prennent chacun 10-15m².
+          </div>
+          <div style="display:flex;gap:10px">
+            <div id="share-no" onclick="setShared(false)" style="flex:1;padding:12px;border:2px solid var(--indigo);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:var(--indigo);color:white;font-weight:700;font-size:.84rem;transition:all .15s">🔒 Non partagé<br><span style="font-size:.72rem;font-weight:400;opacity:.8">1 seul étudiant</span></div>
+            <div id="share-yes" onclick="setShared(true)" style="flex:1;padding:12px;border:2px solid var(--cream-d);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:white;color:var(--muted);font-weight:700;font-size:.84rem;transition:all .15s">👥 Partagé<br><span style="font-size:.72rem;font-weight:400">Plusieurs étudiants</span></div>
+          </div>
+          <input type="hidden" id="f-is-shared" value="false">
+        </div>
+        <div id="share-options" style="display:none">
+          <div class="fg" style="margin-bottom:10px">
+            <label>Nombre maximum d'étudiants simultanés</label>
+            <select id="f-max-tenants" style="width:100%;padding:11px 14px;border:1.5px solid var(--cream-d);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;color:var(--ink);background:white;outline:none;">
+              <option value="2">2 étudiants maximum</option>
+              <option value="3">3 étudiants maximum</option>
+              <option value="4">4 étudiants maximum</option>
+              <option value="5">5 étudiants maximum</option>
+            </select>
+          </div>
+        </div>
         <div class="fg"><label>Description</label><textarea id="f-desc" placeholder="Décris l'espace, l'accès, les conditions…"></textarea></div>
       </div>
 
@@ -673,6 +695,7 @@ function dbToListing(r) {
     ownerType:r.owner_type, listingType:r.listing_type,
     shareSurface:r.share_surface, sharePrice:r.share_price, shareMax:r.share_max,
     surfaceRemaining:(r.surface_remaining !== undefined && r.surface_remaining !== null) ? r.surface_remaining : r.surface,
+    isShared:r.is_shared||false, maxTenants:r.max_tenants||1, pricePerSqm:r.price_per_sqm||0,
     coords:r.coords, deleteKey:r.delete_key, photos:r.photos||[], status:(r.status||'disponible').toLowerCase()
   };
 }
@@ -685,6 +708,7 @@ function listingToDb(l) {
     owner_type:l.ownerType, listing_type:l.listingType,
     share_surface:l.shareSurface, share_price:l.sharePrice, share_max:l.shareMax,
     surface_remaining:l.surfaceRemaining !== undefined ? l.surfaceRemaining : l.surface,
+    is_shared:l.isShared||false, max_tenants:l.maxTenants||1, price_per_sqm:l.pricePerSqm||0,
     coords:l.coords, delete_key:l.deleteKey, photos:l.photos||[], status:l.status||'disponible'
   };
 }
@@ -838,6 +862,8 @@ function updateMapMarkers() {
 function getFilteredListings() {
   var q = searchQuery.toLowerCase().trim();
   return listings.filter(function(l) {
+    // Masquer les annonces partagées sans m² restants
+    if(l.isShared && l.surfaceRemaining !== undefined && l.surfaceRemaining <= 0) return false;
     if (activeFilter !== "all" && l.ownerType !== activeFilter) return false;
     if (!q) return true;
     return (l.title && l.title.toLowerCase().includes(q)) ||
@@ -907,13 +933,36 @@ function makeCard(l) {
   footer.className = "space-card-footer";
   var priceEl = document.createElement("div");
   priceEl.className = "space-card-price";
-  priceEl.textContent = l.price + "€/mois";
+  if(l.isShared && l.pricePerSqm){
+    priceEl.innerHTML = l.pricePerSqm + "€/m²<span>/mois</span>";
+  } else {
+    priceEl.textContent = l.price + "€/mois";
+  }
   var metaEl = document.createElement("div");
   metaEl.className = "space-card-meta";
   metaEl.textContent = n + " intéressé" + (n !== 1 ? "s" : "");
   footer.appendChild(priceEl);
   footer.appendChild(metaEl);
-  body.appendChild(footer);
+
+  // Barre d'occupation pour les espaces partagés
+  if(l.isShared){
+    var remaining = l.surfaceRemaining !== undefined ? l.surfaceRemaining : l.surface;
+    var pct = Math.round((remaining / l.surface) * 100);
+    var barWrap = document.createElement("div");
+    barWrap.style.cssText = "margin-top:8px;width:100%";
+    barWrap.innerHTML =
+      '<div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:4px">' +
+        '<span>👥 Espace partagé</span>' +
+        '<span style="color:'+(pct>50?'var(--indigo)':'#E53E3E');font-weight:700">'+remaining+'m² dispo</span>' +
+      '</div>' +
+      '<div style="height:5px;background:var(--cream-d);border-radius:100px;overflow:hidden">' +
+        '<div style="height:100%;width:'+pct+'%;background:'+(pct>50?'var(--indigo)':pct>25?'#F6AD55':'#E53E3E')+';border-radius:100px;transition:width .3s"></div>' +
+      '</div>';
+    body.appendChild(footer);
+    body.appendChild(barWrap);
+  } else {
+    body.appendChild(footer);
+  }
 
   div.appendChild(imgDiv);
   div.appendChild(body);
@@ -1017,9 +1066,36 @@ function renderDetail(id) {
 
   var header = el("div", "detail-header");
   header.appendChild(el("h1", "detail-title", l.title));
-  var priceEl = el("div", "detail-price", price + "€ / mois");
-  header.appendChild(priceEl);
+  if(l.isShared && l.pricePerSqm){
+    var priceEl = el("div", "detail-price", l.pricePerSqm + "€/m²");
+    var priceSub = el("span", null, " · " + l.price + "€/mois pour tout l'espace");
+    priceSub.style.cssText = "font-size:.8rem;font-weight:400;color:var(--muted)";
+    priceEl.appendChild(priceSub);
+    header.appendChild(priceEl);
+  } else {
+    var priceEl = el("div", "detail-price", price + "€ / mois");
+    header.appendChild(priceEl);
+  }
   dc.appendChild(header);
+
+  // Barre d'occupation pour les espaces partagés
+  if(l.isShared){
+    var remaining = l.surfaceRemaining !== undefined ? l.surfaceRemaining : l.surface;
+    var pct = Math.round((remaining / l.surface) * 100);
+    var barColor = pct > 50 ? 'var(--indigo)' : pct > 25 ? '#F6AD55' : '#E53E3E';
+    var occDiv = el("div");
+    occDiv.style.cssText = "background:var(--indigo-pale);border:1.5px solid rgba(61,59,243,.15);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:16px";
+    occDiv.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+        '<span style="font-size:.8rem;font-weight:700;color:var(--ink)">👥 Espace partageable</span>' +
+        '<span style="font-size:.8rem;font-weight:800;color:'+barColor+'">'+remaining+'m² disponibles sur '+l.surface+'m²</span>' +
+      '</div>' +
+      '<div style="height:8px;background:var(--cream-d);border-radius:100px;overflow:hidden;margin-bottom:8px">' +
+        '<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:100px;transition:width .3s"></div>' +
+      '</div>' +
+      '<div style="font-size:.74rem;color:var(--muted)">Maximum '+l.maxTenants+' locataires · Tu peux louer une partie selon tes besoins</div>';
+    dc.appendChild(occDiv);
+  }
 
   var meta = el("div", "detail-meta");
   [l.typeIcon + " " + l.type, surface + " m²", l.quartier, capitalize(l.ownerType)].forEach(function(t) {
@@ -1258,6 +1334,9 @@ async function submitPropose(e) {
   var lat=parseFloat(document.getElementById("f-lat").value);
   var lng=parseFloat(document.getElementById("f-lng").value);
   var coords=(!isNaN(lat)&&!isNaN(lng))?[lat,lng]:getCoords(quartier);
+  var isShared=document.getElementById("f-is-shared").value==="true";
+  var maxTenants=isShared?parseInt(document.getElementById("f-max-tenants").value)||2:1;
+  var pricePerSqm=surface>0?Math.round((price/surface)*100)/100:0;
   var listing={
     id:Date.now(), title:title, surface:surface, price:price, desc:desc,
     address:address, quartier:quartier,
@@ -1266,6 +1345,8 @@ async function submitPropose(e) {
     contactName:cName, contactEmail:cEmail, contactPhone:cPhone,
     ownerType:document.getElementById("f-owner-type").value,
     listingType:"location", shareSurface:null, sharePrice:null, shareMax:null,
+    isShared:isShared, maxTenants:maxTenants, pricePerSqm:pricePerSqm,
+    surfaceRemaining:surface,
     coords:coords, deleteKey:Math.random().toString(36).slice(2,8).toUpperCase()
   };
   var btn=e.target.querySelector(".btn-submit");
@@ -1278,6 +1359,22 @@ async function submitPropose(e) {
     showDeleteKeyModal(listing);
   } catch(err) { showToast("Erreur: "+err.message); }
   finally { btn.textContent="Publier mon annonce →"; btn.disabled=false; }
+}
+
+function setShared(val){
+  document.getElementById("f-is-shared").value=val?"true":"false";
+  var yes=document.getElementById("share-yes");
+  var no=document.getElementById("share-no");
+  var opts=document.getElementById("share-options");
+  if(val){
+    yes.style.cssText="flex:1;padding:12px;border:2px solid var(--indigo);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:var(--indigo);color:white;font-weight:700;font-size:.84rem;transition:all .15s";
+    no.style.cssText="flex:1;padding:12px;border:2px solid var(--cream-d);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:white;color:var(--muted);font-weight:700;font-size:.84rem;transition:all .15s";
+    opts.style.display="block";
+  } else {
+    no.style.cssText="flex:1;padding:12px;border:2px solid var(--indigo);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:var(--indigo);color:white;font-weight:700;font-size:.84rem;transition:all .15s";
+    yes.style.cssText="flex:1;padding:12px;border:2px solid var(--cream-d);border-radius:var(--r-sm);cursor:pointer;text-align:center;background:white;color:var(--muted);font-weight:700;font-size:.84rem;transition:all .15s";
+    opts.style.display="none";
+  }
 }
 
 /* ══ OLD PARTAGE STUBS (kept for data compat) ══ */
