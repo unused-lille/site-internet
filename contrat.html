@@ -311,6 +311,10 @@ footer a{color:var(--indigo);text-decoration:none;}
       <p class="err" id="err-sign">❌ Coche la case pour apposer ta signature.</p>
       <p class="err" id="err-fields">❌ Remplis tous les champs obligatoires.</p>
 
+      <div style="background:#FFF8E1;border:1.5px solid #F6AD55;border-radius:var(--r-sm);padding:14px 18px;margin-bottom:16px">
+        <p style="font-size:.82rem;font-weight:700;color:#92600A;margin-bottom:4px">📧 Un mail va s'ouvrir après signature</p>
+        <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoie-le sans le modifier — il permet à unused de traiter ta demande. S'il ne s'ouvre pas, contacte-nous à <strong>unused.lille@gmail.com</strong>.</p>
+      </div>
       <button class="btn-primary" id="btn-submit" onclick="submitContract()">✍️ Signer et envoyer ma demande</button>
       <button class="btn-back" onclick="window.history.back()">← Retour aux annonces</button>
     </div>
@@ -325,7 +329,7 @@ footer a{color:var(--indigo);text-decoration:none;}
     <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:16px;max-width:400px;margin-left:auto;margin-right:auto">S'il accepte, tu recevras un email pour régler les 9€ de frais de mise en relation. Tes coordonnées ne lui seront transmises qu'après paiement.</p>
     <div style="background:#FFF8E1;border:1.5px solid #F6AD55;border-radius:var(--r-sm);padding:14px 18px;max-width:400px;margin:0 auto 24px;text-align:left">
       <p style="font-size:.82rem;font-weight:700;color:#92600A;margin-bottom:4px">📧 Un mail va s'ouvrir sur ton appareil</p>
-      <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoie-le sans le modifier — il permet à unused de traiter ta demande. S'il ne s'ouvre pas, contacte-nous directement à <strong>unused.lille@gmail.com</strong>.</p>
+      <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoie-le sans le modifier — il permet à unused de traiter ta demande. S'il ne s'ouvre pas, contacte-nous directement à <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40352e353325246e2c292c2c2500272d21292c6e232f2d">[email&#160;protected]</a></strong>.</p>
     </div>
     <a href="index.html" style="display:inline-block;padding:13px 28px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.9rem;text-decoration:none">Retour aux annonces</a>
   </div>
@@ -334,7 +338,7 @@ footer a{color:var(--indigo);text-decoration:none;}
 
 <footer><p>© 2026 unused — Projet étudiant · Lille &nbsp;·&nbsp; <a href="cgu.html">CGU</a></p></footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var SUPABASE_URL="https://wncoflfsrorictwndffa.supabase.co";
 var SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduY29mbGZzcm9yaWN0d25kZmZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0NDIwMzMsImV4cCI6MjA4NzAxODAzM30.u7_p-Q56AX0j10ItggSZpxsoKulhaacSOKR3tfP7hHE";
 var API=SUPABASE_URL+"/rest/v1";
@@ -534,19 +538,4 @@ async function submitContract(){
     var subj=encodeURIComponent("[unused] 📄 Nouveau contrat — "+listing.title+" #"+listing.id);
     var body=encodeURIComponent(contractSummary+"\n\n— Envoyé depuis unused.fr");
     setTimeout(function(){
-      window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
-    },300);
-
-    setState("confirm");
-
-  }catch(e){
-    alert("Erreur : "+e.message);
-    btn.textContent="✍️ Signer et envoyer ma demande";
-    btn.disabled=false;
-  }
-}
-
-init();
-</script>
-</body>
-</html>
+      window.location.href="mailto:unused.lille@gmail.com?subject
