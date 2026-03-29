@@ -260,7 +260,7 @@ footer a{color:var(--indigo);text-decoration:none;}
       <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:16px;max-width:400px;margin-left:auto;margin-right:auto">Vous recevrez les coordonnées du locataire par email très prochainement.</p>
       <div style="background:#FFF8E1;border:1.5px solid #F6AD55;border-radius:8px;padding:14px 18px;max-width:400px;margin:0 auto 24px;text-align:left">
         <p style="font-size:.82rem;font-weight:700;color:#92600A;margin-bottom:4px">📧 Un mail va s'ouvrir sur votre appareil</p>
-        <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoyez-le sans le modifier — il permet à unused de finaliser la mise en relation. S'il ne s'ouvre pas, contactez-nous à <strong>unused.lille@gmail.com</strong>.</p>
+        <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoyez-le sans le modifier — il permet à unused de finaliser la mise en relation. S'il ne s'ouvre pas, contactez-nous à <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="12677c676177763c7e7b7e7e7752757f737b7e3c717d7f">[email&#160;protected]</a></strong>.</p>
       </div>
       <a href="index.html" style="display:inline-block;padding:12px 24px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.88rem;text-decoration:none">Retour au site</a>
     </div>
@@ -366,18 +366,4 @@ async function submitOwnerSign(){
     ].join("\n"));
 
     setTimeout(function(){
-      window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
-    },300);
-
-    setState("confirm");
-  }catch(e){
-    alert("Erreur : "+e.message);
-    btn.textContent="✍️ Signer le contrat";
-    btn.disabled=false;
-  }
-}
-
-init();
-</script>
-</body>
-</html>
+      window.location.href="mailto:unused.lille@gmail
