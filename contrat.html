@@ -535,7 +535,7 @@ async function submitContract(){
     if(!r.ok)throw new Error(await r.text());
 
     // Ouvrir le client mail avec le contrat en corps
-    var subj=encodeURIComponent("[unused] �    var subj=encodeURIComponent("[unused] 📄 Nouveau contrat — "+listing.title+" #"+listing.id);
+    var subj=encodeURIComponent("[unused] 📄 Nouveau contrat — "+listing.title+" #"+listing.id);
     var body=encodeURIComponent("[unused] Nouvelle demande de contrat\n\nAnnonce : "+listing.title+" (Réf. #"+listing.id+")\nQuartier : "+(listing.quartier||"—")+"\nRéférence demande : "+paymentRef+"\n\n— Envoyé automatiquement depuis unused");
     setTimeout(function(){
       window.location.href="mailto:unused.lille@gmail.com?subject="+subj+"&body="+body;
