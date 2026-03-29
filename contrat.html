@@ -321,8 +321,12 @@ footer a{color:var(--indigo);text-decoration:none;}
   <div id="state-confirm" style="display:none;text-align:center;padding:40px 0">
     <div style="font-size:3.5rem;margin-bottom:16px">✅</div>
     <h2 style="font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:8px">Contrat envoyé !</h2>
-    <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:6px;max-width:400px;margin-left:auto;margin-right:auto">Ton contrat a été enregistré et transmis à unused. Le propriétaire va être contacté avec les modalités que tu as proposées.</p>
-    <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:28px;max-width:400px;margin-left:auto;margin-right:auto">S'il accepte, tu recevras un email pour régler les 9€ de frais de mise en relation. Tes coordonnées ne lui seront transmises qu'après paiement.</p>
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:12px;max-width:400px;margin-left:auto;margin-right:auto">Ton contrat a été enregistré et transmis à unused. Le propriétaire va être contacté avec les modalités que tu as proposées.</p>
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:16px;max-width:400px;margin-left:auto;margin-right:auto">S'il accepte, tu recevras un email pour régler les 9€ de frais de mise en relation. Tes coordonnées ne lui seront transmises qu'après paiement.</p>
+    <div style="background:#FFF8E1;border:1.5px solid #F6AD55;border-radius:var(--r-sm);padding:14px 18px;max-width:400px;margin:0 auto 24px;text-align:left">
+      <p style="font-size:.82rem;font-weight:700;color:#92600A;margin-bottom:4px">📧 Un mail va s'ouvrir sur ton appareil</p>
+      <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoie-le sans le modifier — il permet à unused de traiter ta demande. S'il ne s'ouvre pas, contacte-nous directement à <strong>unused.lille@gmail.com</strong>.</p>
+    </div>
     <a href="index.html" style="display:inline-block;padding:13px 28px;background:var(--indigo);color:white;border-radius:100px;font-weight:700;font-size:.9rem;text-decoration:none">Retour aux annonces</a>
   </div>
 
@@ -481,49 +485,16 @@ async function submitContract(){
 
   var sqm=listing.is_shared?parseInt(document.getElementById("f-sqm").value)||null:null;
 
-  // Résumé du contrat pour le mail
-  var contractSummary=[
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "CONTRAT DE MISE À DISPOSITION — unused",
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "",
-    "📋 ANNONCE",
-    "Titre : "+listing.title,
-    "Quartier : "+listing.quartier,
-    "Surface totale : "+(listing.surface||"?")+" m²",
-    listing.is_shared?"Surface louée : "+(sqm||"?")+" m² sur "+(listing.surface||"?")+" m²":"",
-    "Prix : "+(listing.price||"?")+"€/mois"+(listing.is_shared&&listing.price_per_sqm?" ("+listing.price_per_sqm+"€/m²)":""),
-    "Référence : #"+listing.id,
-    "",
-    "👤 LOCATAIRE",
-    "Nom : "+name,
-    "Email : "+email,
-    "Téléphone : "+phone,
-    "",
-    "📅 MODALITÉS PROPOSÉES",
-    "Date de début : "+new Date(startDate).toLocaleDateString("fr-FR"),
-    "Durée : "+duration,
-    "Fréquence d'accès : "+formValues.access,
-    "Biens à stocker : "+formValues.goods+(goodsDetail?" ("+goodsDetail+")":""),
-    "",
-    "💰 CONDITIONS FINANCIÈRES",
-    "Prix mensuel proposé : "+price+"€/mois",
-    "Modalité de paiement : "+formValues.payment,
-    "Préavis de départ : "+notice,
-    "",
-    "✅ ENGAGEMENTS",
-    "• Aucun bien dangereux ou illicite",
-    "• Accès d'urgence propriétaire accepté",
-    "",
-    "✍️ SIGNATURE ÉLECTRONIQUE",
-    "Signé par : "+name,
-    "Horodatage : "+new Date().toLocaleString("fr-FR"),
-    "Au sens de l'article 1367 du Code civil français",
-    "",
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "Ref. paiement : "+paymentRef,
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  ].join("\n");
+    // Mail simplifié à unused — juste les références
+    var contractSummary=[
+      "[unused] Nouvelle demande de contrat",
+      "",
+      "Annonce : "+listing.title+" (Réf. #"+listing.id+")",
+      "Quartier : "+(listing.quartier||"—"),
+      "Référence demande : "+paymentRef,
+      "",
+      "— Envoyé automatiquement depuis unused"
+    ].join("\n");
 
   try{
     // Enregistrer en base Supabase
