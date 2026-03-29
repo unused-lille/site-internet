@@ -99,7 +99,7 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
 <body>
 
 <nav class="nav">
-  <div class="logo"><span class="logo-dot"></span>UNUSED</div>
+  <div class="logo"><img src="logo.png" style="height:28px;filter:grayscale(100%) brightness(10);"></div>
   <span class="admin-badge">⚙️ Admin</span>
 </nav>
 
@@ -205,7 +205,7 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:#0F0E1A;color:#E8E6
 <div class="modal-overlay" id="contacts-modal">
   <div class="modal-box" style="max-width:620px">
     <h3 style="margin-bottom:6px">🎉 Mise en relation finalisée</h3>
-    <p style="font-size:.82rem;color:#7B79AA;margin-bottom:20px">Copie chaque bloc et envoie les mails depuis <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d4a1baa1a7b1b0fab8bdb8b8b194b3b9b5bdb8fab7bbb9">[email&#160;protected]</a></p>
+    <p style="font-size:.82rem;color:#7B79AA;margin-bottom:20px">Copie chaque bloc et envoie les mails depuis <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d3a6bda6a0b6b7fdbfbabfbfb693b4beb2babffdb0bcbe">[email&#160;protected]</a></p>
 
     <div style="margin-bottom:16px">
       <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7B79AA;margin-bottom:6px">📧 Mail à envoyer au locataire</div>
@@ -551,36 +551,11 @@ async function advanceStatus(btn, payToken, newStatus, tenantName, tenantEmail, 
   if(!confirm("Marquer comme finalisé et afficher les contacts à envoyer ?"))return;
   btn.disabled=true; btn.textContent="…";
   try{
-    // Récupérer la signature pour avoir listing_id et contract_sqm
-    var rSig=await fetch(API+"/signatures?payment_token=eq."+payToken+"&select=listing_id,contract_sqm",{headers:H});
-    var sigData=await rSig.json();
-    var sig=sigData&&sigData.length?sigData[0]:null;
-
     var r=await fetch(API+"/signatures?payment_token=eq."+payToken,{
       method:"PATCH",headers:HP,
       body:JSON.stringify({status:"completed",payment_confirmed_at:new Date().toISOString()})
     });
     if(!r.ok)throw new Error(await r.text());
-
-    // Si espace partagé : déduire les m² loués de surface_remaining
-    if(sig&&sig.listing_id&&sig.contract_sqm){
-      console.log("Déduction m²:", sig.contract_sqm, "pour listing", sig.listing_id);
-      var rListing=await fetch(API+"/listings?id=eq."+sig.listing_id+"&select=surface_remaining,surface",{headers:H});
-      var listingData=await rListing.json();
-      console.log("Listing data:", listingData);
-      if(listingData&&listingData.length){
-        var current=listingData[0].surface_remaining!==null?listingData[0].surface_remaining:listingData[0].surface;
-        var newRemaining=Math.max(0,current-sig.contract_sqm);
-        console.log("surface_remaining:", current, "→", newRemaining);
-        var rPatch=await fetch(API+"/listings?id=eq."+sig.listing_id,{
-          method:"PATCH",headers:HP,
-          body:JSON.stringify({surface_remaining:newRemaining})
-        });
-        console.log("Patch status:", rPatch.status);
-      }
-    } else {
-      console.log("Pas de déduction — sig:", sig);
-    }
 
     // Préparer les deux mails
     var mailTenant=[
@@ -639,17 +614,4 @@ function copyBlock(id, btnId){
     btn.textContent="✅ Copié !";
     setTimeout(function(){btn.textContent="📋 Copier";},2000);
   }).catch(function(){
-    document.getElementById(id).    document.getElementById(id).select();
-    document.execCommand("copy");
-  });
-}
-
-function closeContactsModal(){
-  document.getElementById("contacts-modal").classList.remove("open");
-}
-
-// Chargement automatique au démarrage
-loadAll();
-</script>
-</body>
-</html>
+    document.getElementById(id).
