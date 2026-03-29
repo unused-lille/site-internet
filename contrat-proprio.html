@@ -366,4 +366,27 @@ async function submitOwnerSign(){
     ].join("\n"));
 
     setTimeout(function(){
-      window.location.href="mailto:unused.lille@gmail
+      window.location.href="mailto:unused.lille" + "@" + "gmail.com?subject="+subj+"&body="+body;
+    },300);
+
+    setState("confirm");
+
+  }catch(e){
+    showToast("Erreur : "+e.message);
+    document.getElementById("btn-sign").disabled=false;
+    document.getElementById("btn-sign").textContent="✅ Accepter et signer";
+  }
+}
+
+function showToast(msg){
+  var t=document.getElementById("toast");
+  if(!t)return;
+  t.textContent=msg;
+  t.style.opacity="1";
+  setTimeout(function(){t.style.opacity="0";},2500);
+}
+
+init();
+</script>
+</body>
+</html>
