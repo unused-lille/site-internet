@@ -313,7 +313,7 @@ footer a{color:var(--indigo);text-decoration:none;}
 
       <div style="background:#FFF8E1;border:1.5px solid #F6AD55;border-radius:var(--r-sm);padding:14px 18px;margin-bottom:16px">
         <p style="font-size:.82rem;font-weight:700;color:#92600A;margin-bottom:4px">📧 Un mail va s'ouvrir après signature</p>
-        <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoie-le sans le modifier — il permet à unused de traiter ta demande. S'il ne s'ouvre pas, contacte-nous à <strong>unused.lille@gmail.com</strong>.</p>
+        <p style="font-size:.78rem;color:#92600A;line-height:1.6">Envoie-le sans le modifier — il permet à unused de traiter ta demande. S'il ne s'ouvre pas, contacte-nous à <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="61140f141204054f0d080d0d0421060c00080d4f020e0c">[email&#160;protected]</a></strong>.</p>
       </div>
       <button class="btn-primary" id="btn-submit" onclick="submitContract()">✍️ Signer et envoyer ma demande</button>
       <button class="btn-back" onclick="window.history.back()">← Retour aux annonces</button>
@@ -338,7 +338,7 @@ footer a{color:var(--indigo);text-decoration:none;}
 
 <footer><p>© 2026 unused — Projet étudiant · Lille &nbsp;·&nbsp; <a href="cgu.html">CGU</a></p></footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 var SUPABASE_URL="https://wncoflfsrorictwndffa.supabase.co";
 var SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduY29mbGZzcm9yaWN0d25kZmZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0NDIwMzMsImV4cCI6MjA4NzAxODAzM30.u7_p-Q56AX0j10ItggSZpxsoKulhaacSOKR3tfP7hHE";
 var API=SUPABASE_URL+"/rest/v1";
@@ -535,7 +535,4 @@ async function submitContract(){
     if(!r.ok)throw new Error(await r.text());
 
     // Ouvrir le client mail avec le contrat en corps
-    var subj=encodeURIComponent("[unused] 📄 Nouveau contrat — "+listing.title+" #"+listing.id);
-    var body=encodeURIComponent(contractSummary+"\n\n— Envoyé depuis unused.fr");
-    setTimeout(function(){
-      window.location.href="mailto:unused.lille@gmail.com?subject
+    var subj=encodeURIComponent("[unused] �
