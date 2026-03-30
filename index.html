@@ -408,12 +408,29 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
         style="width:100%;padding:10px 14px 10px 34px;border:1.5px solid var(--cream-d);border-radius:100px;font-family:inherit;font-size:.83rem;background:white;outline:none;color:var(--ink);transition:border-color .18s"
         onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='var(--cream-d)'">
     </div>
-    <div class="filter-bar" style="padding:0">
-      <button class="filter-chip active" onclick="setFilter('all',this)">Tous</button>
-      <button class="filter-chip" onclick="setFilter('particulier',this)">🏠 Particulier</button>
-      <button class="filter-chip" onclick="setFilter('ecole',this)">🏫 École</button>
-      <button class="filter-chip" onclick="setFilter('entreprise',this)">🏢 Entreprise</button>
-      <button class="filter-chip" onclick="setFilter('autre',this)">📦 Autre</button>
+    <div class="filter-bar" style="padding:0;gap:8px;flex-wrap:wrap">
+      <select id="filter-quartier" onchange="applyFilters()" style="padding:6px 12px;border-radius:100px;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--cream-d);background:white;color:var(--muted);transition:all .15s;outline:none;">
+        <option value="">📍 Tous les quartiers</option>
+        <option>Vieux-Lille</option><option>Centre</option><option>Vauban</option>
+        <option>Wazemmes</option><option>Moulins</option><option>Faubourg de Béthune</option>
+        <option>Hellemmes</option><option>Lomme</option><option>Euralille</option>
+        <option>Bois-Blancs</option><option>Saint-Maurice Pellevoisin</option>
+      </select>
+      <select id="filter-surface" onchange="applyFilters()" style="padding:6px 12px;border-radius:100px;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--cream-d);background:white;color:var(--muted);transition:all .15s;outline:none;">
+        <option value="">📐 Toutes surfaces</option>
+        <option value="5">Jusqu'à 5m²</option>
+        <option value="10">Jusqu'à 10m²</option>
+        <option value="20">Jusqu'à 20m²</option>
+        <option value="50">Jusqu'à 50m²</option>
+      </select>
+      <select id="filter-price" onchange="applyFilters()" style="padding:6px 12px;border-radius:100px;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--cream-d);background:white;color:var(--muted);transition:all .15s;outline:none;">
+        <option value="">💶 Tous les prix</option>
+        <option value="20">Moins de 20€/mois</option>
+        <option value="40">Moins de 40€/mois</option>
+        <option value="60">Moins de 60€/mois</option>
+        <option value="100">Moins de 100€/mois</option>
+      </select>
+      <button onclick="resetFilters()" style="padding:6px 14px;border-radius:100px;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--cream-d);background:white;color:var(--muted);">✕ Réinitialiser</button>
     </div>
   </div>
   <div class="listing-layout">
@@ -823,6 +840,18 @@ var leafletMap = null;
 var markers = [];
 var activeFilter = "all";
 
+function applyFilters() {
+  renderListing();
+  updateMapMarkers();
+}
+
+function resetFilters() {
+  document.getElementById("filter-quartier").value = "";
+  document.getElementById("filter-surface").value = "";
+  document.getElementById("filter-price").value = "";
+  applyFilters();
+}
+
 function showView(name, listingId) {
   document.querySelectorAll(".view").forEach(function(v) { v.classList.remove("active"); });
   var el = document.getElementById("view-" + name);
@@ -872,10 +901,15 @@ function updateMapMarkers() {
 
 function getFilteredListings() {
   var q = searchQuery.toLowerCase().trim();
+  var quartier = document.getElementById("filter-quartier") ? document.getElementById("filter-quartier").value : "";
+  var maxSurface = document.getElementById("filter-surface") ? parseInt(document.getElementById("filter-surface").value) || 0 : 0;
+  var maxPrice = document.getElementById("filter-price") ? parseInt(document.getElementById("filter-price").value) || 0 : 0;
+
   return listings.filter(function(l) {
-    // Masquer les annonces partagées sans m² restants
     if(l.isShared && l.surfaceRemaining !== undefined && l.surfaceRemaining <= 0) return false;
-    if (activeFilter !== "all" && l.ownerType !== activeFilter) return false;
+    if(quartier && l.quartier !== quartier) return false;
+    if(maxSurface && (l.surfaceRemaining || l.surface) > maxSurface) return false;
+    if(maxPrice && l.price > maxPrice) return false;
     if (!q) return true;
     return (l.title && l.title.toLowerCase().includes(q)) ||
            (l.quartier && l.quartier.toLowerCase().includes(q)) ||
@@ -885,14 +919,6 @@ function getFilteredListings() {
 }
 function onSearch(val) {
   searchQuery = val;
-  renderListing();
-  updateMapMarkers();
-}
-
-function setFilter(f, el) {
-  activeFilter = f;
-  document.querySelectorAll(".filter-chip").forEach(function(c) { c.classList.remove("active"); });
-  el.classList.add("active");
   renderListing();
   updateMapMarkers();
 }
