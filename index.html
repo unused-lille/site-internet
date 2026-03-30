@@ -418,10 +418,10 @@ h1.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;font-wei
       </select>
       <select id="filter-surface" onchange="applyFilters()" style="padding:6px 12px;border-radius:100px;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--cream-d);background:white;color:var(--muted);transition:all .15s;outline:none;">
         <option value="">📐 Toutes surfaces</option>
-        <option value="5">Jusqu'à 5m²</option>
-        <option value="10">Jusqu'à 10m²</option>
-        <option value="20">Jusqu'à 20m²</option>
-        <option value="50">Jusqu'à 50m²</option>
+        <option value="5">Au moins 5m²</option>
+        <option value="10">Au moins 10m²</option>
+        <option value="20">Au moins 20m²</option>
+        <option value="50">Au moins 50m²</option>
       </select>
       <select id="filter-price" onchange="applyFilters()" style="padding:6px 12px;border-radius:100px;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--cream-d);background:white;color:var(--muted);transition:all .15s;outline:none;">
         <option value="">💶 Tous les prix</option>
@@ -908,7 +908,7 @@ function getFilteredListings() {
   return listings.filter(function(l) {
     if(l.isShared && l.surfaceRemaining !== undefined && l.surfaceRemaining <= 0) return false;
     if(quartier && l.quartier !== quartier) return false;
-    if(maxSurface && (l.surfaceRemaining || l.surface) > maxSurface) return false;
+    if(maxSurface && (l.surfaceRemaining || l.surface) < maxSurface) return false;
     if(maxPrice && l.price > maxPrice) return false;
     if (!q) return true;
     return (l.title && l.title.toLowerCase().includes(q)) ||
